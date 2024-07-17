@@ -1,32 +1,29 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
+import SignInButton from "@/components/home/signInButton"
+
 
 export default function Home() {
   return (
     <div>
       <div className="flex min-h-[100dvh] flex-col">
-      <header className="bg-primary px-4 py-3 md:px-6 md:py-4">
+      <header className="bg-[#00B894] px-4 py-3 md:px-6 md:py-4">
         <div className="container mx-auto flex items-center justify-between">
           <Link href="#" className="flex items-center gap-2" prefetch={false}>
             <MountainIcon className="h-6 w-6 text-primary-foreground" />
-            <span className="text-lg font-semibold text-primary-foreground">Acme Inc.</span>
+            <span className="text-lg font-semibold text-primary-foreground">Message Website</span>
           </Link>
           <nav className="hidden space-x-4 md:flex">
             <Link href="#" className="text-sm font-medium text-primary-foreground hover:underline" prefetch={false}>
               About
             </Link>
             <Link href="#" className="text-sm font-medium text-primary-foreground hover:underline" prefetch={false}>
-              Features
-            </Link>
-            <Link href="#" className="text-sm font-medium text-primary-foreground hover:underline" prefetch={false}>
-              Pricing
-            </Link>
-            <Link href="#" className="text-sm font-medium text-primary-foreground hover:underline" prefetch={false}>
-              Contact
+              Contact 
             </Link>
           </nav>
-          <Button className="hidden md:inline-flex">Get Started</Button>
+          <SignInButton/>
+          {/* <Button className="hidden md:inline-flex"><GGIcon />Continue with Google!</Button> */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
@@ -35,22 +32,10 @@ export default function Home() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <div className="grid gap-4 p-6">
-                <Link href="#" className="flex items-center gap-2 text-lg font-medium" prefetch={false}>
-                  <HomeIcon className="h-5 w-5" />
-                  Home
-                </Link>
+              <div className="grid gap-4 p-6">       
                 <Link href="#" className="flex items-center gap-2 text-lg font-medium" prefetch={false}>
                   <InfoIcon className="h-5 w-5" />
                   About
-                </Link>
-                <Link href="#" className="flex items-center gap-2 text-lg font-medium" prefetch={false}>
-                  <FocusIcon className="h-5 w-5" />
-                  Features
-                </Link>
-                <Link href="#" className="flex items-center gap-2 text-lg font-medium" prefetch={false}>
-                  <ShoppingCartIcon className="h-5 w-5" />
-                  Pricing
                 </Link>
                 <Link href="#" className="flex items-center gap-2 text-lg font-medium" prefetch={false}>
                   <ContactIcon className="h-5 w-5" />
@@ -62,10 +47,10 @@ export default function Home() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="bg-primary py-12 md:py-20 lg:py-28">
+        <section className="bg-[#00B894] py-12 md:py-20 lg:py-28">
           <div className="container mx-auto flex flex-col items-center gap-6 px-4 md:px-6">
             <h1 className="text-center text-3xl font-bold text-primary-foreground sm:text-4xl md:text-5xl lg:text-6xl">
-              Streamline Your Business with Acme Inc.
+            Chat Freely, Connect Deeply, Create Memories!
             </h1>
             <p className="max-w-md text-center text-lg text-primary-foreground">
               Unlock the power of our comprehensive suite of tools and services to take your business to new heights.
@@ -120,7 +105,7 @@ export default function Home() {
   )
 }
 
-function ContactIcon(props) {
+function ContactIcon(props : any) {
   return (
     <svg
       {...props}
@@ -143,53 +128,7 @@ function ContactIcon(props) {
   )
 }
 
-
-function FocusIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="3" />
-      <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-      <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-      <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
-      <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-    </svg>
-  )
-}
-
-
-function HomeIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  )
-}
-
-
-function InfoIcon(props) {
+function InfoIcon(props : any) {
   return (
     <svg
       {...props}
@@ -211,7 +150,7 @@ function InfoIcon(props) {
 }
 
 
-function LockIcon(props) {
+function LockIcon(props : any ) {
   return (
     <svg
       {...props}
@@ -231,8 +170,7 @@ function LockIcon(props) {
   )
 }
 
-
-function MaximizeIcon(props) {
+function MaximizeIcon(props : any) {
   return (
     <svg
       {...props}
@@ -255,7 +193,7 @@ function MaximizeIcon(props) {
 }
 
 
-function MenuIcon(props) {
+function MenuIcon(props : any) {
   return (
     <svg
       {...props}
@@ -277,7 +215,7 @@ function MenuIcon(props) {
 }
 
 
-function MountainIcon(props) {
+function MountainIcon(props : any) {
   return (
     <svg
       {...props}
@@ -297,7 +235,7 @@ function MountainIcon(props) {
 }
 
 
-function RocketIcon(props) {
+function RocketIcon(props : any) {
   return (
     <svg
       {...props}
@@ -320,7 +258,7 @@ function RocketIcon(props) {
 }
 
 
-function ShoppingCartIcon(props) {
+function ShoppingCartIcon(props : any) {
   return (
     <svg
       {...props}
@@ -341,8 +279,7 @@ function ShoppingCartIcon(props) {
   )
 }
 
-
-function XIcon(props) {
+function XIcon(props : any) {
   return (
     <svg
       {...props}
