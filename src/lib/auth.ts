@@ -3,7 +3,7 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google"
 import { db } from "./db";
 
-const getGoogleCredentials = () => {
+function getGoogleCredentials()  {    
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -22,13 +22,10 @@ export const authOptions : NextAuthOptions = {
     session: {
         strategy: "jwt"
     },
-    // pages: {
-    //     signIn: '/login'
-    // },
     providers: [
         GoogleProvider({
-          clientId: getGoogleCredentials().clientId,
-          clientSecret: getGoogleCredentials().clientSecret,
+          clientId: process.env.GOOGLE_CLIENT_ID!,
+          clientSecret: process.env.GOOGLE_CLIENT_ID!,
         }),
     ],
     callbacks: {
@@ -56,7 +53,7 @@ export const authOptions : NextAuthOptions = {
         return session;
         },
         redirect(){
-            return '/home';
+            return '/';
         }
     }
 }

@@ -1,8 +1,10 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
+import { Button } from "../ui/button"
 import { useState } from "react"
 import { signIn } from "next-auth/react"
+import { Loader2 } from 'lucide-react'
+import toast from "react-hot-toast"
 
 export default function SignInButton() {
   const [isLoading, changeLoadingState] = useState<boolean>(false)
@@ -13,14 +15,16 @@ export default function SignInButton() {
       await signIn('google');
     }
     catch (error){
-      //show error
+      toast.error("Something went wrong! :(")
     }
     finally {
       changeLoadingState(false);
     }
   }
-
-  return <Button onClick={SignInWithGoogle} className="hidden md:inline-flex"><GGIcon />Continue with Google!</Button>  
+  return (<Button onClick={SignInWithGoogle} className="hidden md:inline-flex">
+    {(isLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : <GGIcon/>)}
+    Continue with Google!
+    </Button> )
 }
 
 

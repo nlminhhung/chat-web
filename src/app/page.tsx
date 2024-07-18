@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
-import SignInButton from "@/components/home/signInButton"
+import { Button } from "../components/ui/button"
+import { Sheet, SheetTrigger, SheetContent } from "../components/ui/sheet"
+import SignInButton from "../components/home/signInButton"
 
 
 export default function Home() {
@@ -23,7 +23,6 @@ export default function Home() {
             </Link>
           </nav>
           <SignInButton/>
-          {/* <Button className="hidden md:inline-flex"><GGIcon />Continue with Google!</Button> */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
