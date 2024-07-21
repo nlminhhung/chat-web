@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { Button } from "../components/ui/button"
-import { Sheet, SheetTrigger, SheetContent } from "../components/ui/sheet"
+import { Button } from "../components/home/ui/button"
+import { Sheet, SheetTrigger, SheetContent } from "../components/home/ui/sheet"
 import SignInButton from "../components/home/signInButton"
 
 

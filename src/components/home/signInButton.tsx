@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from "../ui/button"
+import { Button } from "./ui/button"
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { Loader2 } from 'lucide-react'
