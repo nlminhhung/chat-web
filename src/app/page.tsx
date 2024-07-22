@@ -4,7 +4,7 @@ import { Sheet, SheetTrigger, SheetContent } from "../components/home/ui/sheet"
 import SignInButton from "../components/home/signInButton"
 
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div>
       <div className="flex min-h-[100dvh] flex-col">

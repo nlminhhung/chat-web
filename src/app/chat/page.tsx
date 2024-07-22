@@ -1,6 +1,6 @@
 import ChatScreen from "@/src/components/chat/(chat screen)/chatScreen"
 
-export default function Chat() {
+export default function ChatPage() {
   return (
         <ChatScreen/>
   )
