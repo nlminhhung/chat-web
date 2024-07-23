@@ -7,7 +7,7 @@ import { Badge } from "@/src/components/chat/ui/badge"
 
 export default function ChatList()  {
     return (
-    <aside className="border-r bg-muted/40 p-4 sm:p-6">
+    <aside className="border-r bg-gray-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Contacts</h2>
             <Button variant="ghost" size="icon">

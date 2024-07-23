@@ -3,7 +3,6 @@ import { Button } from "../components/home/ui/button"
 import { Sheet, SheetTrigger, SheetContent } from "../components/home/ui/sheet"
 import SignInButton from "../components/home/signInButton"
 
-
 export default function HomePage() {
   return (
     <div>
@@ -54,7 +53,11 @@ export default function HomePage() {
             <p className="max-w-md text-center text-lg text-primary-foreground">
               Unlock the power of our comprehensive suite of tools and services to take your business to new heights.
             </p>
-            <Button className="mt-4">Get Started</Button>
+            <Button className="mt-4">
+             <Link href="/chat">
+               Get Started
+             </Link>
+            </Button>
           </div>
         </section>
         <section className="py-12 md:py-20 lg:py-28">

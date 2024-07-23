@@ -50,6 +50,7 @@ export function AddFriend() {
 
   return (
     <div className="container mx-auto max-w-md py-12">
+      <p></p>
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Add a Friend</h1>
         <p className="text-muted-foreground">
@@ -60,6 +61,7 @@ export function AddFriend() {
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
+            {...register('email')}
             id="email"
             type="email"
             placeholder="Enter your friend's email"

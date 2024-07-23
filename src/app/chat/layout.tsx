@@ -11,9 +11,10 @@ interface LayoutProps {
   }
 
 export default function Layout({ children } : LayoutProps) {
-    return (
+    
+  return (
         <div className="flex min-h-screen w-full flex-col bg-background">
-            <div className=" top-0 z-30 flex h-14 items-center justify-between border-b bg-background px-4 sm:h-16 sm:px-6">
+            <div className=" top-0 z-30 flex h-14 items-center justify-between border-b bg-[#00B894] px-4 sm:h-16 sm:px-6">
                 <Link href="/" className="flex items-center gap-2" prefetch={false}>
                 <MessageCircleIcon className="h-6 w-6" />
                 <span className="text-lg font-semibold">Messaging App</span>
