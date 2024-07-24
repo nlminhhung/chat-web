@@ -12,7 +12,7 @@ export default function ChatList()  {
             <h2 className="text-lg font-semibold">Contacts</h2>
             <Button variant="ghost" size="icon">
               <Link href="chat/add-friend">
-                <PlusIcon className="h-5 w-5" />
+                <UserPlusIcon className="h-5 w-5" />
                 <span className="sr-only">Add contact</span>
               </Link>
             </Button>
@@ -50,22 +50,25 @@ export default function ChatList()  {
     )
 }
 
-function PlusIcon(props : any) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M5 12h14" />
-        <path d="M12 5v14" />
-      </svg>
-    )
-  }
+
+function UserPlusIcon(props : any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <line x1="19" x2="19" y1="8" y2="14" />
+      <line x1="22" x2="16" y1="11" y2="11" />
+    </svg>
+  )
+}
