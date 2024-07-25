@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     }
 
     const isSentRequest = (await fetchRedis(
-      "sismember",
+      "hexists",
       `user:${idToAdd}:incoming_friend_requests`,
       session.user.id
     )) as 0 | 1;
@@ -48,9 +48,9 @@ export async function POST(req: Request) {
     }
 
     await fetchRedis(
-      "sadd",
+      "hset",
       `user:${idToAdd}:incoming_friend_requests`,
-      session.user.id
+      session.user.id, "Hello"
     );
 
     return new Response("Your friend request has been sent!", { status: 200 });
