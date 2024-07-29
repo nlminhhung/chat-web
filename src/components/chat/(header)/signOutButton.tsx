@@ -2,7 +2,6 @@
 import { DropdownMenuItem } from "@/src/components/chat/ui/dropdown-menu";
 import { toast } from "react-hot-toast";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
 
 
 export default function SignOutButton() {

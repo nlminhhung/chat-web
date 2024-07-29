@@ -9,9 +9,9 @@ export async function POST(req: Request) {
     if (!session) {
       return new Response("You are unauthorized!", { status: 402 });
     }
-
     const body = await req.json();
-    const { email: emailToAdd } = addFriendValidate.parse(body.email);
+    const { email: emailToAdd, message: messageToAdd } = addFriendValidate.parse({email: body.email, message: body.message});
+
     const idToAdd = (await fetchRedis(
       "get",
       `user:email:${emailToAdd}`
@@ -37,6 +37,7 @@ export async function POST(req: Request) {
       });
     }
 
+    //Not done !!
     const isFriend = (await fetchRedis(
       "sismember",
       `user:${session.user.id}:friends`,
@@ -50,9 +51,12 @@ export async function POST(req: Request) {
     await fetchRedis(
       "hset",
       `user:${idToAdd}:incoming_friend_requests`,
-      session.user.id, "Hello"
+      session.user.id, messageToAdd
     );
 
     return new Response("Your friend request has been sent!", { status: 200 });
-  } catch (error) {}
+  } catch (error) {
+    return new Response("Something went wrong!", { status: 400 });
+
+  }
 }

@@ -4,8 +4,7 @@ import { getServerSession } from "next-auth";
 export default async function AddFriendPage() {
   const session = await getServerSession(authOptions);
   return (
-    <div>
-      {JSON.stringify(session)}
+    <div className="container mx-auto max-w-md py-12">
       
       <AddFriend />
 

@@ -9,24 +9,25 @@ import {
   DropdownMenuItem,
 } from "@/src/components/chat/ui/dropdown-menu";
 import { Button } from "@/src/components/chat/ui/button";
-import { FC } from "react";
-import { Badge } from "@/src/components/chat/ui/badge";
+import { FC, useState } from "react";
 
 interface NotificationProps {
   nOfRequest: number;
 }
 
 export const Notification: FC<NotificationProps> = ({ nOfRequest }) => {
+  // const [pNOfRequest, setPNOfRequest] = useState<number>(nOfRequest);
+
   return (
     <>
-      {nOfRequest > 0 ? (
-        <Badge variant="destructive" className="px-2 py-1 text-xs">
-          {nOfRequest}
-        </Badge>
-      ) : null}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={nOfRequest > 0 ? "destructive" :"ghost"}  size="icon">
+          <Button className="relative" variant={"ghost"} size="icon">
+            {nOfRequest > 0 ? (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                {nOfRequest}
+              </span>
+            ) : null}
             <BellIcon className="h-5 w-5" />
             <span className="sr-only">friend-request</span>
           </Button>
