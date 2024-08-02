@@ -2,7 +2,7 @@
 import { addFriendValidate } from "@/src/lib/valid_data/addFriend";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
@@ -33,15 +33,10 @@ export function AddFriend() {
       setSuccess(true);
       toast.success("Your request has been filed!");
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        setError("email", { message: error.message });
-        return;
-      }
       if (error instanceof AxiosError) {
-        setError("email", { message: error.response?.data });
+        toast.error(error.response?.data);
         return;
       }
-      setError("email", { message: "Something went wrong." });
     }
   };
 
@@ -51,7 +46,7 @@ export function AddFriend() {
   };
 
   return (
-    <div >
+    <div>
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Add a Friend</h1>
         <p className="text-muted-foreground">
