@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Button } from "@/src/components/chat/ui/button";
+import axios, { AxiosError } from "axios";
 
 import {
   DropdownMenu,
@@ -17,19 +18,25 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import NotFound from "../not-found";
 import { fetchRedis } from "@/src/commands/redis";
+import { headers } from "next/headers";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
+
+
 export default async function Layout({ children }: LayoutProps) {
   const session = await getServerSession(authOptions);
   if (!session) NotFound();
 
-  const numberOfUnseenRequests = (await fetchRedis(
-    "hlen",
-    `user:${session!.user.id}:incoming_friend_requests`
-  )) as number;
+  const res = await fetch("http:/localhost:3000/api/notifications/getReqs", {
+    method:"get",
+    headers: headers()
+  });
+  
+  const friendRequests = (await res.json()) as FriendRequest[]
+ 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className=" top-0 z-30 flex h-14 items-center justify-between border-b bg-[#00B894] px-4 sm:h-16 sm:px-6">
@@ -68,7 +75,7 @@ export default async function Layout({ children }: LayoutProps) {
           </Link>
         </nav>
         <div className="flex items-center gap-2">
-          <Notification nOfRequest={numberOfUnseenRequests} />
+          <Notification friendRequests={friendRequests} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">

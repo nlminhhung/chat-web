@@ -9,14 +9,16 @@ import {
   DropdownMenuItem,
 } from "@/src/components/chat/ui/dropdown-menu";
 import { Button } from "@/src/components/chat/ui/button";
-import { FC, useState } from "react";
+import {FC} from "react"
 
-interface NotificationProps {
-  nOfRequest: number;
-}
+interface NotificationProps{
+  friendRequests: FriendRequest[],
+} 
 
-export const Notification: FC<NotificationProps> = ({ nOfRequest }) => {
+export const Notification:FC<NotificationProps> = ({friendRequests}) => {
   // const [pNOfRequest, setPNOfRequest] = useState<number>(nOfRequest);
+  const nOfRequest = friendRequests.length;
+  console.log("Notif", friendRequests)
 
   return (
     <>
@@ -35,8 +37,15 @@ export const Notification: FC<NotificationProps> = ({ nOfRequest }) => {
         <DropdownMenuContent align="center">
           <DropdownMenuLabel>My Notification</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          {/* <DropdownMenuItem>Logout</DropdownMenuItem> */}
+          <>{
+            friendRequests.map((req)=>{
+              <DropdownMenuItem key={req.user.id}>
+                
+              </DropdownMenuItem>
+
+            })
+          }
+          </>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
