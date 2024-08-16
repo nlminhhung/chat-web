@@ -41,7 +41,6 @@ export function AddFriend() {
   };
 
   const onSubmit = (data: FormData) => {
-    console.log("here:", data.email, data.message);
     addFriend(data.email, data.message);
   };
 

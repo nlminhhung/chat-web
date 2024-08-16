@@ -1,56 +1,131 @@
 "use client";
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/src/components/chat/ui/dropdown-menu";
 import { Button } from "@/src/components/chat/ui/button";
-import {FC} from "react"
+import axios, { AxiosError } from "axios";
+import {FC, useState} from "react"
+import { Badge } from "../ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import toast from "react-hot-toast";
 
 interface NotificationProps{
   friendRequests: FriendRequest[],
 } 
 
 export const Notification:FC<NotificationProps> = ({friendRequests}) => {
-  // const [pNOfRequest, setPNOfRequest] = useState<number>(nOfRequest);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const nOfRequest = friendRequests.length;
-  console.log("Notif", friendRequests)
+  // console.log("Notif", friendRequests)
+  
+  const acceptClick = async (id: string) => {
+    try {
+      await axios.post("/api/friends/accept");
+
+      toast.success("You are now friends!");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data);
+        return;
+      }
+    }
+  };
+
+  const denyClick = async (id: string) => {
+    try {
+      await axios.post("/api/friends/deny");
+
+      toast.success("You have denied the request!");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data);
+        return;
+      }
+    }
+  };
+
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button className="relative" variant={"ghost"} size="icon">
-            {nOfRequest > 0 ? (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {nOfRequest}
-              </span>
-            ) : null}
-            <BellIcon className="h-5 w-5" />
-            <span className="sr-only">friend-request</span>
+      <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+          >
+            <BellIcon className="h-6 w-6" />
+            <Badge
+              variant="secondary"
+              className="absolute -top-1 -right-1 rounded-full px-1.5 py-0.5 text-xs font-medium"
+            >
+              {nOfRequest}
+            </Badge>
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="center">
-          <DropdownMenuLabel>My Notification</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <>{
-            friendRequests.map((req)=>{
-              <DropdownMenuItem key={req.user.id}>
-                
-              </DropdownMenuItem>
+          {isNotificationsOpen && (
+            <div className="absolute right-0 mt-2 w-[400px] rounded-md bg-background p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">Notifications</h3>
+                <button
+                  className="text-muted-foreground hover:text-foreground"
+                  onClick={() => setIsNotificationsOpen(false)}
+                >
+                  <XIcon className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="space-y-6">
+                <>
+                {friendRequests.map((req)=>(
+                  <div className="flex items-start justify-between" key={req.user.id}>
+                    <div className="flex items-start">
+                      <Avatar className="mr-4">
+                        <AvatarImage src={req.user.image} alt="Avatar" />
+                        <AvatarFallback>:)</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">{req.user.name} </p>
+                        <p className="text-muted-foreground">{req.message}</p>
+                        <div className="flex gap-2 mt-2 justify-between">
+                        <Button className="bg-green-500" size="sm" onClick={() => acceptClick(req.user.id)}>
+                          <CheckIcon className="h-4 w-4 mr-2" />
+                          Accept
+                        </Button>
+                        <Button variant="destructive" size="sm" className="ml-auto" onClick={() => denyClick(req.user.id)}>
+                          <XIcon className="h-4 w-4 mr-2" />
+                          Deny
+                        </Button>
+                      </div>
 
-            })
-          }
-          </>
-        </DropdownMenuContent>
-      </DropdownMenu>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                </>
+              </div>
+            </div>
+          )}
+        </div>
     </>
   );
 };
+
+
+function CheckIcon(props : any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  )
+}
 
 function BellIcon(props: any) {
   return (
@@ -70,4 +145,24 @@ function BellIcon(props: any) {
       <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
     </svg>
   );
+}
+
+function XIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  )
 }
