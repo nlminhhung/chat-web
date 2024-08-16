@@ -27,8 +27,8 @@ export async function GET(req: Request) {
                 `user:${requestId}`,
             )) as User;
             return {
-                user: senderInfo,
-                message: {message}
+                user: {id: senderInfo.id, name: senderInfo.name, image: senderInfo.image},
+                message
             }
         })
     )
