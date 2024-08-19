@@ -18,8 +18,7 @@ export const Notification:FC<NotificationProps> = ({friendRequests}) => {
   
   const acceptClick = async (id: string) => {
     try {
-      await axios.post("/api/friends/accept");
-
+      await axios.post("/api/friends/accept", {id: id});
       toast.success("You are now friends!");
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -31,8 +30,7 @@ export const Notification:FC<NotificationProps> = ({friendRequests}) => {
 
   const denyClick = async (id: string) => {
     try {
-      await axios.post("/api/friends/deny");
-
+      await axios.post("/api/friends/deny", {id: id});
       toast.success("You have denied the request!");
     } catch (error) {
       if (error instanceof AxiosError) {

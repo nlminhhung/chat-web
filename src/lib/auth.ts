@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    redirect() {
+    async redirect() {
       return "/chat";
     },
   },

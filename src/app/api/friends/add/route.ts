@@ -25,13 +25,13 @@ export async function POST(req: Request) {
       });
     }
 
-    const isSentRequest = (await fetchRedis(
+    const hasSentRequest = (await fetchRedis(
       "hexists",
       `user:${idToAdd}:incoming_friend_requests`,
       session.user.id
     )) as 0 | 1;
 
-    if (isSentRequest) {
+    if (hasSentRequest) {
       return new Response("Already sent request to this user!", {
         status: 400,
       });
