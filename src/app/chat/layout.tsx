@@ -28,14 +28,20 @@ interface LayoutProps {
 
 export default async function Layout({ children }: LayoutProps) {
   const session = await getServerSession(authOptions);
+  console.log(session?.user)
   if (!session) NotFound();
 
-  const res = await fetch("http:/localhost:3000/api/notifications/getReqs", {
+  const res = await fetch(`${process.env.LOCAL_URL}/api/notifications/getReqs`, {
     method:"get",
     headers: headers()
   });
   
-  const friendRequests = (await res.json()) as FriendRequest[]
+  let friendRequests = [] as FriendRequest[]
+  try {
+    const resJson = (await res.json()) as FriendRequest[]
+    friendRequests = resJson;
+  }
+  catch {}
  
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">

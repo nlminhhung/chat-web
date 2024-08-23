@@ -3,4 +3,5 @@ interface User {
     email: string
     image: string
     id: string
+    role: "admin" | "client"
 }
