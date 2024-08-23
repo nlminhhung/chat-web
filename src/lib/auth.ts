@@ -20,6 +20,15 @@ export const authOptions: NextAuthOptions = {
     error: "/error",
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (user) {
+        const isNewUser = await db.exists(`user:${user.id}`)
+        if (!isNewUser) {
+          user.role = 'user'
+        }
+      }
+      return true
+    },
     async jwt({ token, user }) {
       const getUser = (await fetchRedis("get", `user:${token.id}`)) as
         | string
@@ -28,6 +37,7 @@ export const authOptions: NextAuthOptions = {
       if (!getUser) {
         if (user) {
           token.id = user.id;
+          token.role = user.role
         }
         return token;
       }
@@ -39,6 +49,7 @@ export const authOptions: NextAuthOptions = {
         name: userData.name,
         email: userData.email,
         picture: userData.image,
+        role: userData.role
       };
     },
     async session({ session, token }) {
@@ -47,6 +58,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.image = token.picture;
+        session.user.role = token.role;
       }
       return session;
     },
