@@ -9,6 +9,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
+    maxAge: 2*60*60
   },
   providers: [
     GoogleProvider({
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
       if (!getUser) {
         if (user) {
           token.id = user.id;
-          token.role = user.role
+          token.role = user.role;
         }
         return token;
       }

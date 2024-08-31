@@ -18,7 +18,7 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith('/chat')) {
     // If the user is not authenticated, redirect to the login page
     if (!token) {
-      return NextResponse.redirect(new URL('/login', req.url));
+      return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
@@ -26,7 +26,7 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Configure the middleware to match the "/admin" and "/chat" routesddd
+// Configure the middleware to match the "/admin" and "/chat" routes
 export const config = {
   matcher: ['/admin/:path*', '/chat/:path*'],
 };

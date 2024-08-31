@@ -1,30 +1,17 @@
 import { ReactNode } from "react";
-import { Button } from "@/src/components/chat/ui/button";
-import axios, { AxiosError } from "axios";
-
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/src/components/chat/ui/dropdown-menu";
 import Link from "next/link";
 import ChatList from "@/src/components/chat/(chat list)/chatList";
 import { Notification } from "@/src/components/chat/(header)/notification";
-import SignOutButton from "@/src/components/chat/(header)/signOutButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import NotFound from "../not-found";
-import { fetchRedis } from "@/src/commands/redis";
 import { headers } from "next/headers";
+import UserAvatarButton from "@/src/components/chat/(header)/userAvatarButton";
+
 
 interface LayoutProps {
   children: ReactNode;
 }
-
-
 
 export default async function Layout({ children }: LayoutProps) {
   const session = await getServerSession(authOptions);
@@ -82,26 +69,7 @@ export default async function Layout({ children }: LayoutProps) {
         </nav>
         <div className="flex items-center gap-2">
           <Notification friendRequests={friendRequests} />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <img
-                  src={session ? session!.user.image! : "placeholder-user.jpg"}
-                  width="32"
-                  height="32"
-                  className="rounded-full"
-                  alt="Avatar"
-                />
-                <span className="sr-only">Toggle user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <SignOutButton />
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UserAvatarButton />
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
