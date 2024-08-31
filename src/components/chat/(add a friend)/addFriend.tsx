@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { Label } from "@/src/components/chat/(add a friend)/ui/label";
 import { Input } from "@/src/components/chat/(add a friend)/ui/input";
@@ -25,25 +24,25 @@ export function AddFriend() {
   const addFriend = async (email: string, message: string) => {
     try {
       const validatedRequest = addFriendValidate.parse({ email, message });
-      await axios.post("/api/friends/add", {
-        email: validatedRequest.email,
-        message: validatedRequest.message,
+      await fetch("/api/friends/add", 
+        {
+          method: "post", 
+          body: JSON.stringify({
+            email: validatedRequest.email,
+            message: validatedRequest.message,
+          })
       });
 
       setSuccess(true);
       toast.success("Your request has been filed!");
     } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data);
-        return;
+      toast.error("There is an error!");
       }
     }
-  };
-
-  const onSubmit = (data: FormData) => {
-    addFriend(data.email, data.message);
-  };
-
+    const onSubmit = (data: FormData) => {
+      addFriend(data.email, data.message);
+    };
+  
   return (
     <div>
       <div className="space-y-4">

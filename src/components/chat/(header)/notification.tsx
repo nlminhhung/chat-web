@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/src/components/chat/ui/button";
-import axios, { AxiosError } from "axios";
 import {FC, useState} from "react"
 import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -14,15 +13,16 @@ interface NotificationProps{
 export const Notification:FC<NotificationProps> = ({friendRequests}) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const nOfRequest = friendRequests.length;
-  // console.log("Notif", friendRequests)
   
   const acceptClick = async (id: string) => {
     try {
-      await axios.post("/api/friends/accept", {id: id});
+      await fetch("/api/friends/accept", {
+        method: "post",
+        body:JSON.stringify({id: id})});
       toast.success("You are now friends!");
     } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data);
+      if (error) {
+        toast.error("Something gone wrong!");
         return;
       }
     }
@@ -30,13 +30,13 @@ export const Notification:FC<NotificationProps> = ({friendRequests}) => {
 
   const denyClick = async (id: string) => {
     try {
-      await axios.post("/api/friends/deny", {id: id});
+      await fetch("/api/friends/deny", 
+        {method: "post",
+        body:JSON.stringify({id: id})});
       toast.success("You have denied the request!");
     } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data);
+        toast.error("Something gone wrong!");
         return;
-      }
     }
   };
 
