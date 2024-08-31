@@ -2,8 +2,12 @@ import Link from "next/link"
 import { Button } from "../components/home/ui/button"
 import { Sheet, SheetTrigger, SheetContent } from "../components/home/ui/sheet"
 import SignInButton from "../components/home/signInButton"
+import HomeSignOutButton from "../components/home/homeSignOutButton"
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/src/lib/auth";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
   return (
     <div>
       <div className="flex min-h-[100dvh] flex-col">
@@ -21,7 +25,7 @@ export default function HomePage() {
               Contact 
             </Link>
           </nav>
-          <SignInButton/>
+          {session?<HomeSignOutButton/>:<SignInButton/>}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
@@ -53,11 +57,11 @@ export default function HomePage() {
             <p className="max-w-md text-center text-lg text-primary-foreground">
               Unlock the power of our comprehensive suite of tools and services to take your business to new heights.
             </p>
-            <Button className="mt-4">
+            {session?<Button className="mt-4">
              <Link href="/chat">
-               Get Started
+               Continue as {session?.user.name}!
              </Link>
-            </Button>
+            </Button>:<></>}
           </div>
         </section>
         <section className="py-12 md:py-20 lg:py-28">
