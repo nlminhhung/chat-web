@@ -13,10 +13,11 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer);
-
   io.on("connection", (socket) => {
-    io.emit("hello");
+      console.log("Client connected: ", socket.id)
   });
+
+ 
 
   httpServer
     .once("error", (err) => {
