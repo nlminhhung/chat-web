@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse } from "next/server";
 
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -54,9 +55,9 @@ export async function POST(req: Request) {
       `user:${idToAdd}:incoming_friend_requests`,
       session.user.id, messageToAdd || "Hey! Let's be friend!"
     );
-    console.log("hello")  
-
-    return NextResponse.json({message: "Request has been sent!"} , { status: 200 });
+      
+    
+    return NextResponse.json({message: "Request has been sent!", idToAdd: idToAdd, userId: session.user.id} , { status: 200 });
   } catch (error) {
     return NextResponse.json({error: "Something went wrong!"}, { status: 400 });
 

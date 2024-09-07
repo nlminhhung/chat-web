@@ -8,12 +8,14 @@ import toast from "react-hot-toast";
 import { Label } from "@/src/components/chat/(add a friend)/ui/label";
 import { Input } from "@/src/components/chat/(add a friend)/ui/input";
 import { Button } from "@/src/components/chat/(add a friend)/ui/button";
+import { io } from 'socket.io-client';
 
 type FormData = z.infer<typeof addFriendValidate>;
 
 export function AddFriend() {
   const [checkSuccess, setSuccess] = useState(false);
-
+  const socket = io();
+ 
   const {
     register,
     handleSubmit,
@@ -38,6 +40,7 @@ export function AddFriend() {
         toast.error(resMessage.error);
       }
       else {
+        socket.emit('sendFriendRequest', {idToAdd: resMessage.idToAdd, userId: resMessage.userId });
         setSuccess(true);
         toast.success("Your request has been filed!");
       }

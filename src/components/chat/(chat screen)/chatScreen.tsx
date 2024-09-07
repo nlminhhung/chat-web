@@ -1,11 +1,16 @@
+'use client'
 import { Avatar, AvatarImage, AvatarFallback } from "@/src/components/chat/ui/avatar"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/src/components/chat/ui/dropdown-menu"
 import { Button } from "@/src/components/chat/ui/button"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area"
 import { Input } from "@/src/components/chat/ui/input"
+import { useSocket } from "@/src/lib/hook/useSocket"
 
-export default function ChatScreen(){
-    return (
+
+export default function ChatScreen({userId}: {userId:string}){
+  const socket = useSocket(userId);
+    
+  return (
         <main className="flex flex-1 flex-col">
           <div className="border-b bg-muted/40 p-4 sm:p-6">
             <div className="flex items-center gap-4">

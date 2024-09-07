@@ -8,7 +8,6 @@ import NotFound from "../not-found";
 import { headers } from "next/headers";
 import UserAvatarButton from "@/src/components/chat/(header)/userAvatarButton";
 
-
 interface LayoutProps {
   children: ReactNode;
 }
@@ -16,7 +15,9 @@ interface LayoutProps {
 export default async function Layout({ children }: LayoutProps) {
   const session = await getServerSession(authOptions);
   console.log(session?.user)
+
   if (!session) NotFound();
+
 
   const res = await fetch(`${process.env.LOCAL_URL}/api/notifications/getReqs`, {
     method:"get",
