@@ -20,23 +20,29 @@ export function AddFriend() {
     setError,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(addFriendValidate) });
-
+  
   const addFriend = async (email: string, message: string) => {
     try {
       const validatedRequest = addFriendValidate.parse({ email, message });
-      await fetch("/api/friends/add", 
+      const res = await fetch("/api/friends/add", 
         {
           method: "post", 
           body: JSON.stringify({
             email: validatedRequest.email,
             message: validatedRequest.message,
           })
-      });
-
-      setSuccess(true);
-      toast.success("Your request has been filed!");
+        });
+        const resMessage =  await res.json();
+      if (!res.ok)
+      {
+        toast.error(resMessage.error);
+      }
+      else {
+        setSuccess(true);
+        toast.success("Your request has been filed!");
+      }
     } catch (error) {
-      toast.error("There is an error!");
+      toast.error("There was an error! Please try again!");
       }
     }
     const onSubmit = (data: FormData) => {
