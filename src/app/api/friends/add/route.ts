@@ -3,6 +3,7 @@ import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse } from "next/server";
+import { client } from "@/src/server/redis/redisInit";
 
 
 export async function POST(req: Request) {
