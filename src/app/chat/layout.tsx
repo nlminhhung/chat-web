@@ -18,18 +18,6 @@ export default async function Layout({ children }: LayoutProps) {
 
   if (!session) NotFound();
 
-
-  const res = await fetch(`${process.env.LOCAL_URL}/api/notifications/getReqs`, {
-    method:"get",
-    headers: headers()
-  });
-  
-  let friendRequests = [] as FriendRequest[]
-  try {
-    const resJson = (await res.json()) as FriendRequest[]
-    friendRequests = resJson;
-  }
-  catch {}
  
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -69,7 +57,7 @@ export default async function Layout({ children }: LayoutProps) {
           </Link>
         </nav>
         <div className="flex items-center gap-2">
-          <Notification friendRequests={friendRequests} />
+          <Notification />
           <UserAvatarButton />
         </div>
       </div>

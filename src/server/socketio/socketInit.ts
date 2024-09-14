@@ -21,8 +21,9 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
-    socket.on("sendFriendRequest", async ({ idToAdd, userId }) => {
-
+    socket.emit("Hello_world")
+    socket.on("FriendRequest", async ({ idToAdd, userId }) => {
+      
       console.log(`Friend request from ${userId} to ${idToAdd} added.`);
     });
 

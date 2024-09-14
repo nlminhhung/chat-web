@@ -1,19 +1,30 @@
 "use client";
 
 import { Button } from "@/src/components/chat/ui/button";
-import {FC, useState} from "react"
+import {FC, useEffect, useState} from "react"
 import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import toast from "react-hot-toast";
+import 'dotenv/config';
+import socket from "@/src/lib/getSocket";
 
-interface NotificationProps{
-  friendRequests: FriendRequest[],
-} 
-
-export const Notification:FC<NotificationProps> = ({friendRequests}) => {
+export const Notification = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const nOfRequest = friendRequests.length;
+  const [newFriendRequests, setNewFriendRequests] = useState<FriendRequest[]>([])
   
+  useEffect(() => {
+    (async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/notifications/getReqs`, {
+        method:"get"
+      }).then(res => res.json())
+      setNewFriendRequests(res);
+    }
+  )()
+},[]);
+    
+  const nOfRequest = newFriendRequests.length;
+  
+
   const acceptClick = async (id: string) => {
     try {
       await fetch("/api/friends/accept", {
@@ -71,7 +82,7 @@ export const Notification:FC<NotificationProps> = ({friendRequests}) => {
               </div>
               <div className="space-y-6">
                 <>
-                {friendRequests.map((req)=>(
+                {newFriendRequests.map((req)=>(
                   <div className="flex items-start justify-between" key={req.user.id}>
                     <div className="flex items-start">
                       <Avatar className="mr-4">
