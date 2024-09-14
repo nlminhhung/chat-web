@@ -3,12 +3,13 @@ import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse } from "next/server";
-import { client } from "@/src/server/redis/redisInit";
+import { NextApiResponse } from "next";
+import { getIO } from "@/src/lib/getSocket";
 
-
-export async function POST(req: Request) {
+export async function POST(req: Request, res: NextApiResponse) {
   try {
     const session = await getServerSession(authOptions);
+    const io = getIO();
     if (!session) {
       return NextResponse.json({error: "You are unauthorized!"}, { status: 402 });
     }
@@ -56,9 +57,7 @@ export async function POST(req: Request) {
       `user:${idToAdd}:incoming_friend_requests`,
       session.user.id, messageToAdd || "Hey! Let's be friend!"
     );
-      
-    
-    return NextResponse.json({message: "Request has been sent!", idToAdd: idToAdd, userId: session.user.id} , { status: 200 });
+    return NextResponse.json({message: "Request has been sent!", idToAdd: idToAdd, userId: session.user.id, requestMessage: messageToAdd || "Hey! Let's be friend!"} , { status: 200 });
   } catch (error) {
     return NextResponse.json({error: "Something went wrong!"}, { status: 400 });
 

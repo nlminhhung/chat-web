@@ -1,12 +1,16 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "node:http";
 import { client } from "@/src/server/redis/redisInit";
+import { setIO } from "@/src/lib/getSocket";
+
+
 export function createSocketServer(server: HTTPServer) {
   const io = new SocketIOServer(server, {
     cors: {
       origin: "*",
     },
-  });
+  }); 
+  // setIO(io);
   io.on("connection", (socket) => {
     console.log("New client connected:", socket.id);
     socket.on("registerUsers", async (userId: string) => {
@@ -21,7 +25,17 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
-    socket.emit("Hello_world")
+    socket.on('newFriendRequest', async (friendRequest) => {
+      const { userId, idToAdd, requestMessage } = friendRequest;      
+      const recipientSocketID = await client.hget('onlineUsers', idToAdd);
+  
+      if (recipientSocketID) {
+        io.to(recipientSocketID).emit('friendsRequest');
+      } else {
+        console.log(`Recipient with UserID ${idToAdd} is not connected!`);
+      }
+    });
+
     socket.on("FriendRequest", async ({ idToAdd, userId }) => {
       
       console.log(`Friend request from ${userId} to ${idToAdd} added.`);
@@ -39,5 +53,4 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
   });
-
 }

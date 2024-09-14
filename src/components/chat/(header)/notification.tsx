@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import 'dotenv/config';
 import socket from "@/src/lib/getSocket";
 
+
 export const Notification = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const [newFriendRequests, setNewFriendRequests] = useState<FriendRequest[]>([])
@@ -19,12 +20,21 @@ export const Notification = () => {
       }).then(res => res.json())
       setNewFriendRequests(res);
     }
-  )()
-},[]);
-    
+    )()
+    socket.on("friendsRequest", async () => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/notifications/getReqs`, {
+          method:"get"
+        }).then(res => res.json())
+        setNewFriendRequests(res);
+        console.log("Hell")
+      // setNewFriendRequests((prev) => [...prev, data]);
+    })  
+  },[]);
+  socket.on("WTF",()=>{console.log("Hell")})
+  console.log(newFriendRequests);
+  
   const nOfRequest = newFriendRequests.length;
   
-
   const acceptClick = async (id: string) => {
     try {
       await fetch("/api/friends/accept", {

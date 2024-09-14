@@ -5,18 +5,17 @@ import { Notification } from "@/src/components/chat/(header)/notification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import NotFound from "../not-found";
-import { headers } from "next/headers";
 import UserAvatarButton from "@/src/components/chat/(header)/userAvatarButton";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-export default async function Layout({ children }: LayoutProps) {
-  const session = await getServerSession(authOptions);
-  console.log(session?.user)
+export default function Layout({ children }: LayoutProps) {
+  // const session = await getServerSession(authOptions);
+  // console.log(session?.user)
 
-  if (!session) NotFound();
+  // if (!session) NotFound();
 
  
   return (
