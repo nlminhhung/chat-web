@@ -10,7 +10,6 @@ import socket from "@/src/lib/getSocket"
 export default function ChatScreen({userId}: {userId:string}){
   useEffect(() => {
     socket.emit('registerUsers', userId);
-    console.log("Chat screen: ", userId)
     // return () => {
     //   socket.disconnect();
     //   console.log('Disconnecting from WebSocket');

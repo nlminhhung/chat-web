@@ -42,6 +42,11 @@ export async function POST(req: Request) {
         `user:${session.user.id}:incoming_friend_requests`,
         idToAdd
       ),
+      fetchRedis(
+        "hdel",
+        `user:${idToAdd}:incoming_friend_requests`,
+        session.user.id
+      )
     ]);
 
     return Response.json("OK", { status: 200 });

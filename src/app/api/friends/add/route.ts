@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { NextApiResponse } from "next";
 import { getIO } from "@/src/lib/getSocket";
 
-export async function POST(req: Request, res: NextApiResponse) {
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const io = getIO();
@@ -49,7 +49,7 @@ export async function POST(req: Request, res: NextApiResponse) {
     )) as 0 | 1;
 
     if (isFriend) {
-      return new Response("Already friends with this user!", { status: 400 });
+      return Response.json({error:"Already friends with this user!"}, { status: 400 });
     }
 
     await fetchRedis(

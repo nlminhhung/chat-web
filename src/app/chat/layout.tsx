@@ -2,9 +2,6 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import ChatList from "@/src/components/chat/(chat list)/chatList";
 import { Notification } from "@/src/components/chat/(header)/notification";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/src/lib/auth";
-import NotFound from "../not-found";
 import UserAvatarButton from "@/src/components/chat/(header)/userAvatarButton";
 
 interface LayoutProps {
