@@ -4,17 +4,9 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLab
 import { Button } from "@/src/components/chat/ui/button"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area"
 import { Input } from "@/src/components/chat/ui/input"
-import { useEffect } from "react"
-import socket from "@/src/lib/getSocket"
 
-export default function ChatScreen({userId}: {userId:string}){
-  useEffect(() => {
-    socket.emit('registerUsers', userId);
-    // return () => {
-    //   socket.disconnect();
-    //   console.log('Disconnecting from WebSocket');
-    // };
-  }, []);
+
+export default function ChatScreen(){
   return (
         <main className="flex flex-1 flex-col">
           <div className="border-b bg-muted/40 p-4 sm:p-6">

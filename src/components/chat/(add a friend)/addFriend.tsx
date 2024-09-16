@@ -40,7 +40,7 @@ export function AddFriend() {
         toast.error(resMessage.error);
       }
       else {
-        socket.emit('newFriendRequest', {userId: resMessage.userId, idToAdd: resMessage.idToAdd, message: resMessage.requestMessage });
+        socket.emit('newFriendRequest', { idToAdd: resMessage.idToAdd });
         setSuccess(true);
         toast.success("Your request has been filed!");
       }

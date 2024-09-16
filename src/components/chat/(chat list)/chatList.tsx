@@ -1,21 +1,42 @@
+"use client"
 import Link from "next/link"
 import { Button } from "@/src/components/chat/ui/button"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area"
 import { Avatar, AvatarImage, AvatarFallback } from "@/src/components/chat/ui/avatar"
 import { Badge } from "@/src/components/chat/ui/badge"
+import { useEffect } from "react"
+import socket from "@/src/lib/getSocket"
+import { useState } from "react"
 
-
-export default function ChatList()  {
-    return (
+export default function ChatList({userId} : {userId: string})  {
+  const [friendList, setFriendList] = useState<User[]>([])
+  const fetchFriendList = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/friends/friendList`, {
+        method: 'GET',
+      });
+      const data = await res.json();
+      setFriendList(data);
+    } catch (error) {
+      console.error('Failed to fetch friend List:', error);
+    }
+  };
+  
+  useEffect(() => {
+    socket.emit('registerUsers', userId);
+    fetchFriendList();
+  }, []);
+  
+  return (
     <aside className="border-r bg-gray-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Contacts</h2>
+              <Link href="/chat/add-friend" >
             <Button variant="ghost" size="icon">
-              <Link href="chat/add-friend">
                 <UserPlusIcon className="h-5 w-5" />
                 <span className="sr-only">Add contact</span>
-              </Link>
             </Button>
+              </Link>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <Button variant="ghost" size="sm">
@@ -26,25 +47,25 @@ export default function ChatList()  {
             </Button>
           </div>
           <ScrollArea className="mt-4 h-[calc(100vh-7rem)] max-h-[calc(100vh-7rem)]">
-            <div className="grid gap-2">
+            {friendList.map((req)=>(<div className="grid gap-2" key={req.id} >
               <Link
-                href="#"
+                href={`/chat/${req.id}`}
                 className="flex items-center gap-3 rounded-md p-2 hover:bg-accent hover:text-accent-foreground"
                 prefetch={false}
               >
                 <Avatar className="h-10 w-10 border">
-                  <AvatarImage src="/placeholder-user.jpg" />
+                  <AvatarImage src={req.image} />
                   <AvatarFallback>AC</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 truncate">
-                  <div className="font-medium">Olivia Smith</div>
+                  <div className="font-medium">{req.name}</div>
                   <p className="text-sm text-muted-foreground">Hey, how's it going?</p>
                 </div>
                 <Badge variant="secondary" className="px-2 py-1 text-xs">
                   3
                 </Badge>
               </Link>
-            </div>
+            </div>))}
           </ScrollArea>
         </aside>
     )

@@ -1,7 +1,6 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "node:http";
 import { client } from "@/src/server/redis/redisInit";
-import { setIO } from "@/src/lib/getSocket";
 
 
 export function createSocketServer(server: HTTPServer) {
@@ -10,7 +9,6 @@ export function createSocketServer(server: HTTPServer) {
       origin: "*",
     },
   }); 
-  // setIO(io);
   io.on("connection", (socket) => {
     console.log("New client connected:", socket.id);
     socket.on("registerUsers", async (userId: string) => {
@@ -26,7 +24,7 @@ export function createSocketServer(server: HTTPServer) {
     });
 
     socket.on('newFriendRequest', async (friendRequest) => {
-      const { userId, idToAdd, requestMessage } = friendRequest;      
+      const { idToAdd} = friendRequest;      
       const recipientSocketID = await client.hget('onlineUsers', idToAdd);
   
       if (recipientSocketID) {
@@ -34,11 +32,6 @@ export function createSocketServer(server: HTTPServer) {
       } else {
         console.log(`Recipient with UserID ${idToAdd} is not connected!`);
       }
-    });
-
-    socket.on("FriendRequest", async ({ idToAdd, userId }) => {
-      
-      console.log(`Friend request from ${userId} to ${idToAdd} added.`);
     });
 
     socket.on("disconnect", async () => {

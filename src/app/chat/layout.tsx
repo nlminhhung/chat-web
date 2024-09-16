@@ -3,22 +3,20 @@ import Link from "next/link";
 import ChatList from "@/src/components/chat/(chat list)/chatList";
 import { Notification } from "@/src/components/chat/(header)/notification";
 import UserAvatarButton from "@/src/components/chat/(header)/userAvatarButton";
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/src/lib/auth";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
-  // const session = await getServerSession(authOptions);
-  // console.log(session?.user)
-
-  // if (!session) NotFound();
-
- 
+export default async function Layout({ children }: LayoutProps) {
+  const session = await getServerSession(authOptions);
+  
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className=" top-0 z-30 flex h-14 items-center justify-between border-b bg-[#00B894] px-4 sm:h-16 sm:px-6">
-        <Link href="/" className="flex items-center gap-2" prefetch={false}>
+        <Link href="/chat" className="flex items-center gap-2" prefetch={false}>
           <MessageCircleIcon className="h-6 w-6" />
           <span className="text-lg font-semibold">Messaging App</span>
         </Link>
@@ -58,7 +56,7 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <ChatList />
+        <ChatList userId={session?.user.id}/>
         {children}
       </div>
     </div>

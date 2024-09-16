@@ -39,10 +39,19 @@ export const Notification = () => {
   const nOfRequest = newFriendRequests.length;  
   const acceptClick = async (id: string) => {
     try {
-      await fetch("/api/friends/accept", {
+      const res = await fetch("/api/friends/accept", {
         method: "post",
-        body:JSON.stringify({id: id})});
-      toast.success("You are now friends!");
+        body:JSON.stringify({id: id})});       
+      const resMessage =  await res.json();
+      if (!res.ok)
+      {
+        toast.error(resMessage.error);
+      }
+      else {
+        socket.emit('newFriendRequest', { idToAdd: id });
+        setNewFriendRequests(list => list.filter(req => req.user.id !== id ))
+        toast.success("You are now friends!");
+      }
     } catch (error) {
       if (error) {
         toast.error("Something gone wrong!");
@@ -53,10 +62,19 @@ export const Notification = () => {
 
   const denyClick = async (id: string) => {
     try {
-      await fetch("/api/friends/deny", 
+      const res = await fetch("/api/friends/deny", 
         {method: "post",
         body:JSON.stringify({id: id})});
-      toast.success("You have denied the request!");
+      const resMessage =  await res.json();
+      if (!res.ok)
+      {
+        toast.error(resMessage.error);
+      }
+      else {
+        socket.emit("newFriendRequest", { idToAdd: id });
+        setNewFriendRequests(list => list.filter(req => req.user.id !== id ))
+        toast.success("You have denied the request!");
+      }
     } catch (error) {
         toast.error("Something gone wrong!");
         return;
