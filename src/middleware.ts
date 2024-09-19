@@ -20,8 +20,9 @@ export async function middleware(req: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL('/', req.url));
     }
-    // else
-    //   return NextResponse.redirect(new URL(`chat/${token.id}`, req.url));
+    if (pathname === '/chat') {
+      return NextResponse.redirect(new URL(`/chat/${token.id}`, req.url));
+    }
   }
 
   // Allow the request to continue for other routes

@@ -6,9 +6,9 @@ import { fetchRedis } from "@/src/commands/redis";
 export async function GET(req: Request) {
     try{
     const session = await getServerSession(authOptions);
-    // if (!session) {
-    //   return new Response("You are unauthorized!", { status: 402 });
-    // }
+    if (!session) {
+      return new Response("You are unauthorized!", { status: 402 });
+    }
 
     const friends = (await fetchRedis(
         "zrange",

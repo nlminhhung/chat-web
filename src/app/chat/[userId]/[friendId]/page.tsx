@@ -4,9 +4,39 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLab
 import { Button } from "@/src/components/chat/ui/button"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area"
 import { Input } from "@/src/components/chat/ui/input"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
 
-export default function ChatScreen(){
-    return (
+type ChatScreenProps = {
+  friendId: string 
+}
+
+export default function ChatScreen({params}: {params: ChatScreenProps}){
+  const router = useRouter();
+  const [friend, setFriend] = useState<User>()
+  const friendId = params.friendId;
+  const checkPath = async (friendId: string, router: ReturnType<typeof useRouter>) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChat?friendId=${friendId}`, {
+        method: 'GET'
+      });
+      if (!res.ok) {
+        router.push('/chat');  
+        return;
+      }
+      const data = await res.json();
+      setFriend(data);
+      return data;
+    } catch (error) {
+      toast.error('Failed to fetch friend List!');
+    }
+  }
+
+  useEffect(()=>{
+    checkPath(friendId, router);
+  },[])
+  return (
           <main className="flex flex-1 flex-col">
             <div className="border-b bg-muted/40 p-4 sm:p-6">
               <div className="flex items-center gap-4">
@@ -15,7 +45,7 @@ export default function ChatScreen(){
                   <AvatarFallback>AC</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="font-medium">Alo</div>
+                  <div className="font-medium">{friend?.name}</div>
                   <p className="text-sm text-muted-foreground">Last seen 2 hours ago</p>
                 </div>
                 <div className="flex items-center gap-2">
