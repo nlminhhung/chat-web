@@ -34,6 +34,19 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
+    socket.on('newFriend', async (friend) => {
+      const { idToAdd} = friend;      
+      const recipientSocketID = await client.hget('onlineUsers', idToAdd);
+  
+      if (recipientSocketID) {
+        socket.to(recipientSocketID).emit('friends');
+        socket.emit('friends');
+      } else {
+        console.log(`Recipient with UserID ${idToAdd} is not connected!`);
+      }
+    });
+    
+
     socket.on("disconnect", async () => {
       const userId = socket.data.userId;
       console.log(`On disconnect: ${userId}`);

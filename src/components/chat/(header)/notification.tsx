@@ -49,6 +49,7 @@ export const Notification = () => {
       }
       else {
         socket.emit('newFriendRequest', { idToAdd: id });
+        socket.emit('newFriend', { idToAdd: id });
         setNewFriendRequests(list => list.filter(req => req.user.id !== id ))
         toast.success("You are now friends!");
       }

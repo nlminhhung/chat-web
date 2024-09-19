@@ -14,7 +14,8 @@ export async function GET(req: Request) {
         "zrange",
         `user:${session!.user.id}:friends`,
         0,
-        -1
+        -1,
+        "REV"
     )) as string[];
     const friendInfo = await Promise.all(
         friends.map(async (friendId) => {

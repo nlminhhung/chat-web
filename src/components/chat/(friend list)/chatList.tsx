@@ -8,7 +8,7 @@ import { useEffect } from "react"
 import socket from "@/src/lib/getSocket"
 import { useState } from "react"
 
-export default function ChatList({userId} : {userId: string})  {
+export default function FriendList({userId} : {userId: string})  {
   const [friendList, setFriendList] = useState<User[]>([])
   const fetchFriendList = async () => {
     try {
@@ -25,6 +25,14 @@ export default function ChatList({userId} : {userId: string})  {
   useEffect(() => {
     socket.emit('registerUsers', userId);
     fetchFriendList();
+    const handleFriendList = async () => {
+      await fetchFriendList();
+    };
+    socket.on('friends', handleFriendList);
+
+    return () => {
+      socket.off('friends', handleFriendList);
+    };
   }, []);
   
   return (
@@ -49,7 +57,7 @@ export default function ChatList({userId} : {userId: string})  {
           <ScrollArea className="mt-4 h-[calc(100vh-7rem)] max-h-[calc(100vh-7rem)]">
             {friendList.map((req)=>(<div className="grid gap-2" key={req.id} >
               <Link
-                href={`/chat/${req.id}`}
+                href={`/chat/${userId}/${req.id}`}
                 className="flex items-center gap-3 rounded-md p-2 hover:bg-accent hover:text-accent-foreground"
                 prefetch={false}
               >

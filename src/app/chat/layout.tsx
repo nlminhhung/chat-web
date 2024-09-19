@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import ChatList from "@/src/components/chat/(chat list)/chatList";
+import FriendList from "@/src/components/chat/(friend list)/chatList";
 import { Notification } from "@/src/components/chat/(header)/notification";
 import UserAvatarButton from "@/src/components/chat/(header)/userAvatarButton";
 import { getServerSession } from "next-auth"
@@ -56,7 +56,7 @@ export default async function Layout({ children }: LayoutProps) {
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <ChatList userId={session?.user.id}/>
+        <FriendList userId={session?.user.id}/>
         {children}
       </div>
     </div>

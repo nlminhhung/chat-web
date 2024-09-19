@@ -35,10 +35,9 @@ export async function POST(req: Request) {
       });
     }
     const timestamp = Math.floor(Date.now() / 1000);
-    console.log("Time:", timestamp);
     await Promise.all([
-      fetchRedis("zadd", `user:${session.user.id}:friends`, 1, idToAdd),
-      fetchRedis("zadd", `user:${idToAdd}:friends`, 1, session.user.id),
+      fetchRedis("zadd", `user:${session.user.id}:friends`, timestamp, idToAdd),
+      fetchRedis("zadd", `user:${idToAdd}:friends`, timestamp, session.user.id),
       fetchRedis(
         "hdel",
         `user:${session.user.id}:incoming_friend_requests`,
