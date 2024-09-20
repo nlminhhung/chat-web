@@ -17,14 +17,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/src/components/chat/(add a friend)/ui/card";
-import { UserPlus } from "lucide-react";
+import { UserPlus, ArrowLeft } from "lucide-react";
 import socket from "@/src/lib/getSocket";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof addFriendValidate>;
 
 export function AddFriend() {
   const [checkSuccess, setSuccess] = useState(false);
-
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -92,13 +93,22 @@ export function AddFriend() {
             </div>
           </CardContent>
           {!checkSuccess ? (
-            <CardFooter>
+            <CardFooter className="flex flex-col space-y-2">
               <Button
                 type="submit"
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white"
               >
                 <UserPlus className="w-4 h-4 mr-2" />
                 Send Friend Request
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-purple-600 text-purple-600 hover:bg-purple-100"
+                onClick={()=>router.back()}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Go Back
               </Button>
             </CardFooter>
           ) : null}

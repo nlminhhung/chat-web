@@ -51,7 +51,7 @@ export default function FriendList({ userId }: { userId: string }) {
     >
       <div className="p-4 border-b border-purple-600 flex justify-between items-center">
         <h2 className="text-xl font-semibold">Friends</h2>
-        <Link href="/chat/add-friend">
+        <Link href={`/chat/add-friend`}>
           <Button
             variant="ghost"
             size="icon"
