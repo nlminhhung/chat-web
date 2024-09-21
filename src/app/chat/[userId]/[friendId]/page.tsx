@@ -1,21 +1,13 @@
 "use client"
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/src/components/chat/ui/avatar";
 import { Button } from "@/src/components/chat/ui/button";
-import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import { Input } from "@/src/components/chat/ui/input";
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { Send, Menu, X } from "lucide-react";
+import { Send } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { messageValidate } from "@/src/lib/valid_data/message";
 import * as z from "zod";
-import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
+import socket from "@/src/lib/getSocket";
 
 type ChatScreenProps = {
   friendId: string;
@@ -24,42 +16,14 @@ type ChatScreenProps = {
 type FormData = z.infer<typeof messageValidate>;
 
 export default function ChatScreen({ params }: { params: ChatScreenProps }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // const router = useRouter();
-  // const [friend, setFriend] = useState<User>();
-  // useEffect(() => {
-  //   checkPath(friendId, router);
-  // }, []);
   const friendId = params.friendId;
   const {
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(messageValidate) });
-
-  // const checkPath = async (
-  //   friendId: string,
-  //   router: ReturnType<typeof useRouter>
-  // ) => {
-  //   try {
-  //     const res = await fetch(
-  //       `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChat?friendId=${friendId}`,
-  //       {
-  //         method: "GET",
-  //       }
-  //     );
-  //     if (!res.ok) {
-  //       router.push("/chat");
-  //       return;
-  //     }
-  //     const data = await res.json();
-  //     setFriend(data);
-  //     return data;
-  //   } catch (error) {
-  //     toast.error("Failed to fetch friend List!");
-  //   }
-  // };
 
   const sendMessage = async (message: string, friendId: string) => {
     try {
@@ -75,7 +39,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        // socket.emit("", { idToAdd: resMessage.idToAdd }); emit new message
+        socket.emit("newMessage", { idToAdd: friendId }); 
       }
     } catch (error) {
       toast.error("There was an error! Try again");
@@ -84,6 +48,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
 
   const onSubmit = (data: FormData) => {
     sendMessage(data.message, friendId);
+    reset();
   };
 
   return (

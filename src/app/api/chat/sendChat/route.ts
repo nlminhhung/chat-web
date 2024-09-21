@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
         )) as 0 | 1;
     
         if (!isFriend) {
-        return Response.json({error:"You are not friends with this user!"}, { status: 400 });
+        return NextResponse.json({error:"You are not friends with this user!"}, { status: 400 });
         }
 
         await fetchRedis(

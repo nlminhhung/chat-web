@@ -19,8 +19,6 @@ export async function GET(req: NextRequest) {
       `user:${session.user.id}:friends`,
       friendId
     )) as 0 | 1;
-    console.log("friendId: ", friendId)
-    console.log("userId: ", session.user.id)
 
     if (!isFriend) {
       return Response.json(
@@ -31,7 +29,6 @@ export async function GET(req: NextRequest) {
     
     const sortedUsers = [session.user.id, friendId].sort(); // to set a chat ID
     const chatId = sortedUsers.join(":"); // to set a chat ID (2)
-    console.log("here: ", chatId);
 
     const friendInfo = await fetchRedis("lrange", `chat:${chatId}`, 0, -1)
     
