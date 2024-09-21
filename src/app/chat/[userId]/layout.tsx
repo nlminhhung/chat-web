@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import Link from "next/link";
 import FriendList from "@/src/components/chat/(friend list)/friendList";
 import { Notification } from "@/src/components/chat/(header)/notification";
 import UserAvatarButton from "@/src/components/chat/(header)/userAvatarButton";
@@ -16,7 +15,7 @@ export default async function Layout({ children }: LayoutProps) {
   return (
     <div className="flex flex-col h-screen bg-purple-100">
       <header className="bg-purple-800 text-white p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">ChatApp</h1>
+        <h1 className="text-2xl font-bold">ChatterBox</h1>
         <div className="flex items-center space-x-4">
           <Notification/>
           <UserAvatarButton />

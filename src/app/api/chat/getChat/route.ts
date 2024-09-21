@@ -20,13 +20,13 @@ export async function GET(req: NextRequest) {
         if (!isFriend) {
             return Response.json({error:"These users are not friends!"}, { status: 400 });
         }
-        
+
         const friendInfo = JSON.parse(await fetchRedis(
             "get",
             `user:${friendId}`,
         )) as User;
 
-        return NextResponse.json({name: friendInfo.name, image: friendInfo.image} , { status: 200 });
+        return NextResponse.json({name: friendInfo.name, image: friendInfo.image, id: friendInfo.id} , { status: 200 });
 
     }
     catch {
