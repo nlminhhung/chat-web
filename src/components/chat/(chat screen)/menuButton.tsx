@@ -10,7 +10,7 @@ export default function MenuButton() {
     <Button
       variant="ghost"
       size="icon"
-      className="md:hidden text-white"
+      className="sm:hidden text-white"
       onClick={() => setIsSidebarOpen(!isSidebarOpen)}
     >
       {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

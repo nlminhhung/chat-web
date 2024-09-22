@@ -29,7 +29,6 @@ export default function MessageInterface({
   user: userChatInformation;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
-
   const getMessages = async (friendId: string) => {
     try {
       const res = await fetch(
@@ -42,9 +41,7 @@ export default function MessageInterface({
         return;
       }
       const data = await res.json();
-      console.log("data: ", data);
       const parsedData = data.map((message: string) => JSON.parse(message));
-      console.log("parsedData: ", parsedData);
       setMessages(parsedData);
       return data;
     } catch (error) {
@@ -67,7 +64,7 @@ export default function MessageInterface({
     <>
       {messages.map((message, index) => (
         <div
-          key={index} // this key is not unique, make the message index a key
+          key={index} 
           className={`flex ${
             message.senderId === user.id ? "justify-end" : "justify-start"
           }`}

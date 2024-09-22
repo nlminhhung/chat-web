@@ -48,7 +48,7 @@ export default function FriendList({ userId }: { userId: string }) {
     <div
       className={`bg-purple-700 text-white w-64 flex-shrink-0 ${
         isSidebarOpen ? "block" : "hidden"
-      } md:block`}
+      } sm:block`}
     >
       <div className="p-4 border-b border-purple-600 flex justify-between items-center">
         <h2 className="text-xl font-semibold">Friends</h2>

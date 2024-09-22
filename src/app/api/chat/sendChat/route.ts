@@ -16,8 +16,7 @@ export async function POST(req: NextRequest) {
         const friendId = body.friendId; // to get friend ID
         const sortedUsers = [senderId, friendId].sort(); // to set a chat ID
         const chatId = sortedUsers.join(':');  // to set a chat ID (2)
-        const timestamp = Math.floor(Date.now() / 1000);
-      
+        const timestamp = new Date();
         const isFriend = (await fetchRedis(
             "zscore",
             `user:${session.user.id}:friends`,
