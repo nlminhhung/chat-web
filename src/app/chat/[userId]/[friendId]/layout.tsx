@@ -7,7 +7,6 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/src/components/chat/ui/avatar";
-import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
 import MenuButton from "@/src/components/chat/(chat screen)/menuButton";
 import { headers } from "next/headers";
@@ -47,7 +46,7 @@ export default async function Layout({ children, params }: LayoutProps) {
     });
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col overflow-auto">
       <div className="bg-purple-600 text-white shadow-sm z-10">
         <div className="px-4 py-3 flex items-center">
           <MenuButton />
@@ -61,18 +60,14 @@ export default async function Layout({ children, params }: LayoutProps) {
           </div>
         </div>
       </div>
-      <ScrollArea className="flex-1 p-4 bg-purple-50">
-        <div className="space-y-4">
-          <MessageInterface
-            friend={friend!}
-            user={{
-              id: session?.user.id,
-              name: session?.user.name,
-              image: session?.user.image,
-            }}
-          />
-        </div>
-      </ScrollArea>
+      <MessageInterface
+        friend={friend!}
+        user={{
+          id: session?.user.id,
+          name: session?.user.name,
+          image: session?.user.image,
+        }}
+      />
       {children}
     </div>
   );
