@@ -13,7 +13,6 @@ export async function POST(req: Request) {
     }
     const body = await req.json();
     const { email: emailToAdd, message: messageToAdd } = addFriendValidate.parse({email: body.email, message: body.message});
-
     const idToAdd = (await fetchRedis(
       "get",
       `user:email:${emailToAdd}`

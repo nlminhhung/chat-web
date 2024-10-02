@@ -23,6 +23,7 @@ export async function GET(req: Request) {
           id: userInfo.id,
           name: userInfo.name,
           image: userInfo.image,
+          email: userInfo.email
         };
       })
     );
