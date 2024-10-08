@@ -24,7 +24,7 @@ export default async function WelcomePage() {
         </h1>
         <div className="relative w-full h-48 sm:h-64 md:h-80 rounded-lg overflow-hidden shadow-xl">
           <Image
-            src="/onggia.jpg"
+            src="/network.png"
             alt="Friends chatting"
             layout="fill"
             objectFit="cover"

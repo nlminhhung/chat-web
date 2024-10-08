@@ -29,7 +29,7 @@ export default async function Layout({ children, params }: LayoutProps) {
     redirect("/chat");
   }
   const friend = await fetch(
-    `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChat?friendId=${friendId}`,
+    `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChatUser?friendId=${friendId}`,
     {
       method: "GET",
       headers: headers(),

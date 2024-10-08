@@ -12,11 +12,29 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { UserMinus } from "lucide-react";
+import toast from "react-hot-toast";
+import socket from "@/src/lib/getSocket";
+import { redirect } from "next/navigation";
 
 export default function DeleteFriendButton({friendId}: {friendId: string}) {
-  const handleDeleteFriend = (friendId: string) => {
-    // Here you would typically make an API call to delete the friend
-    console.log(`Friend ${friendId} deleted`);
+  const handleDeleteFriend = async (friendId: string) => {
+    try {
+      const res = await fetch("/api/friends/delete", {
+        method: "post",
+        body: JSON.stringify({
+          id: friendId,
+        }),
+      });
+      const resMessage = await res.json();
+      if (!res.ok) {
+        toast.error(resMessage.error);
+      } else {
+        socket.emit("newFriend", { idToAdd: friendId }); 
+        redirect("/chat")
+      }
+    } catch (error) {
+      toast.error("There was an error! Try again");
+    }
   };
   return (
     <AlertDialog>

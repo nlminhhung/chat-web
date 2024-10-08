@@ -6,14 +6,21 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { SidebarProvider } from "@/src/lib/context/sideBarContext";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 interface LayoutProps {
   children: ReactNode;
+  params: {
+    userId: string;
+  };
 }
 
-export default async function Layout({ children }: LayoutProps) {
+export default async function Layout({ children, params }: LayoutProps) {
   const session = await getServerSession(authOptions);
-
+  const userId = params.userId;
+  if (userId !== session!.user.id) {
+    redirect("/chat");
+  }
   return (
     <div className="flex flex-col h-screen bg-purple-100">
       <SidebarProvider>
