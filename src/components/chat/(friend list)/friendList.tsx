@@ -32,7 +32,6 @@ export default function FriendList({ userId }: { userId: string }) {
   };
 
   useEffect(() => {
-    socket.emit("registerUsers", userId);
     fetchFriendList();
     const handleFriendList = async () => {
       await fetchFriendList();

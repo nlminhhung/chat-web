@@ -5,10 +5,10 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
-import { Label } from "@/src/components/chat/(add a friend)/ui/label";
-import { Input } from "@/src/components/chat/(add a friend)/ui/input";
-import { Button } from "@/src/components/chat/(add a friend)/ui/button";
-import { Textarea } from "@/src/components/chat/(add a friend)/ui/textarea";
+import { Label } from "@/src/components/chat/ui/label";
+import { Input } from "@/src/components/chat/ui/input";
+import { Button } from "@/src/components/chat/ui/button";
+import { Textarea } from "@/src/components/chat/ui/textarea";
 import {
   Card,
   CardHeader,
@@ -16,7 +16,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/src/components/chat/(add a friend)/ui/card";
+} from "@/src/components/chat/ui/card";
 import { UserPlus, ArrowLeft } from "lucide-react";
 import socket from "@/src/lib/getSocket";
 import { useRouter } from "next/navigation";

@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/src/components/chat/ui/button";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
@@ -18,7 +17,7 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
-export const Notification = () => {
+export const Notification = ({userId} : {userId: string}) => {
   const [newFriendRequests, setNewFriendRequests] = useState<FriendRequest[]>(
     []
   );
@@ -38,6 +37,7 @@ export const Notification = () => {
     }
   };
   useEffect(() => {
+    socket.emit("registerUsers", userId);
     fetchFriendRequests();
     const handleFriendsRequest = async () => {
       await fetchFriendRequests();

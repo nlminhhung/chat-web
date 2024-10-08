@@ -23,7 +23,7 @@ export default async function Layout({ children }: LayoutProps) {
           </Link>
 
           <div className="flex items-center space-x-4">
-            <Notification />
+            <Notification userId={session?.user.id} />
             <UserAvatarButton />
           </div>
         </header>
