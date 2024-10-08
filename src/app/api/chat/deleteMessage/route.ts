@@ -14,14 +14,12 @@ export async function POST(req: NextRequest) {
       );
     }
     const body = await req.json();
-    const { message: message } = messageValidate.parse({
-      message: body.message,
-    });
+    const index = body.deleteIndex;
     const senderId = session.user.id; // to get user ID
     const friendId = body.friendId; // to get friend ID
     const sortedUsers = [senderId, friendId].sort(); // to set a chat ID
     const chatId = sortedUsers.join(":"); // to set a chat ID (2)
-    const timestamp = new Date();
+
     const isFriend = (await fetchRedis(
       "zscore",
       `user:${session.user.id}:friends`,
@@ -30,22 +28,15 @@ export async function POST(req: NextRequest) {
 
     if (!isFriend) {
       return NextResponse.json(
-        { error: "You are not friends with this user!" },
+        { error: "You are not friends so can't delete this messsage!" },
         { status: 400 }
       );
     }
 
-    const messageObj = {
-      senderId: senderId,
-      timestamp: timestamp,
-      content: encodeURIComponent(message),
-    };
-    const jsonMessage = JSON.stringify(messageObj);
-    await fetchRedis(
-      "rpush",
-      `chat:${chatId}`,
-      jsonMessage
-    );
+    await Promise.all([
+      fetchRedis("lset", `chat:${chatId}`, index, `_TO_DELETE`),
+      fetchRedis("lrem", `chat:${chatId}`, 1, `_TO_DELETE`),
+    ]);
 
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {

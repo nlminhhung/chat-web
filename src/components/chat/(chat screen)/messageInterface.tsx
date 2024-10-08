@@ -24,6 +24,7 @@ import {
 } from "../ui/dialog";
 import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { messageValidate } from "@/src/lib/valid_data/message";
 
 interface Message {
   senderId: string;
@@ -45,7 +46,8 @@ export default function MessageInterface({
   user: userChatInformation;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
+  const [editingMessage, setEditingMessage] = useState<string>("");
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const getMessages = async (friendId: string) => {
     try {
@@ -67,19 +69,51 @@ export default function MessageInterface({
     }
   };
 
-  const handleUpdateMessage = (updateIndex: number, newContent: string) => {
-    setMessages(
-      messages.map((message, index) =>
-        updateIndex === index ? { ...message, content: newContent } : message
-      )
-    );
-    setEditingMessage(null);
-    console.log(`Message at index: ${updateIndex} updated!`);
+  const handleUpdateMessage = async (
+    updateIndex: number,
+    message: string,
+    friendId: string
+  ) => {
+    try {
+      const validatedMessage = messageValidate.parse({ message });
+      console.log("IM HERER: ", message);
+      const res = await fetch("/api/chat/updateMessage", {
+        method: "post",
+        body: JSON.stringify({
+          friendId: friendId,
+          updateIndex: updateIndex,
+          message: validatedMessage.message,
+        }),
+      });
+      const resMessage = await res.json();
+      if (!res.ok) {
+        toast.error(resMessage.error);
+      } else {
+        socket.emit("newMessage", { idToAdd: friendId });
+        setIsEditDialogOpen(false);
+        toast.success("Your message has been updated!");
+      }
+    } catch (error) {
+      toast.error("There was an error! Try again");
+    }
+    setEditingMessage("");
   };
 
-  const handleDeleteMessage = (deleteIndex: number) => {
-    setMessages(messages.filter((message, index) => index !== deleteIndex));
-    console.log(`Message ${deleteIndex} deleted!`);
+  const handleDeleteMessage = async (deleteIndex: number, friendId: string) => {
+    const res = await fetch("/api/chat/deleteMessage", {
+      method: "post",
+      body: JSON.stringify({
+        friendId: friendId,
+        deleteIndex: deleteIndex,
+      }),
+    });
+    const resMessage = await res.json();
+    if (!res.ok) {
+      toast.error(resMessage.error);
+    } else {
+      socket.emit("newMessage", { idToAdd: friendId });
+      toast.success("Delete message successfully!");
+    }
   };
 
   const handleReportMessage = (messageId: number) => {
@@ -114,42 +148,42 @@ export default function MessageInterface({
             className={`flex group ${
               message.senderId === user.id ? "justify-end" : "justify-start"
             }`}
-          >    
+          >
+            <div
+              className={`flex flex-col ${
+                message.senderId === user.id ? "items-end" : "items-start"
+              } max-w-[70%] sm:max-w-[60%]`}
+            >
+              <div className="flex items-center space-x-2 mb-1">
+                {message.senderId === friend.id && (
+                  <Avatar className="w-6 h-6">
+                    <AvatarImage src={friend.image} alt={friend.name} />
+                    <AvatarFallback>{friend.name[0]}</AvatarFallback>
+                  </Avatar>
+                )}
+                <span className="font-semibold text-sm text-purple-800">
+                  {message.senderId === user.id ? user.name : friend.name}
+                </span>
+                {message.senderId === user.id && (
+                  <Avatar className="w-6 h-6">
+                    <AvatarImage src={user.image} alt={user.name} />
+                    <AvatarFallback>{user.name[0]}</AvatarFallback>
+                  </Avatar>
+                )}
+              </div>
               <div
-                className={`flex flex-col ${
-                  message.senderId === user.id ? "items-end" : "items-start"
-                } max-w-[70%] sm:max-w-[60%]`}
+                className={`p-3 rounded-lg ${
+                  message.senderId === user.id
+                    ? "bg-purple-500 text-white"
+                    : "bg-white text-purple-800"
+                }`}
               >
-                <div className="flex items-center space-x-2 mb-1">
-                  {message.senderId === friend.id && (
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={friend.image} alt={friend.name} />
-                      <AvatarFallback>{friend.name[0]}</AvatarFallback>
-                    </Avatar>
-                  )}
-                  <span className="font-semibold text-sm text-purple-800">
-                    {message.senderId === user.id ? user.name : friend.name}
-                  </span>
-                  {message.senderId === user.id && (
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={user.image} alt={user.name} />
-                      <AvatarFallback>{user.name[0]}</AvatarFallback>
-                    </Avatar>
-                  )}
-                </div>
-                <div
-                  className={`p-3 rounded-lg ${
-                    message.senderId === user.id
-                      ? "bg-purple-500 text-white"
-                      : "bg-white text-purple-800"
-                  }`}
-                >
-                  {message.content}
-                </div>
-                <div className="flex items-center mt-1 text-xs text-purple-600">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {message.timestamp}
-                </div>
+                {message.content}
+              </div>
+              <div className="flex items-center mt-1 text-xs text-purple-600">
+                <Clock className="w-3 h-3 mr-1" />
+                {message.timestamp}
+              </div>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -165,9 +199,17 @@ export default function MessageInterface({
               <DropdownMenuContent align="end">
                 {message.senderId === user.id ? (
                   <>
-                    <Dialog>
+                    <Dialog
+                      open={isEditDialogOpen}
+                      onOpenChange={setIsEditDialogOpen}
+                    >
                       <DialogTrigger asChild>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          onSelect={(e) => {
+                            e.preventDefault();
+                            setIsEditDialogOpen(true);
+                          }}
+                        >
                           <Edit className="w-4 h-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
@@ -178,18 +220,14 @@ export default function MessageInterface({
                         </DialogHeader>
                         <Textarea
                           defaultValue={message.content}
-                          onChange={(e) =>
-                            setEditingMessage({
-                              ...message,
-                              content: e.target.value,
-                            })
-                          }
+                          onChange={(e) => setEditingMessage(e.target.value)}
                         />
                         <Button
                           onClick={() =>
                             handleUpdateMessage(
                               index,
-                              editingMessage?.content || ""
+                              editingMessage,
+                              friend.id
                             )
                           }
                         >
@@ -198,7 +236,7 @@ export default function MessageInterface({
                       </DialogContent>
                     </Dialog>
                     <DropdownMenuItem
-                      onSelect={() => handleDeleteMessage(index)}
+                      onSelect={() => handleDeleteMessage(index, friend.id)}
                     >
                       <Trash className="w-4 h-4 mr-2" />
                       Delete
