@@ -2,7 +2,6 @@ import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "node:http";
 import { client } from "@/src/server/redis/redisInit";
 
-
 export function createSocketServer(server: HTTPServer) {
   const io = new SocketIOServer(server, {
     cors: {
@@ -55,7 +54,6 @@ export function createSocketServer(server: HTTPServer) {
 
     socket.on("disconnect", async () => {
       const userId = socket.data.userId;
-      console.log(`On disconnect: ${userId}`);
 
       try {
         client.hdel('onlineUsers', userId);

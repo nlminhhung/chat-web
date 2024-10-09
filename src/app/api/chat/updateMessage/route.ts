@@ -34,8 +34,14 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    const messageObj = {
+      senderId: senderId,
+      timestamp: timestamp,
+      content: encodeURIComponent(message),
+    };
+    const jsonMessage = JSON.stringify(messageObj);
 
-    await fetchRedis("lset", `chat:${chatId}`, index, `{"senderId": "${senderId}", "timestamp": "${timestamp}", "content": "${message}"}`)
+    await fetchRedis("lset", `chat:${chatId}`, index, jsonMessage)
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
