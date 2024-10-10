@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/legacy/image";
 import SuggestedFriends from "@/src/components/chat/(chat screen)/suggestedFriends";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";

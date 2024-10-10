@@ -65,7 +65,7 @@ export default function MessageInterface({
       setMessages(parsedData);
       return data;
     } catch (error) {
-      toast.error("Failed to fetch friend List!");
+      toast.error("Failed to fetch new messages!");
     }
   };
 
@@ -76,7 +76,6 @@ export default function MessageInterface({
   ) => {
     try {
       const validatedMessage = messageValidate.parse({ message });
-      console.log("IM HERER: ", message);
       const res = await fetch("/api/chat/updateMessage", {
         method: "post",
         body: JSON.stringify({
@@ -116,8 +115,22 @@ export default function MessageInterface({
     }
   };
 
-  const handleReportMessage = (messageId: number) => {
-    console.log(`Message ${messageId} reported`);
+  const handleReportMessage = async (message: Message) => {
+    const res = await fetch("/api/chat/reportMessage", {
+      method: "post",
+      body: JSON.stringify({
+        message: message,
+        senderName: friend.name,
+        reporterName: user.name
+      }),
+    });
+    const resMessage = await res.json();
+    if (!res.ok) {
+      toast.error(resMessage.error);
+    } else {
+      toast.success(`Message has been reported!`);
+    }
+    
   };
 
   useEffect(() => {
@@ -243,7 +256,7 @@ export default function MessageInterface({
                     </DropdownMenuItem>
                   </>
                 ) : (
-                  <DropdownMenuItem onSelect={() => handleReportMessage(index)}>
+                  <DropdownMenuItem onSelect={() => handleReportMessage(message)}>
                     <Flag className="w-4 h-4 mr-2" />
                     Report
                   </DropdownMenuItem>

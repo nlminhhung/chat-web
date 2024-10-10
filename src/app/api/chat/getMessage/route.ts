@@ -27,12 +27,12 @@ export async function GET(req: NextRequest) {
       );
     }
     
-    const sortedUsers = [session.user.id, friendId].sort(); // to set a chat ID
-    const chatId = sortedUsers.join(":"); // to set a chat ID (2)
+    const sortedUsers = [session.user.id, friendId].sort(); 
+    const chatId = sortedUsers.join(":"); 
 
-    const friendInfo = await fetchRedis("lrange", `chat:${chatId}`, 0, -1)
+    const chat = await fetchRedis("lrange", `chat:${chatId}`, 0, -1)
     
-    return NextResponse.json(friendInfo, { status: 200 });
+    return NextResponse.json(chat, { status: 200 });
   } catch {
     return NextResponse.json(
       { error: "Something went wrong!" },
