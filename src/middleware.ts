@@ -8,17 +8,20 @@ export async function middleware(req: NextRequest) {
 
   // Protect the "/admin" route
   if (pathname.startsWith('/admin')) {
-    // If the user is not authenticated or not an admin, redirect to the login page
+    // If the user is not authenticated or not an admin, redirect to the landing page
     if (!token || token.role !== 'admin') {
-      return NextResponse.redirect(new URL('/login', req.url));
+      return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
-  // Protect the "/chat" route (all authenticated users can access)
+  // Protect the "/chat" route 
   if (pathname.startsWith('/chat')) {
-    // If the user is not authenticated, redirect to the login page
+    // If the user is not authenticated, redirect to the landing page
     if (!token) {
       return NextResponse.redirect(new URL('/', req.url));
+    }
+    if (pathname === '/chat') {
+      return NextResponse.redirect(new URL(`/chat/${token.id}`, req.url));
     }
   }
 
