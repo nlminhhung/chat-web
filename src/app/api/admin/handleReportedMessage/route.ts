@@ -15,22 +15,26 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    
-    const isDelete = body.isDelete;
-    const senderId = body.report.senderId;
-    const reporterId = body.report.reporterId;
-    const content = body.report.content;
-    const timestamp = body.report.timestamp;
 
-    const sortedUsers = [senderId, reporterId].sort();
+    const isDelete = body.isDelete;
+
+    const reportObj = {
+      reporterId: body.report.reporterId,
+      reporterName: body.report.reporterName,
+      senderId: body.report.senderId,
+      senderName: body.report.senderName,
+      content: encodeURIComponent(body.report.content),
+      timestamp: body.report.timestamp,
+    };
+
+    const sortedUsers = [reportObj.senderId, reportObj.reporterId].sort();
     const chatId = sortedUsers.join(":");
-    const jsonReport = JSON.stringify(body.report);
-    
+
     if (isDelete) {
       const isFriend = (await fetchRedis(
         "zscore",
-        `user:${senderId}:friends`,
-        reporterId
+        `user:${reportObj.senderId}:friends`,
+        reportObj.reporterId
       )) as 0 | 1;
       if (!isFriend) {
         return NextResponse.json(
@@ -39,16 +43,22 @@ export async function POST(req: NextRequest) {
         );
       }
       const messageObj = {
-        senderId: senderId,
-        timestamp: timestamp,
-        content: encodeURIComponent(content),
+        senderId: reportObj.senderId,
+        timestamp: reportObj.timestamp,
+        content: reportObj.content,
       };
-    
+
       const jsonMessage = JSON.stringify(messageObj);
-      
-      await fetchRedis("lrem", `chat:${chatId}`, 1, `${jsonMessage}`)
+      await fetchRedis("lrem", `chat:${chatId}`, 1, `${jsonMessage}`);
     }
-    await fetchRedis("lrem", `admin:report`, 1, `${jsonReport}`)
+
+    const jsonMessage = JSON.stringify(reportObj);
+    await fetchRedis(
+      "lrem",
+      `admin:report`,
+      1,
+      `${jsonMessage}`
+    );
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

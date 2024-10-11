@@ -11,7 +11,7 @@ export default async function HomePage() {
   return (
     <div>
       <div className="flex min-h-[100dvh] flex-col">
-      <header className="bg-[#00B894] px-4 py-3 md:px-6 md:py-4">
+      <header className="bg-purple-700 px-4 py-3 md:px-6 md:py-4">
         <div className="container mx-auto flex items-center justify-between">
           <Link href="#" className="flex items-center gap-2" prefetch={false}>
             <MountainIcon className="h-6 w-6 text-primary-foreground" />
@@ -49,7 +49,7 @@ export default async function HomePage() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="bg-[#00B894] py-12 md:py-20 lg:py-28">
+        <section className="bg-purple-700 py-12 md:py-20 lg:py-28">
           <div className="container mx-auto flex flex-col items-center gap-6 px-4 md:px-6">
             <h1 className="text-center text-3xl font-bold text-primary-foreground sm:text-4xl md:text-5xl lg:text-6xl">
             Chat Freely, Connect Deeply, Create Memories!
