@@ -13,9 +13,14 @@ import socket from "@/src/lib/getSocket";
 import { useState } from "react";
 import { useSidebar } from "@/src/lib/context/sideBarContext";
 
+
+interface FriendListUser extends User {
+  lastMessage: string
+}
+
 export default function FriendList({ userId }: { userId: string }) {
   const {isSidebarOpen, setIsSidebarOpen} = useSidebar();
-  const [friendList, setFriendList] = useState<User[]>([]);
+  const [friendList, setFriendList] = useState<FriendListUser[]>([]);
   const fetchFriendList = async () => {
     try {
       const res = await fetch(
@@ -76,7 +81,7 @@ export default function FriendList({ userId }: { userId: string }) {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{friend.name}</p>
-                  <p className="text-xs text-purple-300 truncate">Last Message</p>
+                  <p className="text-xs text-purple-300 truncate">{friend.lastMessage}</p>
                 </div>
                 {/* <div className={`w-2 h-2 rounded-full ${friend.status === 'online' ? 'bg-green-400' : 'bg-gray-400'}`} /> */}
               </div>
