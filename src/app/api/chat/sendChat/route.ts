@@ -3,6 +3,7 @@ import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
+import { encode } from "he";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,7 +22,8 @@ export async function POST(req: NextRequest) {
     const friendId = body.friendId; // to get friend ID
     const sortedUsers = [senderId, friendId].sort(); // to set a chat ID
     const chatId = sortedUsers.join(":"); // to set a chat ID (2)
-    const timestamp = new Date();
+    const date = new Date();
+    const timestamp = date.getTime();
     const isFriend = (await fetchRedis(
       "zscore",
       `user:${session.user.id}:friends`,
@@ -34,19 +36,34 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    const escapedMessage = JSON.stringify(message).slice(1, -1);
     const messageObj = {
       senderId: senderId,
-      timestamp: timestamp,
-      content: encodeURIComponent(message),
+      timestamp: date,
+      content: message,
     };
-    const jsonMessage = JSON.stringify(messageObj);
-    await fetchRedis(
-      "rpush",
-      `chat:${chatId}`,
-      jsonMessage
-    );
 
+
+    const jsonMessage = JSON.stringify(messageObj);
+    Promise.all([
+      await fetchRedis(
+        "rpush",
+        `chat:${chatId}`,
+        jsonMessage
+      ),
+      await fetchRedis(
+        "zadd",
+        `user:${senderId}:friends`,
+        timestamp,
+        friendId
+      ),
+      await fetchRedis(
+        "zadd",
+        `user:${friendId}:friends`,
+        timestamp,
+        senderId
+      )
+    ])
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

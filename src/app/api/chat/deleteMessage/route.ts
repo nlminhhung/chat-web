@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await Promise.all([
-      fetchRedis("lset", `chat:${chatId}`, index, `_TO_DELETE`),
-      fetchRedis("lrem", `chat:${chatId}`, 1, `_TO_DELETE`),
+    Promise.all([
+      await fetchRedis("lset", `chat:${chatId}`, index, `_TO_DELETE`),
+      await fetchRedis("lrem", `chat:${chatId}`, 1, `_TO_DELETE`),
     ]);
 
     return NextResponse.json({ message: "OK" }, { status: 200 });

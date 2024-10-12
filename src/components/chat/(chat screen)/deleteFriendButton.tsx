@@ -14,9 +14,10 @@ import {
 import { UserMinus } from "lucide-react";
 import toast from "react-hot-toast";
 import socket from "@/src/lib/getSocket";
-import { redirect } from "next/navigation";
+import { useRouter } from 'next/navigation'
 
 export default function DeleteFriendButton({friendId}: {friendId: string}) {
+  const router = useRouter();
   const handleDeleteFriend = async (friendId: string) => {
     try {
       const res = await fetch("/api/friends/delete", {
@@ -29,8 +30,8 @@ export default function DeleteFriendButton({friendId}: {friendId: string}) {
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newFriend", { idToAdd: friendId }); 
-        redirect("/chat")
+        socket.emit("newFriend", { idToAdd: friendId });
+        router.push("/chat")
       }
     } catch (error) {
       toast.error("There was an error! Try again");

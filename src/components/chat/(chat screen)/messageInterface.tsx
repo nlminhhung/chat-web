@@ -195,7 +195,7 @@ export default function MessageInterface({
               </div>
               <div className="flex items-center mt-1 text-xs text-purple-600">
                 <Clock className="w-3 h-3 mr-1" />
-                {message.timestamp}
+                {new Date(message.timestamp).toLocaleString()}
               </div>
             </div>
             <DropdownMenu>

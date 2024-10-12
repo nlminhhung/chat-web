@@ -37,10 +37,10 @@ export async function POST(req: NextRequest) {
     }
     const reportObj = {
         reporterId: reporterId,
-        reporterName: encodeURI(reporterName),
+        reporterName: reporterName,
         senderId: senderId,
-        senderName: encodeURIComponent(senderName),
-        content: encodeURIComponent(content),
+        senderName: senderName,
+        content: content,
         timestamp: timestamp,
     };
     const jsonReport = JSON.stringify(reportObj);

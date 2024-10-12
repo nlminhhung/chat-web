@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const messageObj = {
       senderId: senderId,
       timestamp: timestamp,
-      content: encodeURIComponent(message),
+      content: message,
     };
     const jsonMessage = JSON.stringify(messageObj);
 

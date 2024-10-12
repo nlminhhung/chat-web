@@ -40,6 +40,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
         toast.error(resMessage.error);
       } else {
         socket.emit("newMessage", { idToAdd: friendId }); 
+        socket.emit("newFriend", { idToAdd: friendId }); 
       }
     } catch (error) {
       toast.error("There was an error! Try again");

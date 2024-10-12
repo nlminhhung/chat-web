@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       reporterName: body.report.reporterName,
       senderId: body.report.senderId,
       senderName: body.report.senderName,
-      content: encodeURIComponent(body.report.content),
+      content: body.report.content,
       timestamp: body.report.timestamp,
     };
 

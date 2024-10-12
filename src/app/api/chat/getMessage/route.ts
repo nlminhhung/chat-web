@@ -31,7 +31,6 @@ export async function GET(req: NextRequest) {
     const chatId = sortedUsers.join(":"); 
 
     const chat = await fetchRedis("lrange", `chat:${chatId}`, 0, -1)
-    
     return NextResponse.json(chat, { status: 200 });
   } catch {
     return NextResponse.json(
