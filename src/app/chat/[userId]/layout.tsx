@@ -7,6 +7,8 @@ import { authOptions } from "@/src/lib/auth";
 import { SidebarProvider } from "@/src/lib/context/sideBarContext";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import MenuButton from "@/src/components/chat/(chat screen)/menuButton";
+
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,6 +27,7 @@ export default async function Layout({ children, params }: LayoutProps) {
     <div className="flex flex-col h-screen bg-purple-100">
       <SidebarProvider>
         <header className="bg-purple-800 text-white p-4 flex justify-between items-center">
+          <MenuButton />
           <Link href="/chat">
             <h1 className="text-2xl font-bold">ChatterBox</h1>
           </Link>

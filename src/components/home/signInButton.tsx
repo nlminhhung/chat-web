@@ -21,7 +21,7 @@ export default function SignInButton() {
       changeLoadingState(false);
     }
   }
-  return (<Button onClick={SignInWithGoogle} className="hidden md:inline-flex">
+  return (<Button onClick={SignInWithGoogle} className="inline-flex">
     {(isLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : <GGIcon/>)}
     Continue with Google!
     </Button> )

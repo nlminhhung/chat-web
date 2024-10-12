@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 
 export default function ToAdminButton({ role }: { role: string }) {
   const router = usePathname();
-  console.log(router);
   return (
     role === "admin" && router !== "/admin" && (
       <Link href={"/admin"}>

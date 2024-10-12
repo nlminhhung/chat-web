@@ -7,7 +7,7 @@ export default function HomeSignOutButton() {
       await signOut();    
     }
     return (
-    <Button onClick={handleSignOut} className="hidden md:inline-flex gap-2">
+    <Button onClick={handleSignOut} className="inline-flex gap-2">
         <GGIcon/> Sign out
     </Button> 
     );

@@ -51,14 +51,12 @@ export default async function Layout({ children, params }: LayoutProps) {
       <div className="bg-purple-600 text-white shadow-sm z-10">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
-            <MenuButton />
             <Avatar className="h-10 w-10 mr-3">
               <AvatarImage src={friend?.image} alt={friend?.name} />
               <AvatarFallback>{friend?.name[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-xl font-semibold">{friend?.name}</h1>
-              <p className="text-sm text-purple-200">Last online</p>
+              <h1 className="text-xl truncate font-semibold">{friend?.name}</h1>
             </div>
           </div>
         <DeleteFriendButton friendId={friendId} />

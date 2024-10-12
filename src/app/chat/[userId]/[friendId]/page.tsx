@@ -60,6 +60,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
             {...register("message")}
             id="message"
             className="flex-grow bg-white"
+            autoComplete="off"
             placeholder="Type a message..."
           />
           <Button
