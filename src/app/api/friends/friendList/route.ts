@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         const chatId = sortedUsers.join(":"); 
         let lastMessage = ""
         try {
-            const jsonLastMessage = JSON.parse(await fetchRedis("lrange", `chat:${chatId}`, -1, -1))
+            const jsonLastMessage = JSON.parse(decodeURIComponent((await fetchRedis("lrange", `chat:${chatId}`, -1, -1))))
             lastMessage = jsonLastMessage.content;
         } catch (error) {
             lastMessage = "..."

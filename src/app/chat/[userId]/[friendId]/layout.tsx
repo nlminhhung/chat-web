@@ -42,7 +42,6 @@ export default async function Layout({ children, params }: LayoutProps) {
       return response.json();
     })
     .catch((error) => {
-      console.error("Error fetching friend chat:", error);
       redirect("/chat");
     });
 

@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
+
       const messageObj = {
         senderId: reportObj.senderId,
         timestamp: reportObj.timestamp,
@@ -49,15 +50,17 @@ export async function POST(req: NextRequest) {
       };
 
       const jsonMessage = JSON.stringify(messageObj);
-      await fetchRedis("lrem", `chat:${chatId}`, 1, `${jsonMessage}`);
+      console.log(encodeURIComponent(jsonMessage))
+      await fetchRedis("lrem", `chat:${chatId}`, 1, `${encodeURIComponent(jsonMessage)}`);
     }
 
     const jsonMessage = JSON.stringify(reportObj);
+
     await fetchRedis(
       "lrem",
       `admin:report`,
       1,
-      `${jsonMessage}`
+      `${encodeURIComponent(jsonMessage)}`
     );
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {

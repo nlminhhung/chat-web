@@ -5,6 +5,5 @@ export const messageValidate = z.object({
     .string()
     .max(150)
     .min(1)
-    // .transform((val) => encode(val)),
 });
 

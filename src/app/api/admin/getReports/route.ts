@@ -14,7 +14,9 @@ export async function GET(req: NextRequest) {
     }
 
     const reports = await fetchRedis("lrange", `admin:report`, 0, -1);
-    return NextResponse.json(reports, { status: 200 });
+    const decodedreports: string[] = reports.map((report: any) => decodeURIComponent(report));
+
+    return NextResponse.json(decodedreports, { status: 200 });
   } catch {
     return NextResponse.json(
       { error: "Something went wrong!" },

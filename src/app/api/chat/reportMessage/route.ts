@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     };
     const jsonReport = JSON.stringify(reportObj);
 
-    await fetchRedis("rpush", `admin:report`, jsonReport);
+    await fetchRedis("rpush", `admin:report`, encodeURIComponent(jsonReport));
 
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {

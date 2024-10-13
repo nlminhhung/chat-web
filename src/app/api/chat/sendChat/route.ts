@@ -3,7 +3,6 @@ import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
-import { encode } from "he";
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,20 +35,20 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const escapedMessage = JSON.stringify(message).slice(1, -1);
+
     const messageObj = {
       senderId: senderId,
       timestamp: date,
       content: message,
     };
 
-
     const jsonMessage = JSON.stringify(messageObj);
+    
     Promise.all([
       await fetchRedis(
         "rpush",
         `chat:${chatId}`,
-        jsonMessage
+        encodeURIComponent(jsonMessage)
       ),
       await fetchRedis(
         "zadd",
