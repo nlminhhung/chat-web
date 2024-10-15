@@ -22,6 +22,7 @@ export async function GET(req: Request) {
         const senderInfo = JSON.parse(
           await fetchRedis("get", `user:${friendId}`)
         ) as User;
+        const onlineStatus = (await fetchRedis("hexists", "onlineUsers", friendId)) as 0 | 1
         const sortedUsers = [userId, friendId].sort(); 
         const chatId = sortedUsers.join(":"); 
         let lastMessage = ""
@@ -36,6 +37,7 @@ export async function GET(req: Request) {
           name: senderInfo.name,
           image: senderInfo.image,
           lastMessage: lastMessage,
+          onlineStatus: onlineStatus,
         };
       })
     );

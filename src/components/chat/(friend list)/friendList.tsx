@@ -15,7 +15,8 @@ import { useSidebar } from "@/src/lib/context/sideBarContext";
 
 
 interface FriendListUser extends User {
-  lastMessage: string
+  lastMessage: string,
+  onlineStatus: 0 | 1,
 }
 
 export default function FriendList({ userId }: { userId: string }) {
@@ -83,7 +84,7 @@ export default function FriendList({ userId }: { userId: string }) {
                   <p className="text-sm font-medium truncate">{friend.name}</p>
                   <p className="text-xs text-purple-300 truncate">{friend.lastMessage}</p>
                 </div>
-                {/* <div className={`w-2 h-2 rounded-full ${friend.status === 'online' ? 'bg-green-400' : 'bg-gray-400'}`} /> */}
+                <div className={`w-2 h-2 rounded-full ${friend.onlineStatus ? 'bg-green-400' : 'bg-gray-400'}`} />
               </div>
             </Link>
           </div>
