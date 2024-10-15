@@ -92,8 +92,8 @@ export function AddFriend() {
               />
             </div>
           </CardContent>
-          {!checkSuccess ? (
             <CardFooter className="flex flex-col space-y-2">
+              {!checkSuccess ? (
               <Button
                 type="submit"
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white"
@@ -101,6 +101,7 @@ export function AddFriend() {
                 <UserPlus className="w-4 h-4 mr-2" />
                 Send Friend Request
               </Button>
+            ) : null}
               <Button
                 type="button"
                 variant="outline"
@@ -111,7 +112,6 @@ export function AddFriend() {
                 Go Back
               </Button>
             </CardFooter>
-          ) : null}
         </form>
       </Card>
     </div>
