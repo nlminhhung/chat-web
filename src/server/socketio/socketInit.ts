@@ -7,13 +7,13 @@ export function createSocketServer(server: HTTPServer) {
     cors: {
       origin: "*",
     },
-  }); 
+  });
   io.on("connection", (socket) => {
     console.log("New client connected:", socket.id);
     socket.on("registerUsers", async (userId: string) => {
       try {
         socket.data.userId = userId;
-        await client.hset("onlineUsers", userId, socket.id)
+        await client.hset("onlineUsers", userId, socket.id);
         console.log(
           `User ${userId} already registered with socket ID: ${socket.id}`
         );
@@ -22,44 +22,51 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
-    socket.on('newFriendRequest', async (friendRequest) => {
-      const { idToAdd} = friendRequest;      
-      const recipientSocketID = await client.hget('onlineUsers', idToAdd);
-  
+    socket.on("newFriendRequest", async (friendRequest) => {
+      const { idToAdd } = friendRequest;
+      const recipientSocketID = await client.hget("onlineUsers", idToAdd);
+
       if (recipientSocketID) {
-        io.to(recipientSocketID).emit('friendsRequest');
+        io.to(recipientSocketID).emit("friendsRequest");
       } else {
         console.log(`Recipient with UserID ${idToAdd} is not connected!`);
       }
     });
 
-    socket.on('newFriend', async (friend) => {
-      const { idToAdd} = friend;      
-      const recipientSocketID = await client.hget('onlineUsers', idToAdd);
-  
+    socket.on("newFriend", async (friend) => {
+      const { idToAdd } = friend;
+      const recipientSocketID = await client.hget("onlineUsers", idToAdd);
+
       if (recipientSocketID) {
-        socket.to(recipientSocketID).emit('friends');
-      } 
-      socket.emit('friends');
+        socket.to(recipientSocketID).emit("friends");
+      }
+      socket.emit("friends");
     });
-    
-    socket.on('newMessage', async (friend) => {
-      const { idToAdd } = friend;      
-      const recipientSocketID = await client.hget('onlineUsers', idToAdd);
-      if (recipientSocketID) {
-        socket.to(recipientSocketID).emit('messages');
-      } 
-      socket.emit('messages');
+
+    socket.on("newMessage", async (friend) => {
+      const friendIds: string[] = friend.map(({ idToAdd }: any) => idToAdd);
+      const processIds = async () => {
+        for (const id of friendIds) {
+          const recipientSocketID = await client.hget("onlineUsers", id);
+          if (recipientSocketID) {
+            socket.to(recipientSocketID).emit("messages");
+          }
+        }
+        socket.emit("messages");
+      };
+      processIds();
     });
 
     socket.on("disconnect", async () => {
       const userId = socket.data.userId;
 
       try {
-        client.hdel('onlineUsers', userId);
-        console.log(`User ${userId} disconnected and removed from online users.`);
+        client.hdel("onlineUsers", userId);
+        console.log(
+          `User ${userId} disconnected and removed from online users.`
+        );
       } catch (error) {
-        console.error('Error removing user on disconnect:', error);
+        console.error("Error removing user on disconnect:", error);
       }
     });
   });

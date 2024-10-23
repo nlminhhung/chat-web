@@ -37,7 +37,6 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
     reset,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(messageValidate) });
-  const [chatMessages, setChatMessages] = useState<string[]>([])
 
   const sendMessage = async (message: string, friendId: string) => {
     try {
@@ -53,7 +52,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", { idToAdd: friendId });
+        socket.emit("newMessage", [{ idToAdd: friendId }]);
         socket.emit("newFriend", { idToAdd: friendId });
       }
     } catch (error) {

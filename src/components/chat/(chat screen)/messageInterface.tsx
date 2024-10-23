@@ -88,7 +88,7 @@ export default function MessageInterface({
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", { idToAdd: friendId });
+        socket.emit("newMessage", [{ idToAdd: friendId }]);
         setIsEditDialogOpen(false);
         toast.success("Your message has been updated!");
       }
@@ -110,7 +110,7 @@ export default function MessageInterface({
     if (!res.ok) {
       toast.error(resMessage.error);
     } else {
-      socket.emit("newMessage", { idToAdd: friendId });
+      socket.emit("newMessage", [{ idToAdd: friendId }]);
       toast.success("Delete message successfully!");
     }
   };

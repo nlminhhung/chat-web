@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
       };
 
       const jsonMessage = JSON.stringify(messageObj);
-      console.log(encodeURIComponent(jsonMessage))
       await fetchRedis("lrem", `chat:${chatId}`, 1, `${encodeURIComponent(jsonMessage)}`);
     }
 
