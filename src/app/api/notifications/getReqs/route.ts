@@ -28,11 +28,10 @@ export async function GET(req: Request) {
             )) as User;
             return {
                 user: {id: senderInfo.id, name: senderInfo.name, image: senderInfo.image},
-                message
+                message: decodeURIComponent(message)
             }
         })
     )
-
     return Response.json(friendInfo, { status: 200 });
     }
     catch (error) {

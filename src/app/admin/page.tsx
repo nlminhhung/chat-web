@@ -127,7 +127,7 @@ export default function AdminPage() {
                   variant="secondary"
                   className="mt-1 sm:mt-0 text-xs sm:text-sm bg-purple-200 text-purple-800 "
                 >
-                  Reported at: {report.timestamp}
+                  Reported at: {new Date(report.timestamp).toLocaleString()}
                 </Badge>
               </div>
               <p className="mb-2 text-sm sm:text-base text-purple-900 ">
