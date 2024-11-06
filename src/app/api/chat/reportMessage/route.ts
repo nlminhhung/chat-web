@@ -18,9 +18,10 @@ export async function POST(req: NextRequest) {
       senderId: senderId,
       content: content,
       timestamp: timestamp,
+      type: type,
     } = body.message; 
     const senderName = body.senderName
-    const reporterName =body. reporterName 
+    const reporterName =body.reporterName 
 
     const isFriend = (await fetchRedis(
       "zscore",
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
         reporterName: reporterName,
         senderId: senderId,
         senderName: senderName,
+        type: type,
         content: content,
         timestamp: timestamp,
     };

@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       reporterName: body.report.reporterName,
       senderId: body.report.senderId,
       senderName: body.report.senderName,
+      type: body.report.type,
       content: body.report.content,
       timestamp: body.report.timestamp,
     };
@@ -45,6 +46,7 @@ export async function POST(req: NextRequest) {
       const messageObj = {
         senderId: reportObj.senderId,
         timestamp: reportObj.timestamp,
+        type: reportObj.type,
         content: reportObj.content,
       };
 

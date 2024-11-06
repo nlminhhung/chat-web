@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     const messageObj = {
       senderId: senderId,
       timestamp: date,
+      type: "message",
       content: message,
     };
 

@@ -26,12 +26,6 @@ import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { messageValidate } from "@/src/lib/valid_data/message";
 
-interface Message {
-  senderId: string;
-  content: string;
-  timestamp: string;
-}
-
 interface userChatInformation {
   id: string;
   name: string;
@@ -155,6 +149,7 @@ export default function MessageInterface({
     <ScrollArea className="flex-1 p-4 h-50px overflow-auto bg-purple-50">
       <div className="space-y-4">
         {messages.map((message, index) => (
+          (message.type === "message" &&
           <div
             key={index}
             ref={index === messages.length - 1 ? lastMessageRef : null}
@@ -264,7 +259,7 @@ export default function MessageInterface({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        ))}
+        )))}
       </div>
     </ScrollArea>
   );
