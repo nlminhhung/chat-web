@@ -1,5 +1,5 @@
 import { addFriendValidate } from "@/src/lib/valid_data/addFriend";
-import { fetchRedis } from "@/src/commands/redis";
+import { fetchRedis, postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse } from "next/server";
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       return Response.json({error:"Already friends with this user!"}, { status: 400 });
     }
 
-    await fetchRedis(
+    await postRedis(
       "hset",
       `user:${idToAdd}:incoming_friend_requests`,
       session.user.id, messageToAdd || "Hey! Let's be friend!"

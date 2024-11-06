@@ -1,5 +1,5 @@
 import { messageValidate } from "@/src/lib/valid_data/message";
-import { fetchRedis } from "@/src/commands/redis";
+import { fetchRedis, postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
@@ -45,18 +45,18 @@ export async function POST(req: NextRequest) {
     const jsonMessage = JSON.stringify(messageObj);
     
     Promise.all([
-      await fetchRedis(
+      await postRedis(
         "rpush",
         `chat:${chatId}`,
-        encodeURIComponent(jsonMessage)
+        jsonMessage
       ),
-      await fetchRedis(
+      await postRedis(
         "zadd",
         `user:${senderId}:friends`,
         timestamp,
         friendId
       ),
-      await fetchRedis(
+      await postRedis(
         "zadd",
         `user:${friendId}:friends`,
         timestamp,

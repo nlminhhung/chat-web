@@ -1,5 +1,4 @@
-import { messageValidate } from "@/src/lib/valid_data/message";
-import { fetchRedis } from "@/src/commands/redis";
+import { fetchRedis, postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
@@ -45,7 +44,7 @@ export async function POST(req: NextRequest) {
     };
     const jsonReport = JSON.stringify(reportObj);
 
-    await fetchRedis("rpush", `admin:report`, encodeURIComponent(jsonReport));
+    await postRedis("rpush", `admin:report`, jsonReport);
 
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {

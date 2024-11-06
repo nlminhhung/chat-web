@@ -1,5 +1,4 @@
-import { messageValidate } from "@/src/lib/valid_data/message";
-import { fetchRedis } from "@/src/commands/redis";
+import { fetchRedis, postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
@@ -50,16 +49,16 @@ export async function POST(req: NextRequest) {
       };
 
       const jsonMessage = JSON.stringify(messageObj);
-      await fetchRedis("lrem", `chat:${chatId}`, 1, `${encodeURIComponent(jsonMessage)}`);
+      await postRedis("lrem", `chat:${chatId}`, 1, jsonMessage);
     }
 
     const jsonMessage = JSON.stringify(reportObj);
 
-    await fetchRedis(
+    await postRedis(
       "lrem",
       `admin:report`,
       1,
-      `${encodeURIComponent(jsonMessage)}`
+      jsonMessage
     );
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {

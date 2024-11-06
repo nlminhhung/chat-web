@@ -22,3 +22,24 @@ export async function fetchRedis(
   const data = await response.json();
   return data.result;
 }
+
+export async function postRedis(
+  command: Command,
+  ...args: (string | number)[]
+) {
+  const commandUrl = `${upstashRedisRestUrl}`;
+  const response = await fetch(commandUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${restToken}`,
+    },
+    body: JSON.stringify([command, ...args]),
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`Error executing Redis command: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.result;
+}
