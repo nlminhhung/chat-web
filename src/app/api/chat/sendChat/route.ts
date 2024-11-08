@@ -23,6 +23,8 @@ export async function POST(req: NextRequest) {
     const chatId = sortedUsers.join(":"); // to set a chat ID (2)
     const date = new Date();
     const timestamp = date.getTime();
+    const messageId = `message:${timestamp}:${Math.random().toString(36).substring(2, 9)}`;
+
     const isFriend = (await fetchRedis(
       "zscore",
       `user:${session.user.id}:friends`,
@@ -35,21 +37,20 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    const messageObj = {
-      senderId: senderId,
-      timestamp: date,
-      type: "message",
-      content: message,
-    };
-
-    const jsonMessage = JSON.stringify(messageObj);
-    
     Promise.all([
       await postRedis(
-        "rpush",
+        "hset",
+        messageId,
+        "senderId", senderId,
+        "timestamp", timestamp,
+        "type", "message",
+        "content", message
+      ),
+      await postRedis(
+        "zadd",
         `chat:${chatId}`,
-        jsonMessage
+        timestamp,
+        messageId
       ),
       await postRedis(
         "zadd",
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
         senderId
       )
     ])
+
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

@@ -14,19 +14,13 @@ export async function POST(req: NextRequest) {
     }
     const body = await req.json();
     const reporterId = session.user.id;
-    const {
-      senderId: senderId,
-      content: content,
-      timestamp: timestamp,
-      type: type,
-    } = body.message; 
-    const senderName = body.senderName
-    const reporterName =body.reporterName 
+    const messageId = body.messageId;
+    const friendId = body.friendId;
 
     const isFriend = (await fetchRedis(
       "zscore",
-      `user:${session.user.id}:friends`,
-      senderId
+      `user:${reporterId}:friends`,
+      friendId
     )) as 0 | 1;
 
     if (!isFriend) {
@@ -37,12 +31,8 @@ export async function POST(req: NextRequest) {
     }
     const reportObj = {
         reporterId: reporterId,
-        reporterName: reporterName,
-        senderId: senderId,
-        senderName: senderName,
-        type: type,
-        content: content,
-        timestamp: timestamp,
+        senderId: friendId,
+        messageId: messageId,
     };
     const jsonReport = JSON.stringify(reportObj);
 

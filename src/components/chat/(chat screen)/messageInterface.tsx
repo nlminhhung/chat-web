@@ -55,8 +55,8 @@ export default function MessageInterface({
         return;
       }
       const data = await res.json();
-      const parsedData = data.map((message: string) => JSON.parse(message));
-      setMessages(parsedData);
+      // console.log(data);
+      setMessages(data);
       return data;
     } catch (error) {
       toast.error("Failed to fetch new messages!");
@@ -64,7 +64,7 @@ export default function MessageInterface({
   };
 
   const handleUpdateMessage = async (
-    updateIndex: number,
+    messageId: string,
     message: string,
     friendId: string
   ) => {
@@ -74,7 +74,7 @@ export default function MessageInterface({
         method: "post",
         body: JSON.stringify({
           friendId: friendId,
-          updateIndex: updateIndex,
+          messageId: messageId,
           message: validatedMessage.message,
         }),
       });
@@ -92,30 +92,30 @@ export default function MessageInterface({
     setEditingMessage("");
   };
 
-  const handleDeleteMessage = async (deleteIndex: number, friendId: string) => {
+  const handleDeleteMessage = async (messageId: string, friendId: string) => {
     const res = await fetch("/api/chat/deleteMessage", {
       method: "post",
       body: JSON.stringify({
         friendId: friendId,
-        deleteIndex: deleteIndex,
+        messageId: messageId,
       }),
     });
     const resMessage = await res.json();
     if (!res.ok) {
       toast.error(resMessage.error);
     } else {
-      socket.emit("newMessage", [{ idToAdd: friendId }]);
+      socket.emit("newMessage", [{ idToAdd: friendId,  }]);
       toast.success("Delete message successfully!");
     }
   };
 
-  const handleReportMessage = async (message: Message) => {
+  const handleReportMessage = async (messageId: string) => {
     const res = await fetch("/api/chat/reportMessage", {
       method: "post",
       body: JSON.stringify({
-        message: message,
-        senderName: friend.name,
-        reporterName: user.name
+        messageId: messageId,
+        // userId: user.id,
+        friendId: friend.id,
       }),
     });
     const resMessage = await res.json();
@@ -190,7 +190,7 @@ export default function MessageInterface({
               </div>
               <div className="flex items-center mt-1 text-xs text-purple-600">
                 <Clock className="w-3 h-3 mr-1" />
-                {new Date(message.timestamp).toLocaleString()}
+                {new Date(Number(message.timestamp)).toLocaleString()}
               </div>
             </div>
             <DropdownMenu>
@@ -233,7 +233,7 @@ export default function MessageInterface({
                         <Button
                           onClick={() =>
                             handleUpdateMessage(
-                              index,
+                              message.messageId,
                               editingMessage,
                               friend.id
                             )
@@ -244,14 +244,14 @@ export default function MessageInterface({
                       </DialogContent>
                     </Dialog>
                     <DropdownMenuItem
-                      onSelect={() => handleDeleteMessage(index, friend.id)}
+                      onSelect={() => handleDeleteMessage(message.messageId, friend.id)}
                     >
                       <Trash className="w-4 h-4 mr-2" />
                       Delete
                     </DropdownMenuItem>
                   </>
                 ) : (
-                  <DropdownMenuItem onSelect={() => handleReportMessage(message)}>
+                  <DropdownMenuItem onSelect={() => handleReportMessage(message.messageId)}>
                     <Flag className="w-4 h-4 mr-2" />
                     Report
                   </DropdownMenuItem>

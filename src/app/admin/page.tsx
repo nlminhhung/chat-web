@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import socket from "@/src/lib/getSocket";
 
 interface Report {
+  messageId: string;
   reporterId: string;
   reporterName: string;
   senderId: string;
@@ -40,8 +41,7 @@ export default function AdminPage() {
         return;
       }
       const data = await res.json();
-      const parsedData = data.map((report: string) => JSON.parse(report));
-      setReports(parsedData);
+      setReports(data);
     } catch (error) {
       toast.error("Failed to fetch new reports!");
     }
@@ -62,7 +62,9 @@ export default function AdminPage() {
         const res = await fetch(`/api/admin/handleReportedMessage`, {
           method: "post",
           body: JSON.stringify({
-            report: report,
+            messageId: report.messageId,
+            reporterId: report.reporterId,
+            senderId: report.senderId,
             isDelete: isDelete
           }),
         });
@@ -127,7 +129,7 @@ export default function AdminPage() {
                   variant="secondary"
                   className="mt-1 sm:mt-0 text-xs sm:text-sm bg-purple-200 text-purple-800 "
                 >
-                  Reported at: {new Date(report.timestamp).toLocaleString()}
+                  Reported at: {new Date(Number(report.timestamp)).toLocaleString()}
                 </Badge>
               </div>
               <p className="mb-2 text-sm sm:text-base text-purple-900 ">

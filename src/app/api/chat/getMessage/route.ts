@@ -30,10 +30,30 @@ export async function GET(req: NextRequest) {
     const sortedUsers = [session.user.id, friendId].sort(); 
     const chatId = sortedUsers.join(":"); 
 
-    const chat = await fetchRedis("lrange", `chat:${chatId}`, 0, -1)
-    const decodedMessages: string[] = chat.map((message: any) => decodeURIComponent(message));
-    
-    return NextResponse.json(decodedMessages, { status: 200 });
+    const messageIds = (await fetchRedis(
+      "zrange",
+      `chat:${chatId}`,
+      0,
+      -1,
+    )) as string[];
+
+    const messages = await Promise.all(
+      messageIds.map(async (messageId) => {
+        const message = await fetchRedis(
+          "hgetall",
+          messageId
+      );
+        const result: Record<string, any> = {};
+        for (let i = 0; i < message.length; i += 2) {
+          const key = message[i];
+          const value = message[i + 1];
+          result[key] = value;
+        }
+        result["messageId"] = messageId;
+        return result;
+      })
+    )
+    return NextResponse.json(messages, { status: 200 });
   } catch {
     return NextResponse.json(
       { error: "Something went wrong!" },

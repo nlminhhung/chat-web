@@ -16,25 +16,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const isDelete = body.isDelete;
+    const messageId = body.messageId;
+    const reporterId = body.reporterId;
+    const senderId = body.senderId;
 
-    const reportObj = {
-      reporterId: body.report.reporterId,
-      reporterName: body.report.reporterName,
-      senderId: body.report.senderId,
-      senderName: body.report.senderName,
-      type: body.report.type,
-      content: body.report.content,
-      timestamp: body.report.timestamp,
-    };
-
-    const sortedUsers = [reportObj.senderId, reportObj.reporterId].sort();
+    const sortedUsers = [senderId, reporterId].sort();
     const chatId = sortedUsers.join(":");
 
     if (isDelete) {
       const isFriend = (await fetchRedis(
         "zscore",
-        `user:${reportObj.senderId}:friends`,
-        reportObj.reporterId
+        `user:${senderId}:friends`,
+        reporterId
       )) as 0 | 1;
       if (!isFriend) {
         return NextResponse.json(
@@ -42,18 +35,17 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-
-      const messageObj = {
-        senderId: reportObj.senderId,
-        timestamp: reportObj.timestamp,
-        type: reportObj.type,
-        content: reportObj.content,
-      };
-
-      const jsonMessage = JSON.stringify(messageObj);
-      await postRedis("lrem", `chat:${chatId}`, 1, jsonMessage);
+      await Promise.all([
+        fetchRedis("del", messageId),
+        fetchRedis("zrem", `chat:${chatId}`, messageId),
+      ]);
     }
 
+    const reportObj = {
+      reporterId: reporterId,
+      senderId: senderId,
+      messageId: messageId
+    }
     const jsonMessage = JSON.stringify(reportObj);
 
     await postRedis(

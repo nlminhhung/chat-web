@@ -1,5 +1,5 @@
 import { messageValidate } from "@/src/lib/valid_data/message";
-import { fetchRedis } from "@/src/commands/redis";
+import { fetchRedis, postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
@@ -14,12 +14,15 @@ export async function POST(req: NextRequest) {
       );
     }
     const body = await req.json();
-    const messageId = body.messageId;
+    const { message: message } = messageValidate.parse({
+      message: body.message,
+    });
     const senderId = session.user.id; // to get user ID
     const friendId = body.friendId; // to get friend ID
     const sortedUsers = [senderId, friendId].sort(); // to set a chat ID
     const chatId = sortedUsers.join(":"); // to set a chat ID (2)
-
+    const date = new Date();
+    const timestamp = date.getTime();
     const isFriend = (await fetchRedis(
       "zscore",
       `user:${session.user.id}:friends`,
@@ -28,16 +31,39 @@ export async function POST(req: NextRequest) {
 
     if (!isFriend) {
       return NextResponse.json(
-        { error: "You are not friends so can't delete this messsage!" },
+        { error: "You are not friends with this user!" },
         { status: 400 }
       );
     }
 
-    await Promise.all([
-      fetchRedis("del", messageId),
-      fetchRedis("zrem", `chat:${chatId}`, messageId),
-    ]);
+    const messageObj = {
+      senderId: senderId,
+      timestamp: date,
+      type: "message",
+      content: message,
+    };
 
+    const jsonMessage = JSON.stringify(messageObj);
+    
+    Promise.all([
+      await postRedis(
+        "rpush",
+        `chat:${chatId}`,
+        jsonMessage
+      ),
+      await postRedis(
+        "zadd",
+        `user:${senderId}:friends`,
+        timestamp,
+        friendId
+      ),
+      await postRedis(
+        "zadd",
+        `user:${friendId}:friends`,
+        timestamp,
+        senderId
+      )
+    ])
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
