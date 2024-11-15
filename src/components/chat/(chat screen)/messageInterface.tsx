@@ -25,6 +25,7 @@ import {
 import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { messageValidate } from "@/src/lib/valid_data/message";
+import Image from "next/image";
 
 interface userChatInformation {
   id: string;
@@ -104,7 +105,7 @@ export default function MessageInterface({
     if (!res.ok) {
       toast.error(resMessage.error);
     } else {
-      socket.emit("newMessage", [{ idToAdd: friendId,  }]);
+      socket.emit("newMessage", [{ idToAdd: friendId }]);
       toast.success("Delete message successfully!");
     }
   };
@@ -124,7 +125,6 @@ export default function MessageInterface({
     } else {
       toast.success(`Message has been reported!`);
     }
-    
   };
 
   useEffect(() => {
@@ -145,11 +145,11 @@ export default function MessageInterface({
     }
   }, [messages]);
 
+  const test1 = "https://chat-web-mhung.s3.ap-southeast-2.amazonaws.com/network.png";
   return (
     <ScrollArea className="flex-1 p-4 h-50px overflow-auto bg-purple-50">
       <div className="space-y-4">
         {messages.map((message, index) => (
-          (message.type === "message" &&
           <div
             key={index}
             ref={index === messages.length - 1 ? lastMessageRef : null}
@@ -179,15 +179,24 @@ export default function MessageInterface({
                   </Avatar>
                 )}
               </div>
-              <div
-                className={`p-3 rounded-lg ${
-                  message.senderId === user.id
-                    ? "bg-purple-500 text-white"
-                    : "bg-white text-purple-800"
-                }`}
-              >
-                {message.content}
-              </div>
+              {(message.type == "message" && (
+                <div
+                  className={`p-3 rounded-lg ${
+                    message.senderId === user.id
+                      ? "bg-purple-500 text-white"
+                      : "bg-white text-purple-800"
+                  }`}
+                >
+                  {message.content}
+                </div>
+              )) || (
+                <Image
+                  src={test1}
+                  width={500}
+                  height={500}
+                  alt="Picture of the author"
+                />
+              )}
               <div className="flex items-center mt-1 text-xs text-purple-600">
                 <Clock className="w-3 h-3 mr-1" />
                 {new Date(Number(message.timestamp)).toLocaleString()}
@@ -244,14 +253,18 @@ export default function MessageInterface({
                       </DialogContent>
                     </Dialog>
                     <DropdownMenuItem
-                      onSelect={() => handleDeleteMessage(message.messageId, friend.id)}
+                      onSelect={() =>
+                        handleDeleteMessage(message.messageId, friend.id)
+                      }
                     >
                       <Trash className="w-4 h-4 mr-2" />
                       Delete
                     </DropdownMenuItem>
                   </>
                 ) : (
-                  <DropdownMenuItem onSelect={() => handleReportMessage(message.messageId)}>
+                  <DropdownMenuItem
+                    onSelect={() => handleReportMessage(message.messageId)}
+                  >
                     <Flag className="w-4 h-4 mr-2" />
                     Report
                   </DropdownMenuItem>
@@ -259,7 +272,7 @@ export default function MessageInterface({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        )))}
+        ))}
       </div>
     </ScrollArea>
   );
