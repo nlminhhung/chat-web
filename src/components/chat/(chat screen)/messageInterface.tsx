@@ -56,7 +56,6 @@ export default function MessageInterface({
         return;
       }
       const data = await res.json();
-      // console.log(data);
       setMessages(data);
       return data;
     } catch (error) {
@@ -93,12 +92,13 @@ export default function MessageInterface({
     setEditingMessage("");
   };
 
-  const handleDeleteMessage = async (messageId: string, friendId: string) => {
+  const handleDeleteMessage = async (messageId: string, friendId: string, messageType: string) => {
     const res = await fetch("/api/chat/deleteMessage", {
       method: "post",
       body: JSON.stringify({
         friendId: friendId,
         messageId: messageId,
+        messageType: messageType,
       }),
     });
     const resMessage = await res.json();
@@ -191,7 +191,7 @@ export default function MessageInterface({
                 </div>
               )) || (
                 <Image
-                  src={test1}
+                  src={message.content}
                   width={500}
                   height={500}
                   alt="Picture of the author"
@@ -215,12 +215,12 @@ export default function MessageInterface({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {message.senderId === user.id ? (
-                  <>
+                  <> 
                     <Dialog
                       open={isEditDialogOpen}
                       onOpenChange={setIsEditDialogOpen}
                     >
-                      <DialogTrigger asChild>
+                      {message.type === "message" && <DialogTrigger asChild>
                         <DropdownMenuItem
                           onSelect={(e) => {
                             e.preventDefault();
@@ -230,7 +230,7 @@ export default function MessageInterface({
                           <Edit className="w-4 h-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                      </DialogTrigger>
+                      </DialogTrigger>}
                       <DialogContent aria-describedby={undefined}>
                         <DialogHeader>
                           <DialogTitle>Edit Message</DialogTitle>
@@ -254,7 +254,7 @@ export default function MessageInterface({
                     </Dialog>
                     <DropdownMenuItem
                       onSelect={() =>
-                        handleDeleteMessage(message.messageId, friend.id)
+                        handleDeleteMessage(message.messageId, friend.id, message.type)
                       }
                     >
                       <Trash className="w-4 h-4 mr-2" />

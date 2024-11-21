@@ -29,7 +29,7 @@ export async function GET(req: Request) {
         )) as 0 | 1;
         const sortedUsers = [userId, friendId].sort();
         const chatId = sortedUsers.join(":");
-        let lastMessage = "a";
+        let lastMessage;
         try {
           const messageId = await fetchRedis(
             "zrange",
@@ -38,8 +38,13 @@ export async function GET(req: Request) {
             0,
             "REV"
           );
-          const jsonLastMessage = await fetchRedis("hget", messageId, "content");
-          lastMessage = jsonLastMessage;
+          const lastMessageType = await fetchRedis("hget", messageId, "type");
+          if (lastMessageType == "message"){
+            const jsonLastMessage = await fetchRedis("hget", messageId, "content");
+            lastMessage = jsonLastMessage;
+          } else {
+            lastMessage = "[image]";
+          }
         } catch (error) {
           lastMessage = "...";
         }
