@@ -7,21 +7,29 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/src/components/chat/ui/avatar";
-import { UserPlus } from "lucide-react";
+import {
+  UserPlus,
+  Users,
+  User,
+  Search,
+  CircleUserIcon,
+  MessageCircle,
+} from "lucide-react";
 import { useEffect } from "react";
 import socket from "@/src/lib/getSocket";
 import { useState } from "react";
 import { useSidebar } from "@/src/lib/context/sideBarContext";
 
-
 interface FriendListUser extends User {
-  lastMessage: string,
-  onlineStatus: 0 | 1,
+  lastMessage: string;
+  onlineStatus: 0 | 1;
 }
 
 export default function FriendList({ userId }: { userId: string }) {
-  const {isSidebarOpen, setIsSidebarOpen} = useSidebar();
+  const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
   const [friendList, setFriendList] = useState<FriendListUser[]>([]);
+  const [activeList, setActiveList] = useState<"friends" | "groups">("friends");
+
   const fetchFriendList = async () => {
     try {
       const res = await fetch(
@@ -51,45 +59,115 @@ export default function FriendList({ userId }: { userId: string }) {
 
   return (
     <div
-      className={`bg-purple-700 text-white w-64 flex-shrink-0 ${
+      className={`bg-purple-700 text-white w-72 flex-shrink-0 ${
         isSidebarOpen ? "block" : "hidden"
       } sm:block`}
     >
       <div className="p-4 border-b border-purple-600 flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Friends</h2>
-        <Link href={`/chat/add-friend`}>
+        <div className="flex bg-purple-800 rounded-md p-1 gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`flex-1 transition-colors duration-200 ${
+              activeList === "friends"
+                ? "bg-purple-600 text-white"
+                : "text-purple-300 hover:text-white hover:bg-purple-500"
+            }`}
+            onClick={() => setActiveList("friends")}
+          >
+            <User className="h-4 w-4 mr-2" />
+            Friends
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`flex-1 transition-colors duration-200 ${
+              activeList === "groups"
+                ? "bg-purple-600 text-white"
+                : "text-purple-300 hover:text-white hover:bg-purple-500"
+            }`}
+            onClick={() => setActiveList("groups")}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Groups
+          </Button>
+        </div>
+
+        <Link
+          href={
+            activeList === "friends" ? `/chat/add-friend` : `/chat/new-group`
+          }
+        >
           <Button
             variant="ghost"
             size="icon"
-            className="text-white hover:bg-purple-600"
+            className="text-white hover:bg-purple-500 transition-colors duration-200"
           >
-            <UserPlus className="h-5 w-5" />
-            <span className="sr-only">Add Friend</span>
+            {activeList === "friends" ? (
+              <UserPlus className="h-5 w-5" />
+            ) : (
+              <CircleUserIcon className="h-5 w-5" />
+            )}
+            <span className="sr-only">
+              {activeList === "friends" ? "Add Friend" : "Create Group"}
+            </span>
           </Button>
         </Link>
       </div>
       <ScrollArea className="h-[calc(100vh-9rem)]">
-        {friendList.map((friend) => (
-          <div
-            key={friend.id}
-            className="p-4 border-b border-purple-600 hover:bg-purple-600 cursor-pointer"
-          >
-            <Link href={`/chat/${userId}/${friend.id}`}>
-              <div className="flex items-center space-x-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={friend.image} alt={friend.name} />
-                  <AvatarFallback>{friend.name[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{friend.name}</p>
-                  <p className="text-xs text-purple-300 truncate">{friend.lastMessage}</p>
-                </div>
-                <div className={`w-2 h-2 rounded-full ${friend.onlineStatus ? 'bg-green-400' : 'bg-gray-400'}`} />
+        {activeList === 'friends' ? (
+          friendList.length > 0 ? (
+            friendList.map((friend) => (
+              <div
+                key={friend.id}
+                className="p-4 border-b border-purple-600 hover:bg-purple-500 cursor-pointer transition-colors duration-200"
+              >
+                <Link href={`/chat/${userId}/${friend.id}`}>
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={friend.image} alt={friend.name} />
+                      <AvatarFallback>{friend.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{friend.name}</p>
+                      <p className="text-xs text-purple-300 truncate">{friend.lastMessage}</p>
+                    </div>
+                    <div className={`w-2 h-2 rounded-full ${friend.onlineStatus ? 'bg-green-400' : 'bg-gray-400'}`} />
+                  </div>
+                </Link>
               </div>
-            </Link>
-          </div>
-        ))}
+            ))
+          ) : (
+            <div className="p-4 text-center text-purple-300">No friends added yet.</div>
+          )
+        ) : (
+          friendList.length > 0 ? (
+            friendList.map((group) => (
+              <div
+                key={group.id}
+                className="p-4 border-b border-purple-600 hover:bg-purple-500 cursor-pointer transition-colors duration-200"
+              >
+                <Link href={`/chat/group/${group.id}`}>
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={group.image} alt={group.name} />
+                      <AvatarFallback>{group.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{group.name}</p>
+                      <p className="text-xs text-purple-300 truncate">{group.lastMessage}</p>
+                    </div>
+                    {/* <div className="text-xs text-purple-300">{group.memberCount} members</div> */}
+                  </div>
+                </Link>
+              </div>
+            ))
+          ) : (
+            <div className="p-4 text-center text-purple-300">No groups created yet.</div>
+          )
+        )}
       </ScrollArea>
+
     </div>
   );
 }

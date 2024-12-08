@@ -145,9 +145,8 @@ export default function MessageInterface({
     }
   }, [messages]);
 
-  const test1 = "https://chat-web-mhung.s3.ap-southeast-2.amazonaws.com/network.png";
   return (
-    <ScrollArea className="flex-1 p-4 h-50px overflow-auto bg-purple-50">
+    <ScrollArea className="flex-1 p-4 h-50 overflow-auto bg-purple-50">
       <div className="space-y-4">
         {messages.map((message, index) => (
           <div

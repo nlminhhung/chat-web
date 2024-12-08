@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { fetchRedis } from "@/src/commands/redis";
+import { postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse } from "next/server";
@@ -22,12 +22,12 @@ export async function POST(req: Request) {
     const timestamp = date.getTime();
 
     const promises = friendIds.map((friendId: string) => {
-      return fetchRedis("zadd", `user:${friendId}:groups`, timestamp, groupId);
+      return postRedis("zadd", `user:${friendId}:groups`, timestamp, groupId);
     });
 
     
     await Promise.all([
-        fetchRedis(
+        postRedis(
           "hset",
           `group:${groupId}`,
           "groupName",
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
           "leader",
           userId
         ),
-        fetchRedis("zadd", `user:${userId}:groups`, timestamp, groupId),
+        postRedis("zadd", `user:${userId}:groups`, timestamp, groupId),
         promises
     ])
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     return NextResponse.json(
-      { error: "Group created unsuccessfully !" },
+      { error: "Something went wrong!" },
       { status: 400 }
     );
   }

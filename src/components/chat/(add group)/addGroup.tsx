@@ -4,13 +4,17 @@ import { useState } from "react"
 import { Button } from "@/src/components/chat/ui/button"
 import { Input } from "@/src/components/chat/ui/input"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area"
-import { UserPlus, UserMinus } from "lucide-react"
+import { UserPlus, UserMinus, ArrowLeft } from "lucide-react"
 import socket from "@/src/lib/getSocket";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+
 
 export default function AddGroup({ friendList, userId }: {friendList: User[], userId: string}) {
   const [groupName, setGroupName] = useState("")
   const [groupFriends, setGroupFriends] = useState<User[]>([])
+  const [checkSuccess, setSuccess] = useState(false);
+  const router = useRouter();
 
   const availableFriends = friendList.filter(
     (friend) => !groupFriends.some((groupFriend) => groupFriend.id === friend.id)
@@ -37,7 +41,7 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
           }),
         }
       );
-    const data = res.json();
+    const data = await res.json();
     if (!res.ok) {
         toast.error(data.error);
       } else {
@@ -100,13 +104,22 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
             </ScrollArea>
           </div>
         </div>
-        <Button 
+        {!checkSuccess && <Button 
           className="w-full" 
           onClick={handleConfirm}
           disabled={!groupName.trim() || groupFriends.length === 0}
         >
           Create Group
-        </Button>
+        </Button>}
+        <Button
+                type="button"
+                variant="outline"
+                className="w-full border-purple-600 text-purple-600 hover:bg-purple-100"
+                onClick={()=>router.back()}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Go Back
+              </Button>
       </div>
     </div>
   )
