@@ -35,6 +35,13 @@ export async function POST(req: NextRequest) {
     const sortedUsers = [senderId, friendId].sort(); // to set a chat ID
     const chatId = sortedUsers.join(":"); // to set a chat ID (2)
 
+    
+    if (senderId != session.user.id) {
+      return NextResponse.json(
+        { error: "You do not have permission to update this message!" },
+        { status: 400 }
+      );
+    }
     const isFriend = (await fetchRedis(
       "zscore",
       `user:${session.user.id}:friends`,
@@ -43,10 +50,11 @@ export async function POST(req: NextRequest) {
 
     if (!isFriend) {
       return NextResponse.json(
-        { error: "You are not friends so can't delete this messsage!" },
+        { error: "You are not friends so can't delete this message!" },
         { status: 400 }
       );
     }
+
     if (messageType === "image") {
       const imageUrl = await fetchRedis("hget", messageId, "content");
       const key = imageUrl.split("/").slice(-1)[0]

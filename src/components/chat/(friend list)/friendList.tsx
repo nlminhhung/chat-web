@@ -11,9 +11,7 @@ import {
   UserPlus,
   Users,
   User,
-  Search,
   CircleUserIcon,
-  MessageCircle,
 } from "lucide-react";
 import { useEffect } from "react";
 import socket from "@/src/lib/getSocket";
@@ -28,6 +26,7 @@ interface FriendListUser extends User {
 export default function FriendList({ userId }: { userId: string }) {
   const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
   const [friendList, setFriendList] = useState<FriendListUser[]>([]);
+  const [groupList, setGroupList] = useState<Group[]>([]);
   const [activeList, setActiveList] = useState<"friends" | "groups">("friends");
 
   const fetchFriendList = async () => {
@@ -45,8 +44,26 @@ export default function FriendList({ userId }: { userId: string }) {
     }
   };
 
+  const fetchGroupList = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/groups/groupList`,
+        {
+          method: "GET",
+        }
+      );
+      const data = await res.json();
+      setGroupList(data);
+      console.log(data)
+    } catch (error) {
+      console.error("Failed to fetch group List:", error);
+    }
+  };
+
   useEffect(() => {
     fetchFriendList();
+    fetchGroupList();
+
     const handleFriendList = async () => {
       await fetchFriendList();
     };
@@ -141,8 +158,8 @@ export default function FriendList({ userId }: { userId: string }) {
             <div className="p-4 text-center text-purple-300">No friends added yet.</div>
           )
         ) : (
-          friendList.length > 0 ? (
-            friendList.map((group) => (
+          groupList.length > 0 ? (
+            groupList.map((group) => (
               <div
                 key={group.id}
                 className="p-4 border-b border-purple-600 hover:bg-purple-500 cursor-pointer transition-colors duration-200"
@@ -155,9 +172,9 @@ export default function FriendList({ userId }: { userId: string }) {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{group.name}</p>
-                      <p className="text-xs text-purple-300 truncate">{group.lastMessage}</p>
+                      {/* <p className="text-xs text-purple-300 truncate">{group.lastMessage}</p> */}
                     </div>
-                    {/* <div className="text-xs text-purple-300">{group.memberCount} members</div> */}
+                    <div className="text-xs text-purple-300">{group.memberCount} members</div>
                   </div>
                 </Link>
               </div>

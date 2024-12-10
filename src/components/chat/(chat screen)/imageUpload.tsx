@@ -63,7 +63,7 @@ export default function ImageUpload({friendId}: ImageUploadProps){
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", [{ idToAdd: friendId }]);
+        socket.emit("newMessage", {chatType: "direct", senderId: friendId});
         socket.emit("newFriend", { idToAdd: friendId });
       }
     }

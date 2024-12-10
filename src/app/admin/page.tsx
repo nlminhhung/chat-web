@@ -74,7 +74,8 @@ export default function AdminPage() {
         } else {
           setReports((prevItems) => prevItems.filter(item => item !== report));  
           if (isDelete){
-            socket.emit("newMessage", [{ idToAdd: report.reporterId }, { idToAdd: report.senderId }]);
+            socket.emit("newMessage", {chatType: "direct", senderId: report.senderId});
+            socket.emit("newMessage", {chatType: "direct", senderId: report.reporterId});
           }
           toast.success("Message has been dealed with!")
         }

@@ -49,6 +49,13 @@ export async function GET(req: NextRequest) {
           const value = message[i + 1];
           result[key] = value;
         }
+
+        const senderInfo = JSON.parse(await fetchRedis(
+          "get",
+          `user:${result["senderId"]}`,
+        )) as User;
+        result["name"] = senderInfo.name;
+        result["senderImage"] = senderInfo.image;
         result["messageId"] = messageId;
         return result;
       })

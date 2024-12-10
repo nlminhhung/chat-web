@@ -16,20 +16,27 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { message: message } = messageValidate.parse({message: body.message});
     const messageId = body.messageId;
-    const friendId = body.friendId; 
+    const senderId = body.senderId; 
+    const friendId = body.friendId; // to get friend ID
 
+    if (senderId != session.user.id) {
+      return NextResponse.json(
+        { error: "You do not have permission to update this message!" },
+        { status: 400 }
+      );
+    }
     const isFriend = (await fetchRedis(
       "zscore",
       `user:${session.user.id}:friends`,
       friendId
     )) as 0 | 1;
+
     if (!isFriend) {
       return NextResponse.json(
-        { error: "You are not friends so can't delete this messsage!" },
+        { error: "You are not friends so can't delete this message!" },
         { status: 400 }
       );
     }
-
     await fetchRedis("hset", messageId, "content", message)
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {

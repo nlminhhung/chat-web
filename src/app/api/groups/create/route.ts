@@ -14,7 +14,8 @@ export async function POST(req: Request) {
       );
     }
     const body = await req.json();
-    const friendIds = body.friendIds;
+    const friendIds = (body.friendIds) as string[];
+    const memberCount = friendIds.length + 1;  
     const groupName = body.groupName;
     const userId = body.userId;
     const groupId = randomBytes(12).toString("hex").slice(0, 12);
@@ -30,10 +31,12 @@ export async function POST(req: Request) {
         postRedis(
           "hset",
           `group:${groupId}`,
-          "groupName",
+          "name",
           groupName,
           "leader",
-          userId
+          userId,
+          "memberCount",
+          memberCount
         ),
         postRedis("zadd", `user:${userId}:groups`, timestamp, groupId),
         promises

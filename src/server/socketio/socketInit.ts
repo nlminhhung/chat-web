@@ -43,18 +43,18 @@ export function createSocketServer(server: HTTPServer) {
       socket.emit("friends");
     });
 
-    socket.on("newMessage", async (friend) => {
-      const friendIds: string[] = friend.map(({ idToAdd }: any) => idToAdd);
-      const processIds = async () => {
-        for (const id of friendIds) {
-          const recipientSocketID = await client.hget("onlineUsers", id);
-          if (recipientSocketID) {
-            socket.to(recipientSocketID).emit("messages");
-          }
+    socket.on("newMessage", async (data) => {
+      const { chatType, senderId, roomId } = data;
+      if (chatType === "direct") {
+        const recipientSocketID = await client.hget("onlineUsers", senderId);
+        if (recipientSocketID) {
+          io.to(recipientSocketID).emit("messages");
         }
         socket.emit("messages");
-      };
-      processIds();
+      }
+      else {
+        io.to(roomId).emit("messages");
+      }
     });
 
     socket.on("disconnect", async () => {

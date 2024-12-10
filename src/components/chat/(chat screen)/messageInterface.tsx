@@ -66,14 +66,15 @@ export default function MessageInterface({
   const handleUpdateMessage = async (
     messageId: string,
     message: string,
-    friendId: string
+    senderId: string
   ) => {
     try {
       const validatedMessage = messageValidate.parse({ message });
       const res = await fetch("/api/chat/updateMessage", {
         method: "post",
         body: JSON.stringify({
-          friendId: friendId,
+          senderId: senderId,
+          friendId: friend.id,
           messageId: messageId,
           message: validatedMessage.message,
         }),
@@ -82,7 +83,7 @@ export default function MessageInterface({
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", [{ idToAdd: friendId }]);
+        socket.emit("newMessage", {chatType: "direct", senderId: friend.id});
         setIsEditDialogOpen(false);
         toast.success("Your message has been updated!");
       }
@@ -92,11 +93,12 @@ export default function MessageInterface({
     setEditingMessage("");
   };
 
-  const handleDeleteMessage = async (messageId: string, friendId: string, messageType: string) => {
+  const handleDeleteMessage = async (messageId: string, senderId: string, messageType: string) => {
     const res = await fetch("/api/chat/deleteMessage", {
       method: "post",
       body: JSON.stringify({
-        friendId: friendId,
+        senderId: senderId,
+        friendId: friend.id,
         messageId: messageId,
         messageType: messageType,
       }),
@@ -105,7 +107,7 @@ export default function MessageInterface({
     if (!res.ok) {
       toast.error(resMessage.error);
     } else {
-      socket.emit("newMessage", [{ idToAdd: friendId }]);
+      socket.emit("newMessage", {chatType: "direct", senderId: friend.id});
       toast.success("Delete message successfully!");
     }
   };
@@ -162,14 +164,14 @@ export default function MessageInterface({
               } max-w-[70%] sm:max-w-[60%]`}
             >
               <div className="flex items-center space-x-2 mb-1">
-                {message.senderId === friend.id && (
+                {message.senderId !== user.id && (
                   <Avatar className="w-6 h-6">
-                    <AvatarImage src={friend.image} alt={friend.name} />
-                    <AvatarFallback>{friend.name[0]}</AvatarFallback>
+                    <AvatarImage src={message.senderImage} alt={message.name} />
+                    <AvatarFallback>{message.name[0]}</AvatarFallback>
                   </Avatar>
                 )}
                 <span className="font-semibold text-sm text-purple-800">
-                  {message.senderId === user.id ? user.name : friend.name}
+                  {message.senderId === user.id ? user.name : message.name}
                 </span>
                 {message.senderId === user.id && (
                   <Avatar className="w-6 h-6">
@@ -243,7 +245,7 @@ export default function MessageInterface({
                             handleUpdateMessage(
                               message.messageId,
                               editingMessage,
-                              friend.id
+                              message.senderId
                             )
                           }
                         >
@@ -253,7 +255,7 @@ export default function MessageInterface({
                     </Dialog>
                     <DropdownMenuItem
                       onSelect={() =>
-                        handleDeleteMessage(message.messageId, friend.id, message.type)
+                        handleDeleteMessage(message.messageId, message.senderId, message.type)
                       }
                     >
                       <Trash className="w-4 h-4 mr-2" />
