@@ -1,6 +1,15 @@
-import { Server as SocketIOServer } from "socket.io";
+import { Socket, Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "node:http";
 import { client } from "@/src/server/redis/redisInit";
+
+
+async function joinGroup(socket: Socket, userId: string) {
+  const userRooms = await client.zrange(`user:${userId}:groups`, 0, -1) as string[];
+  userRooms.forEach((roomId) => {
+    socket.join(roomId);
+    console.log(`User ${userId} joined room with room ID: ${roomId}`);
+  });
+}
 
 export function createSocketServer(server: HTTPServer) {
   const io = new SocketIOServer(server, {
@@ -14,14 +23,25 @@ export function createSocketServer(server: HTTPServer) {
       try {
         socket.data.userId = userId;
         await client.hset("onlineUsers", userId, socket.id);
-        console.log(
-          `User ${userId} already registered with socket ID: ${socket.id}`
-        );
+        console.log(`User ${userId} already registered with socket ID: ${socket.id}`);
+        await joinGroup(socket, userId);
       } catch (error) {
         console.error("Error registering user:", error);
       }
     });
 
+    socket.on("newGroup", async (group) => {
+      const { memberIds } = group;
+
+      for (const id of memberIds) {
+        const recipientSocketID = await client.hget("onlineUsers", id);
+        if (recipientSocketID) {
+          io.to(recipientSocketID).emit("groups");
+          await joinGroup(socket, recipientSocketID);
+        }
+      }
+    })
+    
     socket.on("newFriendRequest", async (friendRequest) => {
       const { idToAdd } = friendRequest;
       const recipientSocketID = await client.hget("onlineUsers", idToAdd);

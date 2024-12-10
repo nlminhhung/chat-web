@@ -45,7 +45,7 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
     if (!res.ok) {
         toast.error(data.error);
       } else {
-        socket.emit("newRoom", { idToAdd: data.idToAdd });
+        socket.emit("newGroup", { memberIds: [...friendIds, userId] });
         setSuccess(true);
         toast.success("Your request has been filed!");
       }

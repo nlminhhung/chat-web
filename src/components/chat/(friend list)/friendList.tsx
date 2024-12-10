@@ -67,10 +67,16 @@ export default function FriendList({ userId }: { userId: string }) {
     const handleFriendList = async () => {
       await fetchFriendList();
     };
+    const handleGroupList = async () => {
+      await fetchGroupList();
+    };
+
     socket.on("friends", handleFriendList);
+    socket.on("groups", handleGroupList);
 
     return () => {
       socket.off("friends", handleFriendList);
+      socket.off("groups", handleGroupList);
     };
   }, []);
 
