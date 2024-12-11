@@ -2,6 +2,7 @@ import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
+import { getHash } from "@/src/commands/getHash";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,54 +13,42 @@ export async function GET(req: NextRequest) {
         { status: 402 }
       );
     }
-    const friendId = req.nextUrl.searchParams.get("friendId") as string;
+    const groupId = req.nextUrl.searchParams.get("groupId") as string;
 
-    const isFriend = (await fetchRedis(
+    const isMember = (await fetchRedis(
       "zscore",
-      `user:${session.user.id}:friends`,
-      friendId
+      `user:${session.user.id}:groups`,
+      groupId
     )) as 0 | 1;
 
-    if (!isFriend) {
-      return Response.json(
-        { error: "These users are not friends!" },
+    if (!isMember) {
+      return NextResponse.json(
+        { error: "You are not a member of this group!" },
         { status: 403 }
       );
     }
-    
-    const sortedUsers = [session.user.id, friendId].sort(); 
-    const chatId = sortedUsers.join(":"); 
 
     const messageIds = (await fetchRedis(
       "zrange",
-      `chat:${chatId}`,
+      `chat:${groupId}`,
       0,
-      -1,
+      -1
     )) as string[];
 
     const messages = await Promise.all(
       messageIds.map(async (messageId) => {
-        const message = await fetchRedis(
-          "hgetall",
-          messageId
-      );
-        const result: Record<string, any> = {};
-        for (let i = 0; i < message.length; i += 2) {
-          const key = message[i];
-          const value = message[i + 1];
-          result[key] = value;
-        }
+        const message = await fetchRedis("hgetall", messageId);
+        const result = await getHash(message);
 
-        const senderInfo = JSON.parse(await fetchRedis(
-          "get",
-          `user:${result["senderId"]}`,
-        )) as User;
+        const senderInfo = JSON.parse(
+          await fetchRedis("get", `user:${result["senderId"]}`)
+        ) as User;
         result["name"] = senderInfo.name;
         result["senderImage"] = senderInfo.image;
         result["messageId"] = messageId;
         return result;
       })
-    )
+    );
     return NextResponse.json(messages, { status: 200 });
   } catch {
     return NextResponse.json(

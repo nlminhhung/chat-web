@@ -12,8 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/chat/u
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import ImageUpload from "@/src/components/chat/(chat screen)/imageUpload";
 
-type ChatScreenProps = {
-  friendId: string;
+type GroupScreenProps = {
+  groupId: string;
 };
 
 type FormData = z.infer<typeof messageValidate>;
@@ -28,8 +28,8 @@ const emojis = [
 ]
 
 
-export default function ChatScreen({ params }: { params: ChatScreenProps }) {
-  const friendId = params.friendId;
+export default function GroupScreen({ params }: { params: GroupScreenProps }) {
+  const groupId = params.groupId;
   const {
     register,
     handleSubmit,
@@ -38,13 +38,13 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(messageValidate) });
 
-  const sendMessage = async (message: string, friendId: string) => {
+  const sendMessage = async (message: string, groupId: string) => {
     try {
       const validatedMessage = messageValidate.parse({ message });
-      const res = await fetch("/api/chat/sendDirectMessage", {
+      const res = await fetch("/api/chat/sendGroupMessage", {
         method: "post",
         body: JSON.stringify({
-          friendId: friendId,
+          groupId: groupId,
           message: validatedMessage.message,
         }),
       });
@@ -52,8 +52,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", {chatType: "direct", senderId: friendId});
-        socket.emit("newFriend", { idToAdd: friendId });
+        socket.emit("newMessage", {chatType: "group", roomId: groupId});
       }
     } catch (error) {
       toast.error("There was an error! Try again");
@@ -62,14 +61,14 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
 
   const onSubmit = (data: FormData) => {
     if (data.message.trim()) {
-      sendMessage(data.message, friendId);
+      sendMessage(data.message, groupId);
       reset();
     }
   };
 
   const onSubmitEmoji = (emoji: string) => {
     if (emoji.trim()) {
-      sendMessage(emoji, friendId);
+      sendMessage(emoji, groupId);
       reset();
     }
   };
@@ -92,7 +91,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
             <Send className="h-4 w-4" />
             <span className="sr-only">Send</span>
           </Button>
-          <ImageUpload friendId={friendId}/>
+          {/* <ImageUpload friendId={friendId}/> */}
           
           <Popover>
             <PopoverTrigger asChild>

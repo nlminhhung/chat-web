@@ -36,22 +36,26 @@ interface userChatInformation {
 export default function MessageInterface({
   friend,
   user,
+  chatType,
 }: {
   friend: User;
   user: userChatInformation;
+  chatType: "direct" | "group";
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [editingMessage, setEditingMessage] = useState<string>("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const getMessages = async (friendId: string) => {
+  const getMessages = async (id: string) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getMessage?friendId=${friendId}`,
-        {
-          method: "GET",
-        }
-      );
+      const getMessageURL =
+        chatType === "direct"
+          ? `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getDirectMessage?friendId=${id}`
+          : `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getGroupMessage?groupId=${id}`;
+
+      const res = await fetch(getMessageURL, {
+        method: "GET",
+      });
       if (!res.ok) {
         return;
       }
@@ -83,7 +87,7 @@ export default function MessageInterface({
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", {chatType: "direct", senderId: friend.id});
+        socket.emit("newMessage", { chatType: "direct", senderId: friend.id });
         setIsEditDialogOpen(false);
         toast.success("Your message has been updated!");
       }
@@ -93,7 +97,11 @@ export default function MessageInterface({
     setEditingMessage("");
   };
 
-  const handleDeleteMessage = async (messageId: string, senderId: string, messageType: string) => {
+  const handleDeleteMessage = async (
+    messageId: string,
+    senderId: string,
+    messageType: string
+  ) => {
     const res = await fetch("/api/chat/deleteMessage", {
       method: "post",
       body: JSON.stringify({
@@ -107,7 +115,7 @@ export default function MessageInterface({
     if (!res.ok) {
       toast.error(resMessage.error);
     } else {
-      socket.emit("newMessage", {chatType: "direct", senderId: friend.id});
+      socket.emit("newMessage", { chatType: "direct", senderId: friend.id });
       toast.success("Delete message successfully!");
     }
   };
@@ -216,22 +224,24 @@ export default function MessageInterface({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {message.senderId === user.id ? (
-                  <> 
+                  <>
                     <Dialog
                       open={isEditDialogOpen}
                       onOpenChange={setIsEditDialogOpen}
                     >
-                      {message.type === "message" && <DialogTrigger asChild>
-                        <DropdownMenuItem
-                          onSelect={(e) => {
-                            e.preventDefault();
-                            setIsEditDialogOpen(true);
-                          }}
-                        >
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                      </DialogTrigger>}
+                      {message.type === "message" && (
+                        <DialogTrigger asChild>
+                          <DropdownMenuItem
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setIsEditDialogOpen(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                        </DialogTrigger>
+                      )}
                       <DialogContent aria-describedby={undefined}>
                         <DialogHeader>
                           <DialogTitle>Edit Message</DialogTitle>
@@ -255,7 +265,11 @@ export default function MessageInterface({
                     </Dialog>
                     <DropdownMenuItem
                       onSelect={() =>
-                        handleDeleteMessage(message.messageId, message.senderId, message.type)
+                        handleDeleteMessage(
+                          message.messageId,
+                          message.senderId,
+                          message.type
+                        )
                       }
                     >
                       <Trash className="w-4 h-4 mr-2" />

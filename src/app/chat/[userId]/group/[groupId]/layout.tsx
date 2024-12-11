@@ -14,21 +14,21 @@ import DeleteFriendButton from "@/src/components/chat/(chat screen)/deleteFriend
 interface LayoutProps {
   children: ReactNode;
   params: {
-    friendId: string;
+    groupId: string;
     userId: string;
   };
 }
 
 export default async function Layout({ children, params }: LayoutProps) {
   const session = await getServerSession(authOptions);
-  const friendId = params.friendId;
+  const groupId = params.groupId;
   const userId = params.userId;
 
   if (userId !== session!.user.id) {
     redirect("/chat");
   }
-  const friend = await fetch(
-    `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChatUser?friendId=${friendId}`,
+  const group = await fetch(
+    `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChatGroup?groupId=${groupId}`,
     {
       method: "GET",
       headers: headers(),
@@ -50,24 +50,24 @@ export default async function Layout({ children, params }: LayoutProps) {
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
             <Avatar className="h-10 w-10 mr-3">
-              <AvatarImage src={friend?.image} alt={friend?.name} />
-              <AvatarFallback>{friend?.name[0]}</AvatarFallback>
+              <AvatarImage src={group?.image} alt={group?.name} />
+              <AvatarFallback>{group?.name[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-xl truncate font-semibold">{friend?.name}</h1>
+              <h1 className="text-xl truncate font-semibold">{group?.name}</h1>
             </div>
           </div>
-        <DeleteFriendButton friendId={friendId} />
+        {/* <DeleteFriendButton friendId={friendId} /> */}
         </div>
       </div>
       <MessageInterface
-        friend={friend!}
+        friend={group!}
         user={{
           id: session?.user.id,
           name: session?.user.name,
           image: session?.user.image,
         }}
-        chatType="direct"
+        chatType="group"
       />
       {children}
     </div>

@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     ])
 
     return NextResponse.json(
-      { message: "Group created successfully!" },
+      { message: "Group created successfully!", groupId: groupId },
       { status: 200 }
     );
   } catch (error) {

@@ -170,7 +170,7 @@ export default function FriendList({ userId }: { userId: string }) {
                 key={group.id}
                 className="p-4 border-b border-purple-600 hover:bg-purple-500 cursor-pointer transition-colors duration-200"
               >
-                <Link href={`/chat/group/${group.id}`}>
+                <Link href={`/chat/${userId}/group/${group.id}`}>
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-10 h-10">
                       <AvatarImage src={group.image} alt={group.name} />

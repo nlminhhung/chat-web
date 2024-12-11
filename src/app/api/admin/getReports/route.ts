@@ -2,6 +2,7 @@ import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
+import { getHash } from "@/src/commands/getHash";
 
 export async function GET(req: NextRequest) {
   try {
@@ -9,7 +10,7 @@ export async function GET(req: NextRequest) {
     if (!session || session.user.role != "admin") {
       return NextResponse.json(
         { error: "You are unauthorized!" },
-        { status: 402 }
+        { status: 403 }
       );
     }
 
@@ -28,12 +29,7 @@ export async function GET(req: NextRequest) {
           report.messageId
         );
 
-        const messageResult: Record<string, any> = {};
-        for (let i = 0; i < messageInfo.length; i += 2) {
-          const key = messageInfo[i];
-          const value = messageInfo[i + 1];
-          messageResult[key] = value;
-        }
+        const messageResult = await getHash(messageInfo);
         messageResult["messageId"] = report.messageId;
         messageResult["reporterName"] = reporterInfo.name;
         messageResult["reporterId"] = report.reporterId;

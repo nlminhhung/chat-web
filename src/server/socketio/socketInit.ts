@@ -30,14 +30,15 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
-    socket.on("newGroup", async (group) => {
-      const { memberIds } = group;
-
-      for (const id of memberIds) {
+    socket.on("newGroup", async ({groupMembers, roomId}) => {
+      console.log("room ID: ", roomId);
+      console.log("groupMembers: ", groupMembers);
+      for (const id of groupMembers) {
+        console.log("member id: ", id);
         const recipientSocketID = await client.hget("onlineUsers", id);
         if (recipientSocketID) {
           io.to(recipientSocketID).emit("groups");
-          await joinGroup(socket, recipientSocketID);
+          io.sockets.sockets.get(recipientSocketID)?.join(roomId)
         }
       }
     })
@@ -65,6 +66,10 @@ export function createSocketServer(server: HTTPServer) {
 
     socket.on("newMessage", async (data) => {
       const { chatType, senderId, roomId } = data;
+      console.log("chatType: ", chatType)
+      console.log("senderId: ", senderId)
+      console.log("roomId: ", roomId)
+
       if (chatType === "direct") {
         const recipientSocketID = await client.hget("onlineUsers", senderId);
         if (recipientSocketID) {
@@ -72,7 +77,7 @@ export function createSocketServer(server: HTTPServer) {
         }
         socket.emit("messages");
       }
-      else {
+      else if (chatType === "group") {
         io.to(roomId).emit("messages");
       }
     });
