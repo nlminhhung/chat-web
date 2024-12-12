@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     if (!session || session.user.role != "admin") {
       return NextResponse.json(
         { error: "You are unauthorized!" },
-        { status: 402 }
+        { status: 401 }
       );
     }
 
@@ -19,19 +19,24 @@ export async function POST(req: NextRequest) {
     const messageId = body.messageId;
     const reporterId = body.reporterId;
     const senderId = body.senderId;
+    const groupId = body.groupId;
+    const chatType = body.chatType;
 
-    const sortedUsers = [senderId, reporterId].sort();
-    const chatId = sortedUsers.join(":");
+    const chatId =
+      chatType === "direct" ? [senderId, reporterId].sort().join(":") : groupId;
 
     if (isDelete) {
-      const isFriend = (await fetchRedis(
+      const requestType = chatType === "direct" ? "friends" : "groups";
+
+      const isValidRequest = (await fetchRedis(
         "zscore",
-        `user:${senderId}:friends`,
-        reporterId
+        `user:${session.user.id}:${requestType}`,
+        groupId
       )) as 0 | 1;
-      if (!isFriend) {
+
+      if (!isValidRequest) {
         return NextResponse.json(
-          { error: "They are no longer friends so this report is not valid!" },
+          { error: "You can't delete this message!" },
           { status: 400 }
         );
       }
@@ -44,16 +49,13 @@ export async function POST(req: NextRequest) {
     const reportObj = {
       reporterId: reporterId,
       senderId: senderId,
-      messageId: messageId
-    }
+      groupId: groupId,
+      messageId: messageId,
+      chatType: chatType,
+    };
     const jsonMessage = JSON.stringify(reportObj);
 
-    await postRedis(
-      "lrem",
-      `admin:report`,
-      1,
-      jsonMessage
-    );
+    await postRedis("lrem", `admin:report`, 1, jsonMessage);
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

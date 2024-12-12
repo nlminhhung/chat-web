@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) {
-            return NextResponse.json({error: "You are unauthorized!"}, { status: 402 });
+            return NextResponse.json({error: "You are unauthorized!"}, { status: 401 });
         }
         const friendId = req.nextUrl.searchParams.get("friendId") as string;
 

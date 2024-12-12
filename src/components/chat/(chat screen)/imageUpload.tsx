@@ -12,9 +12,10 @@ import socket from "@/src/lib/getSocket";
 
 type ImageUploadProps = {
   friendId: string;
+  chatType: "direct" | "group"
 }
 
-export default function ImageUpload({friendId}: ImageUploadProps){
+export default function ImageUpload({friendId, chatType}: ImageUploadProps){
   const [dragActive, setDragActive] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<File | null>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
@@ -53,9 +54,13 @@ export default function ImageUpload({friendId}: ImageUploadProps){
     const form = event.currentTarget
     const formData = new FormData()
     formData.append("file", uploadedImage!);
-    formData.append("friendId", friendId);   
+    formData.append("friendId", friendId);
+    const sendImageURL =
+        chatType === "direct"
+          ? `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/sendImage`
+          : `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/sendGroupImage`;   
     try {
-      const res = await fetch("/api/chat/sendImage", {
+      const res = await fetch(sendImageURL, {
         method: "post",
         body: formData
       });
@@ -63,8 +68,8 @@ export default function ImageUpload({friendId}: ImageUploadProps){
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", {chatType: "direct", senderId: friendId});
-        socket.emit("newFriend", { idToAdd: friendId });
+        socket.emit("newMessage", {chatType: chatType, recipientId: friendId});
+        if(chatType === "direct") socket.emit("newFriend", { idToAdd: friendId });
       }
     }
     catch (error) {

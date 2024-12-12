@@ -74,20 +74,22 @@ export default function MessageInterface({
   ) => {
     try {
       const validatedMessage = messageValidate.parse({ message });
+      const requestBody = {
+        senderId: senderId,
+        friendId: friend.id,
+        messageId: messageId,
+        message: validatedMessage.message,
+        chatType: chatType,
+      }
       const res = await fetch("/api/chat/updateMessage", {
         method: "post",
-        body: JSON.stringify({
-          senderId: senderId,
-          friendId: friend.id,
-          messageId: messageId,
-          message: validatedMessage.message,
-        }),
+        body: JSON.stringify(requestBody),
       });
       const resMessage = await res.json();
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", { chatType: "direct", senderId: friend.id });
+        socket.emit("newMessage", { chatType: chatType, recipientId: friend.id });
         setIsEditDialogOpen(false);
         toast.success("Your message has been updated!");
       }
@@ -102,31 +104,34 @@ export default function MessageInterface({
     senderId: string,
     messageType: string
   ) => {
+    const requestBody = {
+      senderId: senderId,
+      friendId: friend.id,
+      messageId: messageId,
+      messageType: messageType,
+      chatType: chatType,
+    }
     const res = await fetch("/api/chat/deleteMessage", {
       method: "post",
-      body: JSON.stringify({
-        senderId: senderId,
-        friendId: friend.id,
-        messageId: messageId,
-        messageType: messageType,
-      }),
+      body: JSON.stringify(requestBody),
     });
     const resMessage = await res.json();
     if (!res.ok) {
       toast.error(resMessage.error);
     } else {
-      socket.emit("newMessage", { chatType: "direct", senderId: friend.id });
+      socket.emit("newMessage", { chatType: chatType, recipientId: friend.id });
       toast.success("Delete message successfully!");
     }
   };
 
-  const handleReportMessage = async (messageId: string) => {
+  const handleReportMessage = async (messageId: string, senderId: string) => {
     const res = await fetch("/api/chat/reportMessage", {
       method: "post",
       body: JSON.stringify({
         messageId: messageId,
-        // userId: user.id,
         friendId: friend.id,
+        senderId: senderId,
+        chatType: chatType,
       }),
     });
     const resMessage = await res.json();
@@ -278,7 +283,7 @@ export default function MessageInterface({
                   </>
                 ) : (
                   <DropdownMenuItem
-                    onSelect={() => handleReportMessage(message.messageId)}
+                    onSelect={() => handleReportMessage(message.messageId, message.senderId)}
                   >
                     <Flag className="w-4 h-4 mr-2" />
                     Report

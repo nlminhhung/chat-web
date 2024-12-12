@@ -52,7 +52,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", {chatType: "direct", senderId: friendId});
+        socket.emit("newMessage", {chatType: "direct", recipientId: friendId});
         socket.emit("newFriend", { idToAdd: friendId });
       }
     } catch (error) {
@@ -92,7 +92,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
             <Send className="h-4 w-4" />
             <span className="sr-only">Send</span>
           </Button>
-          <ImageUpload friendId={friendId}/>
+          <ImageUpload friendId={friendId} chatType="direct"/>
           
           <Popover>
             <PopoverTrigger asChild>

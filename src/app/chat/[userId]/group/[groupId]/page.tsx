@@ -52,7 +52,7 @@ export default function GroupScreen({ params }: { params: GroupScreenProps }) {
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", {chatType: "group", roomId: groupId});
+        socket.emit("newMessage", {chatType: "group", recipientId: groupId});
       }
     } catch (error) {
       toast.error("There was an error! Try again");
@@ -91,7 +91,7 @@ export default function GroupScreen({ params }: { params: GroupScreenProps }) {
             <Send className="h-4 w-4" />
             <span className="sr-only">Send</span>
           </Button>
-          {/* <ImageUpload friendId={friendId}/> */}
+          <ImageUpload friendId={groupId} chatType="group"/>
           
           <Popover>
             <PopoverTrigger asChild>

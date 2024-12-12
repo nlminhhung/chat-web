@@ -54,7 +54,6 @@ export default function FriendList({ userId }: { userId: string }) {
       );
       const data = await res.json();
       setGroupList(data);
-      console.log(data)
     } catch (error) {
       console.error("Failed to fetch group List:", error);
     }

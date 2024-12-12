@@ -31,6 +31,8 @@ export async function GET(req: NextRequest) {
 
         const messageResult = await getHash(messageInfo);
         messageResult["messageId"] = report.messageId;
+        messageResult["groupId"] = report.groupId;
+        messageResult["chatType"] = report.chatType;
         messageResult["reporterName"] = reporterInfo.name;
         messageResult["reporterId"] = report.reporterId;
         messageResult["senderName"] = senderInfo.name;

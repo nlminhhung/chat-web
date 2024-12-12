@@ -21,14 +21,16 @@ interface Report {
   reporterName: string;
   senderId: string;
   senderName: string;
+  groupId: string;
   content: string;
   timestamp: string;
+  chatType: "direct" | "group";
 }
 
 export default function AdminPage() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [reports, setReports] = useState<Report[]>([]);
-  
+
   const getReports = async () => {
     try {
       const res = await fetch(
@@ -59,29 +61,44 @@ export default function AdminPage() {
 
   const handleReport = async (isDelete: boolean, report: Report) => {
     try {
-        const res = await fetch(`/api/admin/handleReportedMessage`, {
-          method: "post",
-          body: JSON.stringify({
-            messageId: report.messageId,
-            reporterId: report.reporterId,
-            senderId: report.senderId,
-            isDelete: isDelete
-          }),
-        });
-        const resMessage = await res.json();
-        if (!res.ok) {
-          toast.error(resMessage.error);
-        } else {
-          setReports((prevItems) => prevItems.filter(item => item !== report));  
-          if (isDelete){
-            socket.emit("newMessage", {chatType: "direct", senderId: report.senderId});
-            socket.emit("newMessage", {chatType: "direct", senderId: report.reporterId});
+      const res = await fetch(`/api/admin/handleReportedMessage`, {
+        method: "post",
+        body: JSON.stringify({
+          messageId: report.messageId,
+          reporterId: report.reporterId,
+          senderId: report.senderId,
+          isDelete: isDelete,
+          groupId: report.groupId,
+          chatType: report.chatType,
+        }),
+      });
+      const resMessage = await res.json();
+      if (!res.ok) {
+        toast.error(resMessage.error);
+      } else {
+        setReports((prevItems) => prevItems.filter((item) => item !== report));
+        if (isDelete) {
+          if (report.chatType === "direct") {
+            socket.emit("newMessage", {
+              chatType: "direct",
+              recipientId: report.senderId,
+            });
+            socket.emit("newMessage", {
+              chatType: "direct",
+              recipientId: report.reporterId,
+            });
+          } else if (report.chatType === "group") {
+            socket.emit("newMessage", {
+              chatType: "group",
+              recipientId: report.groupId,
+            });
           }
-          toast.success("Message has been dealed with!")
         }
-      } catch (error) {
-        toast.error("There was an error! Try again");
+        toast.success("Message has been dealed with!");
       }
+    } catch (error) {
+      toast.error("There was an error! Try again");
+    }
   };
 
   useEffect(() => {
@@ -130,7 +147,8 @@ export default function AdminPage() {
                   variant="secondary"
                   className="mt-1 sm:mt-0 text-xs sm:text-sm bg-purple-200 text-purple-800 "
                 >
-                  Reported at: {new Date(Number(report.timestamp)).toLocaleString()}
+                  Reported at:{" "}
+                  {new Date(Number(report.timestamp)).toLocaleString()}
                 </Badge>
               </div>
               <p className="mb-2 text-sm sm:text-base text-purple-900 ">

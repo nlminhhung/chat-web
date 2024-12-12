@@ -24,33 +24,35 @@ export async function POST(req: NextRequest) {
     if (!session) {
       return NextResponse.json(
         { error: "You are unauthorized!" },
-        { status: 402 }
+        { status: 401 }
       );
     }
     const body = await req.json();
     const messageId = body.messageId;
     const messageType = body.messageType;
-    const senderId = session.user.id; // to get user ID
-    const friendId = body.friendId; // to get friend ID
-    const sortedUsers = [senderId, friendId].sort(); // to set a chat ID
-    const chatId = sortedUsers.join(":"); // to set a chat ID (2)
-
+    const senderId = session.user.id; 
+    const friendId = body.friendId; 
+    const chatType = body.chatType; 
+    const chatId = chatType === "direct" ? [senderId, friendId].sort().join(":") : friendId;
     
     if (senderId != session.user.id) {
       return NextResponse.json(
-        { error: "You do not have permission to update this message!" },
+        { error: "You do not have permission to delete this message!" },
         { status: 400 }
       );
     }
-    const isFriend = (await fetchRedis(
+
+    const requestType = chatType === "direct" ? "friends" : "groups"
+
+    const isValidRequest = (await fetchRedis(
       "zscore",
-      `user:${session.user.id}:friends`,
+      `user:${session.user.id}:${requestType}`,
       friendId
     )) as 0 | 1;
 
-    if (!isFriend) {
+    if (!isValidRequest) {
       return NextResponse.json(
-        { error: "You are not friends so can't delete this message!" },
+        { error: "You can't delete this message!" },
         { status: 400 }
       );
     }

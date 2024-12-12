@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     try{
     const session = await getServerSession(authOptions);
     if (!session) {
-      return new Response("You are unauthorized!", { status: 402 });
+      return new Response("You are unauthorized!", { status: 401 });
     }
 
     const friendRequests = (await fetchRedis(

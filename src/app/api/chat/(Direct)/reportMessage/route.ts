@@ -9,30 +9,36 @@ export async function POST(req: NextRequest) {
     if (!session) {
       return NextResponse.json(
         { error: "You are unauthorized!" },
-        { status: 402 }
+        { status: 401 }
       );
     }
     const body = await req.json();
     const reporterId = session.user.id;
     const messageId = body.messageId;
+    const senderId = body.senderId;
     const friendId = body.friendId;
+    const chatType = body.chatType;
 
-    const isFriend = (await fetchRedis(
+    const requestType = chatType === "direct" ? "friends" : "groups"
+
+    const isValidRequest = (await fetchRedis(
       "zscore",
-      `user:${reporterId}:friends`,
+      `user:${session.user.id}:${requestType}`,
       friendId
     )) as 0 | 1;
 
-    if (!isFriend) {
+    if (!isValidRequest) {
       return NextResponse.json(
-        { error: "You are not friends so can't report this messsage!" },
+        { error: "You can't report this messsage!" },
         { status: 400 }
       );
     }
     const reportObj = {
         reporterId: reporterId,
-        senderId: friendId,
+        senderId: senderId,
+        groupId: friendId,
         messageId: messageId,
+        chatType: chatType,
     };
     const jsonReport = JSON.stringify(reportObj);
 

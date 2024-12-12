@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({error: "You are unauthorized!"}, { status: 402 });
+      return NextResponse.json({error: "You are unauthorized!"}, { status: 401 });
     }
     const body = await req.json();
     const { email: emailToAdd, message: messageToAdd } = addFriendValidate.parse({email: body.email, message: body.message});

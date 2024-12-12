@@ -31,10 +31,7 @@ export function createSocketServer(server: HTTPServer) {
     });
 
     socket.on("newGroup", async ({groupMembers, roomId}) => {
-      console.log("room ID: ", roomId);
-      console.log("groupMembers: ", groupMembers);
       for (const id of groupMembers) {
-        console.log("member id: ", id);
         const recipientSocketID = await client.hget("onlineUsers", id);
         if (recipientSocketID) {
           io.to(recipientSocketID).emit("groups");
@@ -65,20 +62,17 @@ export function createSocketServer(server: HTTPServer) {
     });
 
     socket.on("newMessage", async (data) => {
-      const { chatType, senderId, roomId } = data;
-      console.log("chatType: ", chatType)
-      console.log("senderId: ", senderId)
-      console.log("roomId: ", roomId)
+      const { chatType, recipientId } = data;
 
       if (chatType === "direct") {
-        const recipientSocketID = await client.hget("onlineUsers", senderId);
+        const recipientSocketID = await client.hget("onlineUsers", recipientId);
         if (recipientSocketID) {
           io.to(recipientSocketID).emit("messages");
         }
         socket.emit("messages");
       }
       else if (chatType === "group") {
-        io.to(roomId).emit("messages");
+        io.to(recipientId).emit("messages");
       }
     });
 
