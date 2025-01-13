@@ -12,17 +12,17 @@ export async function GET(req: Request) {
     }
 
     const userId = session!.user.id;
-    const friends = (await fetchRedis(
+    const members = (await fetchRedis(
       "zrange",
-      `user:${userId}:friends`,
+      `group:${userId}:members`,
       0,
       -1,
       "REV"
     )) as string[];
-    const friendInfo = await Promise.all(
-      friends.map(async (friendId) => {
+    const membersInfo = await Promise.all(
+        members.map(async (memberId) => {
         const senderInfo = JSON.parse(
-          await fetchRedis("get", `user:${friendId}`)
+          await fetchRedis("get", `user:${memberId}`)
         ) as User;
         
         return {
@@ -33,7 +33,7 @@ export async function GET(req: Request) {
       })
     );
 
-    return Response.json(friendInfo, { status: 200 });
+    return Response.json(membersInfo, { status: 200 });
   } catch (error) {
     return new Response("Something went wrong!", { status: 400 });
   }

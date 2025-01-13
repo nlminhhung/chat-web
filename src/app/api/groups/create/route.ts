@@ -1,3 +1,5 @@
+//creating a group
+
 import { randomBytes } from "crypto";
 import { postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
@@ -22,11 +24,16 @@ export async function POST(req: Request) {
     const date = new Date();
     const timestamp = date.getTime();
 
-    const promises = friendIds.map((friendId: string) => {
+    // add user to group
+    const addUserToGroupPromises = friendIds.map((friendId: string) => {
       return postRedis("zadd", `user:${friendId}:groups`, timestamp, groupId);
     });
 
-    
+    // add group members
+    const addGroupMembers = friendIds.map((friendId: string) => {
+      return postRedis("zadd", `group:${groupId}:members`, timestamp, friendId);
+    });
+
     await Promise.all([
         postRedis(
           "hset",
@@ -39,7 +46,9 @@ export async function POST(req: Request) {
           memberCount
         ),
         postRedis("zadd", `user:${userId}:groups`, timestamp, groupId),
-        promises
+        postRedis("zadd", `group:${groupId}:members`, timestamp, userId),
+        addUserToGroupPromises,
+        addGroupMembers
     ])
 
     return NextResponse.json(

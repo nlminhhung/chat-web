@@ -9,7 +9,7 @@ import {
 } from "@/src/components/chat/ui/avatar";
 import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
-import DeleteFriendButton from "@/src/components/chat/(chat screen)/deleteFriendButton"
+import GroupMenuButton from "@/src/components/chat/(chat screen)/groupMenuButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -57,7 +57,7 @@ export default async function Layout({ children, params }: LayoutProps) {
               <h1 className="text-xl truncate font-semibold">{group?.name}</h1>
             </div>
           </div>
-        {/* <DeleteFriendButton friendId={friendId} /> */}
+          <GroupMenuButton />
         </div>
       </div>
       <MessageInterface

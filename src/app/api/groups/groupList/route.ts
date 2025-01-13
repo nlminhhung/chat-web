@@ -1,3 +1,4 @@
+// return a list of groups that the user is a member of
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { fetchRedis } from "@/src/commands/redis";
