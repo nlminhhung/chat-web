@@ -1,22 +1,36 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/src/components/chat/ui/dropdown-menu";
 import { Button } from "@/src/components/chat/ui/button";
 import { MoreVertical, Trash, UserMinus, UserPlus, UserCog } from 'lucide-react'
 import RemoveMemberDialogue from './removeMemberDialogue';
+import toast from 'react-hot-toast';
 
-// Mock data for group members
-const groupMembers = [
-  { id: 1, name: 'Alice Johnson' },
-  { id: 2, name: 'Bob Smith' },
-  { id: 3, name: 'Charlie Brown' },
-  { id: 4, name: 'Diana Prince' },
-];
-
-export default function GroupMenuButton() {
+export default function GroupMenuButton({groupId, userId}: {groupId: string, userId: string}) {
+    const [groupMembers, setGroupMembers] = useState<UserChatInformation[]>([])
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+
+    const fetchGroupMembers = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/getGroupMembers?groupId=${groupId}`, {
+          method: "GET",
+        })
+        if (!res.ok) {   
+          return; 
+        }
+        const data = await res.json();
+        setGroupMembers(data.filter((member: UserChatInformation) => member.id !== userId));
+        return data;
+      } catch (error) {
+        toast.error("Failed to fetch members!");
+      }
+    };
+
+    useEffect(() => {
+        fetchGroupMembers();
+    }, []);
 
     const handleRemoveMember = () => {
         setIsDropdownOpen(false);
@@ -56,7 +70,7 @@ export default function GroupMenuButton() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>  
-            <RemoveMemberDialogue isRemoveDialogOpen={isRemoveDialogOpen} setIsRemoveDialogOpen={setIsRemoveDialogOpen} setIsDropdownOpen={setIsDropdownOpen} groupMembers={groupMembers}/>     
+            <RemoveMemberDialogue isRemoveDialogOpen={isRemoveDialogOpen} setIsRemoveDialogOpen={setIsRemoveDialogOpen} setIsDropdownOpen={setIsDropdownOpen} groupMembers={groupMembers} userId={userId} groupId={groupId}/>     
         </div>
     )
 }

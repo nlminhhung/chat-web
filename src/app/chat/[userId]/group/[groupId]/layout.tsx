@@ -31,7 +31,7 @@ export default async function Layout({ children, params }: LayoutProps) {
     `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChatGroup?groupId=${groupId}`,
     {
       method: "GET",
-      headers: headers(),
+      headers: headers()
     }
   )
     .then((response) => {
@@ -57,7 +57,7 @@ export default async function Layout({ children, params }: LayoutProps) {
               <h1 className="text-xl truncate font-semibold">{group?.name}</h1>
             </div>
           </div>
-          <GroupMenuButton />
+          <GroupMenuButton groupId={groupId} userId={userId} />
         </div>
       </div>
       <MessageInterface

@@ -27,11 +27,6 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { messageValidate } from "@/src/lib/valid_data/message";
 import Image from "next/image";
 
-interface userChatInformation {
-  id: string;
-  name: string;
-  image: string;
-}
 
 export default function MessageInterface({
   friend,
@@ -39,7 +34,7 @@ export default function MessageInterface({
   chatType,
 }: {
   friend: User;
-  user: userChatInformation;
+  user: UserChatInformation;
   chatType: "direct" | "group";
 }) {
   const [messages, setMessages] = useState<Message[]>([]);

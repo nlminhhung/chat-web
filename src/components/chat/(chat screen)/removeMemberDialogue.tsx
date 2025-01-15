@@ -1,39 +1,52 @@
 'use client'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/chat/ui/dialog";
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import { Button } from "@/src/components/chat/ui/button";
 import { X } from "lucide-react";
-
-type GroupMember = {
-    id: number;
-    name: string;
-};
+import toast from "react-hot-toast";
 
 type RemoveMemberDialogueProps = {
     isRemoveDialogOpen: boolean;
     setIsRemoveDialogOpen: (open: boolean) => void;
     setIsDropdownOpen: (open: boolean) => void;
-    groupMembers: GroupMember[];
+    groupMembers: UserChatInformation[];
+    userId: string;
+    groupId: string;
 };
 
-
-export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDialogOpen, setIsDropdownOpen, groupMembers}: RemoveMemberDialogueProps) {
-    const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
-    
-
-    const handleMemberSelection = (memberId: number) => {
-        setSelectedMembers((prev: number[]) =>
+export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDialogOpen, setIsDropdownOpen, groupMembers, userId, groupId}: RemoveMemberDialogueProps) {
+    const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+    const handleMemberSelection = (memberId: string) => {
+        setSelectedMembers((prev: string[]) =>
             prev.includes(memberId)
-                ? prev.filter((id: number) => id !== memberId)
+                ? prev.filter((id: string) => id !== memberId)
                 : [...prev, memberId]
         );
     };
     
-    const handleConfirmRemove = () => {
+    const handleConfirmRemove = async () => {
         console.log('Removing members:', selectedMembers);
+        try{
+            const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/removeMember`, {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: userId,
+                    groupId: groupId,
+                    memberIds: selectedMembers,
+                }),
+            });
+            const resMessage = await res.json();
+            if (!res.ok) {
+                toast.error(resMessage.error);
+            }
+        } catch(error){
+            toast.error("Failed to remove members!");
+        }
+
         setIsRemoveDialogOpen(false);
         setSelectedMembers([]);
+        toast.success('Members removed successfully!');
     };
 
     return(
@@ -44,7 +57,7 @@ export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDia
                     if (!open) setIsDropdownOpen(false);
                 }}
             >
-                <DialogContent className="sm:max-w-md bg-red-500">
+                <DialogContent className="sm:max-w-md ">
                     <DialogHeader className=''>
                         <DialogTitle>Remove Group Members</DialogTitle>
                     </DialogHeader>
