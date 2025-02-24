@@ -43,7 +43,9 @@ export async function POST(req: Request) {
           "leader",
           userId,
           "memberCount",
-          memberCount
+          memberCount,
+          "createdAt",
+          timestamp
         ),
         postRedis("zadd", `user:${userId}:groups`, timestamp, groupId),
         postRedis("zadd", `group:${groupId}:members`, timestamp, userId),

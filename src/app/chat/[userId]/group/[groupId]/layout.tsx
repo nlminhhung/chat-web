@@ -9,7 +9,7 @@ import {
 } from "@/src/components/chat/ui/avatar";
 import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
-import GroupMenuButton from "@/src/components/chat/(chat screen)/groupMenuButton";
+import GroupMenuButton from "@/src/components/chat/(chat screen)/(group menu)/groupMenuButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -33,7 +33,7 @@ export default async function Layout({ children, params }: LayoutProps) {
       method: "GET",
       headers: headers()
     }
-  )
+  ) 
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -57,7 +57,7 @@ export default async function Layout({ children, params }: LayoutProps) {
               <h1 className="text-xl truncate font-semibold">{group?.name}</h1>
             </div>
           </div>
-          <GroupMenuButton groupId={groupId} userId={userId} />
+          <GroupMenuButton groupId={groupId} userId={userId} groupName={group?.name} memberCount={group?.memberCount} createdAt={group?.createdAt} leader={group?.leader}/>
         </div>
       </div>
       <MessageInterface

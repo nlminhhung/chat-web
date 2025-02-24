@@ -1,4 +1,4 @@
-// removing a list of members from a group by the group leader
+// add new member to group
 import { fetchRedis, postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
@@ -16,25 +16,18 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const memberIds = (body.memberIds) as string[];
-    const membersRemoved = memberIds.length as number;
+    const membersAdded = memberIds.length as number;
     const memberCount = parseInt(body.memberCount) as number;
     const groupId = body.groupId;
     const userId = body.userId;
-
+    const timestamp = new Date().getTime();
+    
     //check if user is the leader of the group
     const leaderId = await fetchRedis("hget", `group:${groupId}`, "leader");
     if (leaderId !== userId) {
       return NextResponse.json(
         { error: "You are not the leader of the group!" },
         { status: 403 }
-      );
-    }
-    
-    //check if the user is removing himself
-    if (memberIds.includes(userId)) {
-      return NextResponse.json(
-        { error: "You cannot remove yourself from the group!" },
-        { status: 400 }
       );
     }
 
@@ -46,27 +39,27 @@ export async function POST(req: Request) {
       );
     }
 
-    // remove group from user's group list
-    const removeGroupIdFromUser = memberIds.map((memberId: string) => {
-      return postRedis("zrem", `user:${memberId}:groups`, groupId);
+    // add group id to user's group list
+    const addGroupIdToUser = memberIds.map((memberId: string) => {
+      return postRedis("zadd", `user:${memberId}:groups`, timestamp, groupId);
     });
 
-    // remove users from group members
-    const removeUserFromGroup = memberIds.map((memberId: string) => {
-      return postRedis("zrem", `group:${groupId}:members`, memberId);
+    // add user id to group members
+    const addUserIdToGroup = memberIds.map((memberId: string) => {
+      return postRedis("zadd", `group:${groupId}:members`, timestamp, memberId);
     });
 
-    // reduce group member count
-    const reduceGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", memberCount - membersRemoved);
+    // increase group member count
+    const increaseGroupMembersCount = await postRedis("hset", `group:${groupId}`, "memberCount", memberCount + membersAdded);
 
-    Promise.all([
-      removeGroupIdFromUser,
-      removeUserFromGroup,
-      reduceGroupMembersCount,
+    await Promise.all([
+      ...addGroupIdToUser,
+      ...addUserIdToGroup,
+      increaseGroupMembersCount,
     ])
 
     return NextResponse.json(
-      { message: "Remove user(s) successfully!" },
+      { message: "Add user(s) successfully!" },
       { status: 200 }
     );
   } catch (error) {

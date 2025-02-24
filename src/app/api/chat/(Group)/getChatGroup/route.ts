@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
         const group = await fetchRedis("hgetall", `group:${groupId}`);
         const groupResult = await getHash(group);
         groupResult["id"] = groupId;
-        // return NextResponse.json({name: friendInfo.name, image: friendInfo.image, id: friendInfo.id} , { status: 200 });
+
         return NextResponse.json(groupResult , { status: 200 });
     }
     catch {

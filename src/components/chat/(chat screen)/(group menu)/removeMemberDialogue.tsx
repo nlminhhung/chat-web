@@ -13,9 +13,11 @@ type RemoveMemberDialogueProps = {
     groupMembers: UserChatInformation[];
     userId: string;
     groupId: string;
+    memberCount: number;
 };
 
-export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDialogOpen, setIsDropdownOpen, groupMembers, userId, groupId}: RemoveMemberDialogueProps) {
+export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDialogOpen, setIsDropdownOpen, groupMembers, userId, groupId, memberCount}: RemoveMemberDialogueProps) {
+    const groupMembersList = groupMembers.filter((member: UserChatInformation) => member.id !== userId);
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
     const handleMemberSelection = (memberId: string) => {
         setSelectedMembers((prev: string[]) =>
@@ -26,13 +28,13 @@ export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDia
     };
     
     const handleConfirmRemove = async () => {
-        console.log('Removing members:', selectedMembers);
         try{
             const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/removeMember`, {
                 method: "POST",
                 body: JSON.stringify({
                     userId: userId,
                     groupId: groupId,
+                    memberCount: memberCount,
                     memberIds: selectedMembers,
                 }),
             });
@@ -43,7 +45,6 @@ export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDia
         } catch(error){
             toast.error("Failed to remove members!");
         }
-
         setIsRemoveDialogOpen(false);
         setSelectedMembers([]);
         toast.success('Members removed successfully!');
@@ -65,7 +66,7 @@ export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDia
                         <p className="text-sm text-gray-500 mb-4">Select the members you want to remove from the group:</p>
                         <ScrollArea className="h-[200px] pr-4">
                             <ul className="space-y-2">
-                                {groupMembers.map(member => (
+                                {groupMembersList.map(member => (
                                     <li key={member.id} className="flex items-center justify-between">
                                         <span className="text-sm font-medium">{member.name}</span>
                                         <Button
