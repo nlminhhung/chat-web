@@ -28,6 +28,7 @@ import { Crown, MoreVertical, Shield, UserPlus, UserMinus, Users, Calendar, Tras
 import AddMemberDialogue from "./addMemberDialogue"
 import RemoveMemberDialogue from "./removeMemberDialogue"
 import toast from "react-hot-toast"
+import socket from "@/src/lib/getSocket"
 
 type MembersManagementProps = {
     isOpen: boolean;
@@ -44,7 +45,6 @@ type MembersManagementProps = {
 };
 
 export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen, friendList, groupMembers, userId, groupId, groupName, memberCount, createdAt, leader }: MembersManagementProps) {
-    const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -61,20 +61,33 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
 
     }
 
-    const handleMemberSelection = (memberId: string) => {
-        setSelectedMembers((prev: string[]) =>
-            prev.includes(memberId)
-                ? prev.filter((id: string) => id !== memberId)
-                : [...prev, memberId]
-        );
+    const handleDeleteGroup = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/deleteGroup`, {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: userId,
+                    groupId: groupId,
+                    memberIds: groupMembers.map((member) => member.id),
+                }),
+            });
+            const resMessage = await res.json();
+            if (!res.ok) {
+                toast.error(resMessage.error);
+            }
+            else {
+                setIsOpen(false);
+                setShowDeleteAlert(false)
+                for (const member of groupMembers) {
+                    socket.emit("leaveGroup", {userId: member.id, groupId});
+                }
+                toast.success(resMessage.message);
+            }
+        } catch (error) {
+            toast.error("Failed to delete group!");
+        }
     };
 
-    const handleDeleteGroup = () => {
-        // Implement delete group logic
-        console.log("Delete group")
-        setShowDeleteAlert(false)
-        setIsOpen(false)
-    }
 
     return (
         <>
@@ -178,8 +191,8 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
                 </DialogContent>
             </Dialog>
 
-            <AddMemberDialogue isAddDialogOpen={isAddDialogOpen} setIsAddDialogOpen={setIsAddDialogOpen} setIsDropdownOpen={setIsDropdownOpen} memberCount={memberCount} friendList={friendList} userId={userId} groupId={groupId} />
-            <RemoveMemberDialogue isRemoveDialogOpen={isRemoveDialogOpen} setIsRemoveDialogOpen={setIsRemoveDialogOpen} setIsDropdownOpen={setIsDropdownOpen} memberCount={memberCount} groupMembers={groupMembers} userId={userId} groupId={groupId}/>
+            <AddMemberDialogue isAddDialogOpen={isAddDialogOpen} setIsAddDialogOpen={setIsAddDialogOpen} setIsDropdownOpen={setIsDropdownOpen} memberCount={memberCount} groupMembers={groupMembers} friendList={friendList} userId={userId} groupId={groupId} />
+            <RemoveMemberDialogue isRemoveDialogOpen={isRemoveDialogOpen} setIsRemoveDialogOpen={setIsRemoveDialogOpen} setIsDropdownOpen={setIsDropdownOpen} memberCount={memberCount} groupMembers={groupMembers} userId={userId} groupId={groupId} />
 
             <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
                 <AlertDialogContent>

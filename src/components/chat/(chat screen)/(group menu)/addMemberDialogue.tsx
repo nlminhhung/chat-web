@@ -1,23 +1,25 @@
 'use client'
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/chat/ui/dialog";
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import { Button } from "@/src/components/chat/ui/button";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import socket from "@/src/lib/getSocket";
 
 type AddMemberDialogueProps = {
     isAddDialogOpen: boolean;
     setIsAddDialogOpen: (open: boolean) => void;
     setIsDropdownOpen: (open: boolean) => void;
     friendList: UserChatInformation[];
+    groupMembers: UserChatInformation[];
     userId: string;
     groupId: string;
     memberCount: number;
 };
 
-export default function AddMemberDialogue({ isAddDialogOpen, setIsAddDialogOpen, setIsDropdownOpen, friendList, userId, groupId, memberCount }: AddMemberDialogueProps) {
+export default function AddMemberDialogue({ isAddDialogOpen, setIsAddDialogOpen, setIsDropdownOpen, friendList, userId, groupId, groupMembers, memberCount }: AddMemberDialogueProps) {
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
     const handleMemberSelection = (memberId: string) => {
         setSelectedMembers((prev: string[]) =>
@@ -41,13 +43,17 @@ export default function AddMemberDialogue({ isAddDialogOpen, setIsAddDialogOpen,
             const resMessage = await res.json();
             if (!res.ok) {
                 toast.error(resMessage.error);
+            } else {
+                socket.emit("newGroup", {groupMembers: selectedMembers, groupId}); // Notify, add new members to room
+                socket.emit("notificateGroup", {groupMembers: groupMembers.map((member) => member.id)}); // Notify to all group members
+                setIsAddDialogOpen(false);
+                setSelectedMembers([]);
+                toast.success(resMessage.message);
             }
         } catch (error) {
             toast.error("Failed to add members!");
         }
-        setIsAddDialogOpen(false);
-        setSelectedMembers([]);
-        toast.success('Members added successfully!');
+        
     };
 
     return (

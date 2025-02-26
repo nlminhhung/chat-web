@@ -185,7 +185,7 @@ export default function FriendList({ userId }: { userId: string }) {
               </div>
             ))
           ) : (
-            <div className="p-4 text-center text-purple-300">No groups created yet.</div>
+            <div className="p-4 text-center text-purple-300">You have not joined any groups yet.</div>
           )
         )}
       </ScrollArea>

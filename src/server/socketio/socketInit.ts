@@ -38,8 +38,26 @@ export function createSocketServer(server: HTTPServer) {
           io.sockets.sockets.get(recipientSocketID)?.join(roomId)
         }
       }
-    })
+    });
     
+    socket.on("notificateGroup", async ({groupMembers}) => {
+      for (const id of groupMembers) {
+        console.log("Member Id: ", id);
+        const recipientSocketID = await client.hget("onlineUsers", id);
+        if (recipientSocketID) {
+          io.to(recipientSocketID).emit("groups");
+        }
+      }
+    });
+
+    socket.on("leaveGroup", async ({userId, roomId}) => {
+      const recipientSocketID = await client.hget("onlineUsers", userId);
+      if (recipientSocketID) {
+        io.to(recipientSocketID).emit("groups");
+        io.sockets.sockets.get(recipientSocketID)?.leave(roomId);
+      }
+    });
+
     socket.on("newFriendRequest", async (friendRequest) => {
       const { idToAdd } = friendRequest;
       const recipientSocketID = await client.hget("onlineUsers", idToAdd);

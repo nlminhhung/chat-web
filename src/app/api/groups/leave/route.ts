@@ -15,49 +15,27 @@ export async function POST(req: Request) {
     }
     const body = await req.json();
 
-    const memberIds = (body.memberIds) as string[];
-    const membersRemoved = memberIds.length as number;
     const memberCount = parseInt(body.memberCount) as number;
     const groupId = body.groupId;
     const userId = body.userId;
 
     //check if user is the leader of the group
     const leaderId = await fetchRedis("hget", `group:${groupId}`, "leader");
-    if (leaderId !== userId) {
+    if (leaderId === userId) {
       return NextResponse.json(
-        { error: "You are not the leader of this group!" },
+        { error: "You have to pass leadership before leaving the group! (or delete the group if you the only one)" },
         { status: 403 }
-      );
-    }
-    
-    //check if the user is removing himself
-    if (memberIds.includes(userId)) {
-      return NextResponse.json(
-        { error: "You cannot remove yourself from the group!" },
-        { status: 400 }
-      );
-    }
-
-    // check if no member is selected
-    if (memberIds.length === 0) {
-      return NextResponse.json(
-        { error: "No member selected!" },
-        { status: 400 }
       );
     }
 
     // remove group from user's group list
-    const removeGroupIdFromUser = memberIds.map((memberId: string) => {
-      return postRedis("zrem", `user:${memberId}:groups`, groupId);
-    });
+    const removeGroupIdFromUser = await postRedis("zrem", `user:${userId}:groups`, groupId);
 
-    // remove users from group members
-    const removeUserFromGroup = memberIds.map((memberId: string) => {
-      return postRedis("zrem", `group:${groupId}:members`, memberId);
-    });
+    // remove the user from group members
+    const removeUserFromGroup = await postRedis("zrem", `group:${groupId}:members`, userId);
 
-    // reduce group member count
-    const reduceGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", memberCount - membersRemoved);
+    // reduce group member count by one (the user who is leaving)
+    const reduceGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", memberCount - 1);
 
     Promise.all([
       removeGroupIdFromUser,
@@ -66,7 +44,7 @@ export async function POST(req: Request) {
     ])
 
     return NextResponse.json(
-      { message: "Remove user(s) successfully!" },
+      { message: "Leave the group successfully!" },
       { status: 200 }
     );
   } catch (error) {

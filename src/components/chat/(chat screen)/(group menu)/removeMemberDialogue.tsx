@@ -5,6 +5,7 @@ import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import { Button } from "@/src/components/chat/ui/button";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
+import socket from "@/src/lib/getSocket";
 
 type RemoveMemberDialogueProps = {
     isRemoveDialogOpen: boolean;
@@ -41,13 +42,20 @@ export default function RemoveMemberDialogue({isRemoveDialogOpen, setIsRemoveDia
             const resMessage = await res.json();
             if (!res.ok) {
                 toast.error(resMessage.error);
+            } else {
+                
+                for(const id of selectedMembers) {
+                    socket.emit("leaveGroup", {userId: id, groupId});
+                }
+                socket.emit("notificateGroup", {groupMembers: groupMembers.map((member) => member.id)});
+                setSelectedMembers([]);
+                setIsRemoveDialogOpen(false);
+                toast.success(resMessage.message);
             }
         } catch(error){
             toast.error("Failed to remove members!");
         }
-        setIsRemoveDialogOpen(false);
-        setSelectedMembers([]);
-        toast.success('Members removed successfully!');
+        
     };
 
     return(

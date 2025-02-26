@@ -16,8 +16,6 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const memberIds = (body.memberIds) as string[];
-    const membersRemoved = memberIds.length as number;
-    const memberCount = parseInt(body.memberCount) as number;
     const groupId = body.groupId;
     const userId = body.userId;
 
@@ -25,48 +23,45 @@ export async function POST(req: Request) {
     const leaderId = await fetchRedis("hget", `group:${groupId}`, "leader");
     if (leaderId !== userId) {
       return NextResponse.json(
-        { error: "You are not the leader of this group!" },
+        { error: "Only group leader can delete this group!" },
         { status: 403 }
-      );
-    }
-    
-    //check if the user is removing himself
-    if (memberIds.includes(userId)) {
-      return NextResponse.json(
-        { error: "You cannot remove yourself from the group!" },
-        { status: 400 }
-      );
-    }
-
-    // check if no member is selected
-    if (memberIds.length === 0) {
-      return NextResponse.json(
-        { error: "No member selected!" },
-        { status: 400 }
       );
     }
 
     // remove group from user's group list
-    const removeGroupIdFromUser = memberIds.map((memberId: string) => {
-      return postRedis("zrem", `user:${memberId}:groups`, groupId);
+    const removeGroupIdFromMembers = memberIds.map((memberId: string) => {
+        return postRedis("zrem", `user:${memberId}:groups`, groupId);
     });
+
+    const removeGroupIdFromUser = await postRedis("zrem", `user:${userId}:groups`, groupId);
 
     // remove users from group members
-    const removeUserFromGroup = memberIds.map((memberId: string) => {
-      return postRedis("zrem", `group:${groupId}:members`, memberId);
-    });
+    const deleteGroupMember = await postRedis("del", `group:${groupId}:members`);
 
-    // reduce group member count
-    const reduceGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", memberCount - membersRemoved);
+    const deleteGroup = await postRedis("del", `group:${groupId}`);
+
+    const messageIds = (await fetchRedis(
+        "zrange",
+        `chat:${groupId}`,
+        0,
+        -1,
+      )) as string[];
+
+    const deleteGroupMessage = await messageIds.map(async (messageId) => {
+        fetchRedis("zrem", `chat:${groupId}`, messageId);
+        fetchRedis("del", messageId)
+    });
 
     Promise.all([
       removeGroupIdFromUser,
-      removeUserFromGroup,
-      reduceGroupMembersCount,
+      removeGroupIdFromMembers,
+      deleteGroupMember,
+      deleteGroup,
+      deleteGroupMessage,
     ])
 
     return NextResponse.json(
-      { message: "Remove user(s) successfully!" },
+      { message: "Delete this group successfully!" },
       { status: 200 }
     );
   } catch (error) {

@@ -3,19 +3,18 @@
 import { useState, useEffect } from 'react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/src/components/chat/ui/dropdown-menu";
 import { Button } from "@/src/components/chat/ui/button";
-import { MoreVertical, DoorOpen, UserMinus, UserPlus, UserCog, Users } from 'lucide-react'
-import RemoveMemberDialogue from './removeMemberDialogue';
+import { DoorOpen, Menu, UserCog, Users } from 'lucide-react'
 import MembersManagement from './membersManagement';
 import toast from 'react-hot-toast';
-import AddMemberDialogue from './addMemberDialogue';
+import LeaveGroupDialogue from './leaveGroupDialogue';
+import socket from '@/src/lib/getSocket';
 
 export default function GroupMenuButton({groupId, userId, groupName, memberCount, createdAt, leader}: {groupId: string, userId: string, groupName: string, memberCount: number, createdAt: string, leader: string}) {
     const [groupMembers, setGroupMembers] = useState<UserChatInformation[]>([])
     const [friendList, setFriendList] = useState<UserChatInformation[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    // const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-    // const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isGroupManagementOpen, setIsGroupManagementOpen] = useState(false);
+    const [isleaveGroupOpen, setIsLeaveGroupOpen] = useState(false);
 
     
     const fetchGroupMembers = async () => {
@@ -46,31 +45,28 @@ export default function GroupMenuButton({groupId, userId, groupName, memberCount
       }
     };
     
-
     useEffect(() => {
       fetchGroupMembers();
+      socket.on("groups", fetchGroupMembers);
+      return () => {
+        socket.off("groups", fetchGroupMembers);
+      };
     }, []);
-
-    // const handleRemoveMember = () => {
-    //     setIsDropdownOpen(false);
-    //     setIsRemoveDialogOpen(true);
-    // };
-
-    // const handleAddMember = () => {
-    //   setIsDropdownOpen(false);
-    //   setIsAddDialogOpen(true);
-    // };
 
     const handleGroupManagement = () => {
       setIsDropdownOpen(false);
       setIsGroupManagementOpen(true);
+    };
+    const handleLeaveGroup = () => {
+      setIsDropdownOpen(false);
+      setIsLeaveGroupOpen(true);
     };
     return (
         <div>
             <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-white hover:bg-purple-700">
-                  <MoreVertical className="h-5 w-5" />
+                  <Menu className="h-5 w-5" />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -84,15 +80,15 @@ export default function GroupMenuButton({groupId, userId, groupName, memberCount
                   <span>Members Management</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
+                <DropdownMenuItem className="text-red-600" onSelect={handleLeaveGroup}>
                   <DoorOpen className="mr-2 h-4 w-4" />
                   <span>Leave group</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>  
-            {/* <AddMemberDialogue isAddDialogOpen={isAddDialogOpen} setIsAddDialogOpen={setIsAddDialogOpen} setIsDropdownOpen={setIsDropdownOpen} friendList={friendList} userId={userId} groupId={groupId}/>
-            <RemoveMemberDialogue isRemoveDialogOpen={isRemoveDialogOpen} setIsRemoveDialogOpen={setIsRemoveDialogOpen} setIsDropdownOpen={setIsDropdownOpen} groupMembers={groupMembers} userId={userId} groupId={groupId}/>      */}
+           
             <MembersManagement isOpen={isGroupManagementOpen} setIsOpen={setIsGroupManagementOpen} setIsDropdownOpen={setIsDropdownOpen} friendList={friendList} groupMembers={groupMembers} userId={userId} groupId={groupId} groupName={groupName} memberCount={memberCount} createdAt={createdAt} leader={leader} />
+            <LeaveGroupDialogue isOpen={isleaveGroupOpen} setIsOpen={setIsLeaveGroupOpen} setIsDropdownOpen={setIsDropdownOpen} userId={userId} groupId={groupId} groupMembers={groupMembers} memberCount={memberCount} groupName={groupName} leader={leader}/>
         </div>
     )
 }
