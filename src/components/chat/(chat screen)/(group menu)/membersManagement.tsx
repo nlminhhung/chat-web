@@ -88,7 +88,6 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
         }
     };
 
-
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>

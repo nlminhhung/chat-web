@@ -52,8 +52,7 @@ export default function AddMemberDialogue({ isAddDialogOpen, setIsAddDialogOpen,
             }
         } catch (error) {
             toast.error("Failed to add members!");
-        }
-        
+        }    
     };
 
     return (

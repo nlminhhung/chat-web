@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     const memberIds = (body.memberIds) as string[];
     const membersAdded = memberIds.length as number;
-    const memberCount = parseInt(body.memberCount) as number;
+    // const memberCount = parseInt(body.memberCount) as number;
     const groupId = body.groupId;
     const userId = body.userId;
     const timestamp = new Date().getTime();
@@ -39,6 +39,9 @@ export async function POST(req: Request) {
       );
     }
 
+    //get member count
+    const memberCount = await fetchRedis("hget", `group:${groupId}`, "memberCount");
+
     // add group id to user's group list
     const addGroupIdToUser = memberIds.map((memberId: string) => {
       return postRedis("zadd", `user:${memberId}:groups`, timestamp, groupId);
@@ -50,7 +53,9 @@ export async function POST(req: Request) {
     });
 
     // increase group member count
-    const increaseGroupMembersCount = await postRedis("hset", `group:${groupId}`, "memberCount", memberCount + membersAdded);
+    const increaseGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", parseInt(memberCount) + membersAdded);
+    
+    console.log("MC: ", parseInt(memberCount), "MR: ", membersAdded);
 
     await Promise.all([
       ...addGroupIdToUser,

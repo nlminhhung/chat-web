@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     const memberIds = (body.memberIds) as string[];
     const membersRemoved = memberIds.length as number;
-    const memberCount = parseInt(body.memberCount) as number;
+    // const memberCount = parseInt(body.memberCount) as number;
     const groupId = body.groupId;
     const userId = body.userId;
 
@@ -46,6 +46,9 @@ export async function POST(req: Request) {
       );
     }
 
+    //get member count
+    const memberCount = await fetchRedis("hget", `group:${groupId}`, "memberCount");
+
     // remove group from user's group list
     const removeGroupIdFromUser = memberIds.map((memberId: string) => {
       return postRedis("zrem", `user:${memberId}:groups`, groupId);
@@ -57,7 +60,8 @@ export async function POST(req: Request) {
     });
 
     // reduce group member count
-    const reduceGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", memberCount - membersRemoved);
+    console.log("MC: ", parseInt(memberCount), "MR: ", membersRemoved);
+    const reduceGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", parseInt(memberCount) - membersRemoved);
 
     Promise.all([
       removeGroupIdFromUser,
