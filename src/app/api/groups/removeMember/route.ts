@@ -15,9 +15,13 @@ export async function POST(req: Request) {
     }
     const body = await req.json();
 
-    const memberIds = (body.memberIds) as string[];
+    // const memberIds = (body.memberIds) as string[];
+
+    const memberIds = Array.isArray(body.memberIds) // check memberIds is an array or not
+    ? body.memberIds as string[]
+    : [body.memberIds as string];
+
     const membersRemoved = memberIds.length as number;
-    // const memberCount = parseInt(body.memberCount) as number;
     const groupId = body.groupId;
     const userId = body.userId;
 
@@ -60,7 +64,6 @@ export async function POST(req: Request) {
     });
 
     // reduce group member count
-    console.log("MC: ", parseInt(memberCount), "MR: ", membersRemoved);
     const reduceGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", parseInt(memberCount) - membersRemoved);
 
     Promise.all([

@@ -42,7 +42,6 @@ export function createSocketServer(server: HTTPServer) {
     
     socket.on("notificateGroup", async ({groupMembers}) => {
       for (const id of groupMembers) {
-        console.log("Member Id: ", id);
         const recipientSocketID = await client.hget("onlineUsers", id);
         if (recipientSocketID) {
           io.to(recipientSocketID).emit("groups");

@@ -9,9 +9,10 @@ import toast from 'react-hot-toast';
 import LeaveGroupDialogue from './leaveGroupDialogue';
 import socket from '@/src/lib/getSocket';
 
-export default function GroupMenuButton({groupId, userId, groupName, memberCount, createdAt, leader}: {groupId: string, userId: string, groupName: string, memberCount: number, createdAt: string, leader: string}) {
+export default function GroupMenuButton({groupId, userId, groupName, memberCount, createdAt}: {groupId: string, userId: string, groupName: string, memberCount: number, createdAt: string, leader: string}) {
     const [groupMembers, setGroupMembers] = useState<UserChatInformation[]>([])
     const [friendList, setFriendList] = useState<UserChatInformation[]>([]);
+    const [leader, setLeader] = useState<string>("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isGroupManagementOpen, setIsGroupManagementOpen] = useState(false);
     const [isleaveGroupOpen, setIsLeaveGroupOpen] = useState(false);
@@ -27,19 +28,20 @@ export default function GroupMenuButton({groupId, userId, groupName, memberCount
             method: "GET",
           }),
         ]);
-    
+        
         if (!membersRes.ok || !friendsRes.ok) {
           return;
         }
-    
-        const members = await membersRes.json();
+        
+        const membersData = await membersRes.json(); // Now includes { leaderId, membersInfo }
         const friends = await friendsRes.json();
-    
-        setGroupMembers(members);
-    
+        
+        setGroupMembers(membersData.membersInfo); // Access the nested membersInfo
+        setLeader(membersData.leader); // Access the leaderId
         // Filter out group members from friend list based on ID
-        const memberIds = members.map((member: UserChatInformation) => member.id);
+        const memberIds = membersData.membersInfo.map((member: UserChatInformation) => member.id);
         setFriendList(friends.filter((friend: UserChatInformation) => !memberIds.includes(friend.id)));
+        
       } catch (error) {
         toast.error("Failed to fetch members!");
       }

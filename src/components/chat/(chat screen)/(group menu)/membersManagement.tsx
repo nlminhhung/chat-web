@@ -49,15 +49,43 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
-    const handleRemoveMember = (memberId: string) => {
-        // Implement remove member logic
-        console.log("Remove member", memberId)
+    const handleRemoveMember = async (memberId: string) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/removeMember`, {
+            method: "POST",
+            body: JSON.stringify({
+                userId: userId,
+                groupId: groupId,
+                memberIds: memberId,
+            }),
+        });
+        const resMessage = await res.json();
+        if (!res.ok) {
+            toast.error(resMessage.error);
+        } else {  
+            socket.emit("leaveGroup", {userId: memberId, groupId});
+            socket.emit("notificateGroup", {groupMembers: groupMembers.map((member) => member.id)});
+            setIsRemoveDialogOpen(false);
+            toast.success(resMessage.message);
+        }
     }
 
-    const handleMakeLeader = (memberId: string) => {
-        // Implement make leader logic
-        console.log("Make leader", memberId)
-        console.log("leader id", leader)
+    const handleMakeLeader = async (memberId: string) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/makeLeader`, {
+            method: "POST",
+            body: JSON.stringify({
+                userId: userId,
+                groupId: groupId,
+                memberId: memberId,
+            }),
+        });
+        const resMessage = await res.json();
+        if (!res.ok) {
+            toast.error(resMessage.error);
+        } else {  
+            socket.emit("notificateGroup", {groupMembers: groupMembers.map((member) => member.id)});
+            setIsRemoveDialogOpen(false);
+            toast.success(resMessage.message);
+        }
 
     }
 
@@ -102,7 +130,7 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
                                 <Users className="h-4 w-4" />
-                                {memberCount} members
+                                {groupMembers.length} members
                             </div>
                             <Separator orientation="vertical" className="h-4" />
                             <div className="flex items-center gap-1">
