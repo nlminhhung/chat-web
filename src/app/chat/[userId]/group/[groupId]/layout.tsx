@@ -10,6 +10,7 @@ import {
 import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
 import GroupMenuButton from "@/src/components/chat/(chat screen)/(group menu)/groupMenuButton";
+import ChatSummarizeButton from "@/src/components/chat/(chat screen)/(group menu)/chatSummarizeButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -57,7 +58,10 @@ export default async function Layout({ children, params }: LayoutProps) {
               <h1 className="text-xl truncate font-semibold">{group?.name}</h1>
             </div>
           </div>
-          <GroupMenuButton groupId={groupId} userId={userId} groupName={group?.name} memberCount={group?.memberCount} createdAt={group?.createdAt} leader={group?.leader}/>
+          <div className={"flex items-center space-x-2"}>
+            <ChatSummarizeButton groupId={groupId} userId={userId} />
+            <GroupMenuButton groupId={groupId} userId={userId} groupName={group?.name} memberCount={group?.memberCount} createdAt={group?.createdAt} leader={group?.leader}/>
+          </div>
         </div>
       </div>
       <MessageInterface
