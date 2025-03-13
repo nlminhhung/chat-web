@@ -17,11 +17,10 @@ export default function GroupMenuButton({groupId, userId, groupName, memberCount
     const [isGroupManagementOpen, setIsGroupManagementOpen] = useState(false);
     const [isleaveGroupOpen, setIsLeaveGroupOpen] = useState(false);
 
-    
     const fetchGroupMembers = async () => {
       try {
         const [membersRes, friendsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/getGroupMembers?groupId=${groupId}`, {
+          fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/groups/getGroupMembers?groupId=${groupId}`, {
             method: "GET",
           }),
           fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/groups/friendList`, {

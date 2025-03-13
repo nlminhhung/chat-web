@@ -45,7 +45,7 @@ export default function DeleteFriendButton({friendId}: {friendId: string}) {
           size="sm"
           className="flex gap-x-2 text-white hover:bg-purple-700"
         >
-          <p className="hidden md:inline">Delete this friend</p><UserMinus/> 
+          <p className="hidden md:inline">Delete</p><UserMinus/> 
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

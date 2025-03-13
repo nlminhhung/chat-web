@@ -14,7 +14,6 @@ export async function GET(req: NextRequest) {
 
     const groupId = req.nextUrl.searchParams.get("groupId") as string;
     const leader = await fetchRedis("hget", `group:${groupId}`, "leader");
-
     const members = (await fetchRedis(
       "zrange",
       `group:${groupId}:members`,
@@ -22,6 +21,7 @@ export async function GET(req: NextRequest) {
       -1,
       "REV"
     )) as string[];
+
     const membersInfo: UserChatInformation[]  = await Promise.all(
         members.map(async (memberId) => {
         const memberInfo = JSON.parse(
@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
         };
       })
     );
+
     return Response.json({leader, membersInfo}, { status: 200 });
   } catch (error) {
     return new Response("Something went wrong!", { status: 400 });
