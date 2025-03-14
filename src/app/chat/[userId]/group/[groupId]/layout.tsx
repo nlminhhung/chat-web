@@ -10,7 +10,7 @@ import {
 import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
 import GroupMenuButton from "@/src/components/chat/(chat screen)/(group menu)/groupMenuButton";
-import ChatSummarizeButton from "@/src/components/chat/(chat screen)/(group menu)/chatSummarizeButton";
+import ChatSummarizeButton from "@/src/components/chat/(chat screen)/chatSummarizeButton";
 
 interface LayoutProps {
   children: ReactNode;
