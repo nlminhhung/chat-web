@@ -3,6 +3,20 @@ import { fetchRedis, postRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+
+const bucketName = process.env.BUCKET_NAME!
+const region = process.env.BUCKET_REGION!
+const accessKeyId = process.env.ACCESS_KEY!
+const secretAccessKey = process.env.SECRET_ACCESS_KEY!
+
+const s3Client = new S3Client({
+  region,
+  credentials: {
+    accessKeyId,
+    secretAccessKey
+  }
+})
 
 export async function POST(req: Request) {
   try {
@@ -27,18 +41,19 @@ export async function POST(req: Request) {
         { status: 403 }
       );
     }
-
     // remove group from user's group list
     const removeGroupIdFromMembers = memberIds.map((memberId: string) => {
         return postRedis("zrem", `user:${memberId}:groups`, groupId);
     });
 
-    const removeGroupIdFromUser = await postRedis("zrem", `user:${userId}:groups`, groupId);
+    const removeGroupIdFromUser = postRedis("zrem", `user:${userId}:groups`, groupId);
 
     // remove users from group members
-    const deleteGroupMember = await postRedis("del", `group:${groupId}:members`);
+    const deleteGroupMember = postRedis("del", `group:${groupId}:members`);
 
-    const deleteGroup = await postRedis("del", `group:${groupId}`);
+    const imageUrl = await fetchRedis("hget", `group:${groupId}`, "image");
+
+    const deleteGroup = postRedis("del", `group:${groupId}`);
 
     const messageIds = (await fetchRedis(
         "zrange",
@@ -47,18 +62,24 @@ export async function POST(req: Request) {
         -1,
       )) as string[];
 
-    const deleteGroupMessage = await messageIds.map(async (messageId) => {
-        fetchRedis("zrem", `chat:${groupId}`, messageId);
-        fetchRedis("del", messageId)
+    const deleteGroupMessage =  messageIds.map(async (messageId) => {
+      await fetchRedis("zrem", `chat:${groupId}`, messageId);
+      await fetchRedis("del", messageId)
     });
 
-    Promise.all([
+    const deleteImage =  s3Client.send(new DeleteObjectCommand({
+      Bucket: bucketName,
+      Key: imageUrl.split("/").slice(-1)[0]
+    }))
+
+    await Promise.all([
+      deleteImage,
       removeGroupIdFromUser,
-      removeGroupIdFromMembers,
+      ...removeGroupIdFromMembers,
       deleteGroupMember,
       deleteGroup,
-      deleteGroupMessage,
-    ])
+      ...deleteGroupMessage,
+    ]);    
 
     return NextResponse.json(
       { message: "Delete this group successfully!" },

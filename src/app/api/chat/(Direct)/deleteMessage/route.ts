@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     await Promise.all([
       fetchRedis("del", messageId),
       fetchRedis("zrem", `chat:${chatId}`, messageId),
-  ]);
+    ]);
 
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {

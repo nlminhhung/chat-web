@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import socket from "@/src/lib/getSocket";
 import { useState } from "react";
 import { useSidebar } from "@/src/lib/context/sideBarContext";
+import { ChatListSkeleton } from "./friendListSkeletion";
 
 interface FriendListUser extends User {
   lastMessage: string;
@@ -28,6 +29,7 @@ export default function FriendList({ userId }: { userId: string }) {
   const [friendList, setFriendList] = useState<FriendListUser[]>([]);
   const [groupList, setGroupList] = useState<Group[]>([]);
   const [activeList, setActiveList] = useState<"friends" | "groups">("friends");
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchFriendList = async () => {
     try {
@@ -60,8 +62,10 @@ export default function FriendList({ userId }: { userId: string }) {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     fetchFriendList();
     fetchGroupList();
+    setIsLoading(false);
 
     const handleFriendList = async () => {
       await fetchFriendList();
@@ -136,7 +140,7 @@ export default function FriendList({ userId }: { userId: string }) {
           </Button>
         </Link>
       </div>
-      <ScrollArea className="h-[calc(100vh-9rem)]">
+      {!isLoading ? <ScrollArea className="h-[calc(100vh-9rem)]">
         {activeList === 'friends' ? (
           friendList.length > 0 ? (
             friendList.map((friend) => (
@@ -188,8 +192,7 @@ export default function FriendList({ userId }: { userId: string }) {
             <div className="p-4 text-center text-purple-300">You have not joined any groups yet.</div>
           )
         )}
-      </ScrollArea>
-
+      </ScrollArea> : <ChatListSkeleton activeList={activeList} />}
     </div>
   );
 }

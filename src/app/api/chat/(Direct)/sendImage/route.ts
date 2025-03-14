@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import crypto from 'crypto'
+import crypto from 'crypto';
 
 const bucketName = process.env.BUCKET_NAME!
 const region = process.env.BUCKET_REGION!

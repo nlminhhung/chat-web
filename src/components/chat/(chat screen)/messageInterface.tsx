@@ -26,7 +26,8 @@ import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { messageValidate } from "@/src/lib/valid_data/message";
 import Image from "next/image";
-
+import { set } from "zod";
+import { MessageListSkeleton } from "./messageInterfaceSkeleton";
 
 export default function MessageInterface({
   friend,
@@ -40,6 +41,7 @@ export default function MessageInterface({
   const [messages, setMessages] = useState<Message[]>([]);
   const [editingMessage, setEditingMessage] = useState<string>("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getMessages = async (id: string) => {
     try {
@@ -138,7 +140,9 @@ export default function MessageInterface({
   };
 
   useEffect(() => {
+    setIsLoading(true);
     getMessages(friend.id);
+    setIsLoading(false);
     const handleMessages = async () => {
       await getMessages(friend.id);
     };
@@ -156,6 +160,8 @@ export default function MessageInterface({
   }, [messages]);
 
   return (
+    <>
+    { !isLoading ? (
     <ScrollArea className="flex-1 p-4 h-50 overflow-auto bg-purple-50">
       <div className="space-y-4">
         {messages.map((message, index) => (
@@ -289,6 +295,8 @@ export default function MessageInterface({
           </div>
         ))}
       </div>
-    </ScrollArea>
-  );
+    </ScrollArea>) : <MessageListSkeleton />}
+    
+    </>
+    )
 }
