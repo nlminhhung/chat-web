@@ -41,45 +41,43 @@ export async function POST(req: Request) {
         { status: 403 }
       );
     }
-    // remove group from user's group list
-    const removeGroupIdFromMembers = memberIds.map((memberId: string) => {
-        return postRedis("zrem", `user:${memberId}:groups`, groupId);
-    });
 
-    const removeGroupIdFromUser = postRedis("zrem", `user:${userId}:groups`, groupId);
-
-    // remove users from group members
-    const deleteGroupMember = postRedis("del", `group:${groupId}:members`);
-
-    const imageUrl = await fetchRedis("hget", `group:${groupId}`, "image");
-
-    const deleteGroup = postRedis("del", `group:${groupId}`);
-
-    const messageIds = (await fetchRedis(
-        "zrange",
-        `chat:${groupId}`,
-        0,
-        -1,
-      )) as string[];
-
-    const deleteGroupMessage =  messageIds.map(async (messageId) => {
-      await fetchRedis("zrem", `chat:${groupId}`, messageId);
-      await fetchRedis("del", messageId)
-    });
-
-    const deleteImage =  s3Client.send(new DeleteObjectCommand({
-      Bucket: bucketName,
-      Key: imageUrl.split("/").slice(-1)[0]
-    }))
-
-    await Promise.all([
-      deleteImage,
-      removeGroupIdFromUser,
-      ...removeGroupIdFromMembers,
-      deleteGroupMember,
-      deleteGroup,
-      ...deleteGroupMessage,
-    ]);    
+    async function deleteGroup(groupId: string, userId: string, memberIds: string[]) {
+      try {
+        for (const memberId of memberIds) {
+          await postRedis("zrem", `user:${memberId}:groups`, groupId);
+        }
+    
+        await postRedis("zrem", `user:${userId}:groups`, groupId);
+    
+        await postRedis("del", `group:${groupId}:members`);
+    
+        const imageUrl = await fetchRedis("hget", `group:${groupId}`, "image");
+    
+        const messageIds = await fetchRedis("zrange", `chat:${groupId}`, 0, -1) as string[];
+    
+        for (const messageId of messageIds) {
+          await fetchRedis("del", messageId);
+        }
+    
+        await fetchRedis("del", `chat:${groupId}`);
+    
+        await s3Client.send(new DeleteObjectCommand({
+          Bucket: bucketName,
+          Key: imageUrl.split("/").slice(-1)[0]
+        }));
+    
+        await postRedis("del", `group:${groupId}`);
+      } catch (error) {
+        return NextResponse.json(
+          { error: "Something went wrong!" },
+          { status: 400 }
+        );
+      }
+    }
+    
+    deleteGroup(groupId, userId, memberIds);
+    
 
     return NextResponse.json(
       { message: "Delete this group successfully!" },

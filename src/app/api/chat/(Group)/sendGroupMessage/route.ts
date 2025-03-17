@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
     const { message: message } = messageValidate.parse({
       message: body.message,
     });
-    const senderId = session.user.id; // to get user ID
-    const groupId = body.groupId; // to get friend ID
+    const senderId = session.user.id; 
+    const groupId = body.groupId; 
     
     const date = new Date();
     const timestamp = date.getTime();

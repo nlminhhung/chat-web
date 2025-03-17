@@ -52,15 +52,15 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
         body: formData
       });
     
-      // const data = await res.json();
+      const data = await res.json();
 
-      // if (!res.ok) {
-      //     toast.error(data.error);
-      //   } else {
-      //     socket.emit("newGroup", { groupMembers: [...friendIds, userId], roomId: data.groupId });
-      //     setSuccess(true);
-      //     toast.success(data.message);
-      //   }
+      if (!res.ok) {
+          toast.error(data.error);
+        } else {
+          socket.emit("newGroup", { groupMembers: [...friendIds, userId], roomId: data.groupId });
+          setSuccess(true);
+          toast.success(data.message);
+        }
       } catch (error) {
         toast.error("Failed to create group");
       }
