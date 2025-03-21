@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import next from "next";
 import { createSocketServer } from "./server/socketio/socketInit";
+import 'dotenv/config';
+
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
