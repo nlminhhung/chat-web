@@ -11,10 +11,15 @@ services:
   server:
     build:
       context: .
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     env_file:
       - .env
     environment:
-      NODE_ENV: development
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     ports:
       - 3000:3000
 
