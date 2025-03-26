@@ -2,9 +2,12 @@ import { Socket, Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "node:http";
 import { client } from "@/src/server/redis/redisInit";
 
-
 async function joinGroup(socket: Socket, userId: string) {
-  const userRooms = await client.zrange(`user:${userId}:groups`, 0, -1) as string[];
+  const userRooms = (await client.zrange(
+    `user:${userId}:groups`,
+    0,
+    -1
+  )) as string[];
   userRooms.forEach((roomId) => {
     socket.join(roomId);
     console.log(`User ${userId} joined room with room ID: ${roomId}`);
@@ -23,24 +26,26 @@ export function createSocketServer(server: HTTPServer) {
       try {
         socket.data.userId = userId;
         await client.hset("onlineUsers", userId, socket.id);
-        console.log(`User ${userId} already registered with socket ID: ${socket.id}`);
+        console.log(
+          `User ${userId} already registered with socket ID: ${socket.id}`
+        );
         await joinGroup(socket, userId);
       } catch (error) {
         console.error("Error registering user:", error);
       }
     });
 
-    socket.on("newGroup", async ({groupMembers, roomId}) => {
+    socket.on("newGroup", async ({ groupMembers, roomId }) => {
       for (const id of groupMembers) {
         const recipientSocketID = await client.hget("onlineUsers", id);
         if (recipientSocketID) {
           io.to(recipientSocketID).emit("groups");
-          io.sockets.sockets.get(recipientSocketID)?.join(roomId)
+          io.sockets.sockets.get(recipientSocketID)?.join(roomId);
         }
       }
     });
-    
-    socket.on("notificateGroup", async ({groupMembers}) => {
+
+    socket.on("notificateGroup", async ({ groupMembers }) => {
       for (const id of groupMembers) {
         const recipientSocketID = await client.hget("onlineUsers", id);
         if (recipientSocketID) {
@@ -49,7 +54,7 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
-    socket.on("leaveGroup", async ({userId, roomId}) => {
+    socket.on("leaveGroup", async ({ userId, roomId }) => {
       const recipientSocketID = await client.hget("onlineUsers", userId);
       if (recipientSocketID) {
         io.to(recipientSocketID).emit("groups");
@@ -87,8 +92,7 @@ export function createSocketServer(server: HTTPServer) {
           io.to(recipientSocketID).emit("messages");
         }
         socket.emit("messages");
-      }
-      else if (chatType === "group") {
+      } else if (chatType === "group") {
         io.to(recipientId).emit("messages");
       }
     });
