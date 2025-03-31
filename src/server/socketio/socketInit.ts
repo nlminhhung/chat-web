@@ -10,7 +10,6 @@ async function joinGroup(socket: Socket, userId: string) {
   )) as string[];
   userRooms.forEach((roomId) => {
     socket.join(roomId);
-    console.log(`User ${userId} joined room with room ID: ${roomId}`);
   });
 }
 
@@ -97,9 +96,40 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
+    socket.on("call-initiate", async ({ recipientId }) => {
+      const recipientSocketID = await client.hget("onlineUsers", recipientId);
+        if (recipientSocketID) {
+          io.to(recipientSocketID).emit("call-initiate");
+        }
+    });
+
+    socket.on("join-room", async (roomId) => {
+      socket.join(roomId);
+      console.log("User joined room:", roomId);
+    });
+
+    socket.on("offer", ({ offer, roomId }) => {
+      socket.to(roomId).emit("offer", { offer });
+      console.log("Offer sent to", roomId);
+    });
+
+    socket.on("answer", ({ answer, roomId }) => {
+      socket.to(roomId).emit("answer", { answer });
+      console.log("Answer sent to", roomId);
+    });
+
+    socket.on("ice-candidate", ({ candidate, roomId }) => {
+      socket.to(roomId).emit("ice-candidate", { candidate });
+      console.log("Ice candidate sent");
+    });
+
+    socket.on("hangup", ({ roomId }) => {
+      socket.to(roomId).emit("hangup");
+      console.log("Call ended in", roomId);
+    });
+
     socket.on("disconnect", async () => {
       const userId = socket.data.userId;
-
       try {
         client.hdel("onlineUsers", userId);
         console.log(
