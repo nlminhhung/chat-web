@@ -125,6 +125,7 @@ export function createSocketServer(server: HTTPServer) {
 
     socket.on("hangup", ({ roomId }) => {
       socket.to(roomId).emit("hangup");
+      socket.leave(roomId);
       console.log("Call ended in", roomId);
     });
 

@@ -106,25 +106,26 @@ export default function CallVideoButton({ friendId, userId }: { friendId: string
     };
     
     // --- Hang Up Call --- //
-    const hangUpCall = () => {
-        if (localVideoRef.current?.srcObject) {
-          (localVideoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-          localVideoRef.current.srcObject = null;
-        }
-        if (remoteVideoRef.current?.srcObject) {
-          (remoteVideoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-          remoteVideoRef.current.srcObject = null;
-        }
-        peerConnection.current?.close();
-        peerConnection.current = null;
-        socket.emit("hangup", { roomId: chatId });
-        socket.off("offer");
-        socket.off("answer");
-        socket.off("ice-candidate");
-        socket.off("hangup");
-        socket.off("call-initiate");
-        toast("Call ended.");
-        setOpen(false);
+    const hangUpCall = async () => {
+      setOpen(false);
+      socket.emit("hangup", { roomId: chatId });
+
+      if (localVideoRef.current?.srcObject) {
+        (localVideoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+        localVideoRef.current.srcObject = null;
+      }
+      if (remoteVideoRef.current?.srcObject) {
+        (remoteVideoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+        remoteVideoRef.current.srcObject = null;
+      }
+      peerConnection.current?.close();
+      peerConnection.current = null;
+      // socket.off("offer");
+      // socket.off("answer");
+      // socket.off("ice-candidate");
+      // socket.off("hangup"); // this one cause the problem
+      // socket.off("call-initiate");
+      toast("Call ended.");
       };
       
     
@@ -163,7 +164,7 @@ export default function CallVideoButton({ friendId, userId }: { friendId: string
     
       socket.on("hangup", () => {
         hangUpCall();
-        toast("Call ended by remote user.");
+        // toast("Call ended by remote user.");
       });
     
       socket.on("call-initiate", () => {
@@ -173,10 +174,10 @@ export default function CallVideoButton({ friendId, userId }: { friendId: string
       });
     
       return () => {
+        socket.off("hangup");
         socket.off("offer");
         socket.off("answer");
         socket.off("ice-candidate");
-        socket.off("hangup");
         socket.off("call-initiate");
       };
     }, [chatId]);
