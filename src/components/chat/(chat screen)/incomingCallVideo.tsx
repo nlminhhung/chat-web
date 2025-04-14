@@ -1,31 +1,60 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import toast from "react-hot-toast";
 import { Phone, PhoneOff, Video } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Avatar, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
-import { Card, CardContent } from "../ui/card"
+import socket from "@/src/lib/getSocket"
+import { Dialog, DialogContent } from "../ui/dialog";
 
-export default function IncomingCallDialog({ friendId, userId, friendName }: { friendId: string, userId: string, friendName: string }) {
-  const [isVisible, setIsVisible] = useState(true)
 
-  const handleAccept = () => {
-    // Handle accept call logic here
-    setIsVisible(false)
-    console.log("Call accepted")
-  }
+export function IncomingCallVideo({
+  friendId,
+  friendName,
+  chatId,
+  showInterface,
+}: {
+  friendId: string;
+  friendName: string;
+  chatId: string;
+  showInterface: () => void;
+}) {
+  const [incomingCall, setIncomingCall] = useState(false);
 
-  const handleDecline = () => {
-    // Handle decline call logic here
-    setIsVisible(false)
-    console.log("Call declined")
-  }
+  // When a "call-initiate" event is received, indicate an incoming call.
+  useEffect(() => {
+    const handleIncoming = () => {
+      // For incoming calls, notify the callee.
+      setIncomingCall(true);
+      toast.success(`Incoming call from ${friendId}`);
+    };
+    socket.on("call-initiate", handleIncoming);
 
-  if (!isVisible) return null
+    return () => {
+      socket.off("call-initiate", handleIncoming);
+    };
+  }, [friendId]);
+
+  // Accept the incoming call.
+  const acceptCall = async () => {
+    setIncomingCall(false);
+    socket.emit("join-room", chatId);
+    showInterface();
+  };
+
+  // Decline the incoming call.
+  const declineCall = () => {
+    setIncomingCall(false);
+    socket.emit("hangup", { roomId: chatId });
+    toast("Call declined.");
+  };
+
+  if (!incomingCall) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <Card className="w-full max-w-md overflow-hidden border-2 border-purple-600">
+    <Dialog open onOpenChange={() => setIncomingCall(false)}>
+      <DialogContent className="p-0 border-2 border-purple-600 max-w-md overflow-hidden [&>button]:hidden">
         <div className="bg-white px-6 py-4 text-center text-gray-900">
           <div className="mb-2 flex items-center justify-center">
             <Video className="mr-2 h-5 w-5" />
@@ -34,32 +63,31 @@ export default function IncomingCallDialog({ friendId, userId, friendName }: { f
           <div className="flex justify-center">
             <div className="pulse-animation relative flex h-20 w-20 items-center justify-center rounded-full bg-purple-100">
               <Avatar className="h-16 w-16">
-                <AvatarImage src="/placeholder.svg?height=64&width=64" alt="Caller" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage src={"/placeholder.svg"} />
               </Avatar>
             </div>
           </div>
-          <h3 className="mt-4 text-xl font-semibold">Jane Doe</h3>
+          <h3 className="mt-4 text-xl font-semibold">{friendName}</h3>
           <p className="text-sm text-gray-500">is calling you...</p>
         </div>
-        <CardContent className="grid grid-cols-2 gap-4 p-6 bg-black">
+        <div className="grid grid-cols-2 gap-4 p-6 bg-black">
           <Button
             variant="outline"
             className="flex items-center justify-center gap-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-            onClick={handleDecline}
+            onClick={declineCall}
           >
             <PhoneOff className="h-4 w-4" />
             Decline
           </Button>
           <Button
             className="flex items-center justify-center gap-2 bg-green-500 text-white hover:bg-green-600"
-            onClick={handleAccept}
+            onClick={acceptCall}
           >
             <Phone className="h-4 w-4" />
             Accept
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </DialogContent>
 
       <style jsx global>{`
         .pulse-animation::before {
@@ -87,7 +115,8 @@ export default function IncomingCallDialog({ friendId, userId, friendName }: { f
           }
         }
       `}</style>
-    </div>
+    </Dialog>
   )
 }
+
 

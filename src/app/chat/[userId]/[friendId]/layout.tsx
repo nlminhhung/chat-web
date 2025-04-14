@@ -11,7 +11,7 @@ import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
 import DeleteFriendButton from "@/src/components/chat/(chat screen)/deleteFriendButton"
 import UserDetailSkeleton from "@/src/components/chat/(chat screen)/userDetailSkeleton";
-import CallVideoButton from "@/src/components/chat/(chat screen)/callVideoButton";
+import {CallVideoButton} from "@/src/components/chat/(chat screen)/callVideoButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -61,7 +61,7 @@ export default async function Layout({ children, params }: LayoutProps) {
           </div>
           <div className="flex items-center gap-x-2 ml-auto">
             <DeleteFriendButton friendId={friendId} />
-            <CallVideoButton friendId={friendId} userId={userId}/>
+            <CallVideoButton friendName={friend?.name} friendId={friendId} userId={userId}/>
           </div>
         </div>
       </div>)}
