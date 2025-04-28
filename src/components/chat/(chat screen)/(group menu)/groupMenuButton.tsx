@@ -8,12 +8,14 @@ import MembersManagement from './membersManagement';
 import toast from 'react-hot-toast';
 import LeaveGroupDialogue from './leaveGroupDialogue';
 import socket from '@/src/lib/getSocket';
+import { GroupSettingsDialog } from './groupSettingButton';
 
-export default function GroupMenuButton({groupId, userId, groupName, memberCount, createdAt}: {groupId: string, userId: string, groupName: string, memberCount: number, createdAt: string, leader: string}) {
+export default function GroupMenuButton({ groupImage, groupId, userId, groupName, memberCount, createdAt}: {groupImage: string ,groupId: string, userId: string, groupName: string, memberCount: number, createdAt: string, leader: string}) {
     const [groupMembers, setGroupMembers] = useState<UserChatInformation[]>([])
     const [friendList, setFriendList] = useState<UserChatInformation[]>([]);
     const [leader, setLeader] = useState<string>("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isGroupSettingOpen, setIsGroupSettingOpen] = useState(false);
     const [isGroupManagementOpen, setIsGroupManagementOpen] = useState(false);
     const [isleaveGroupOpen, setIsLeaveGroupOpen] = useState(false);
 
@@ -54,6 +56,11 @@ export default function GroupMenuButton({groupId, userId, groupName, memberCount
       };
     }, []);
 
+    const handleGroupSetting = () => {
+      setIsDropdownOpen(false);
+      setIsGroupSettingOpen(true);
+    }
+
     const handleGroupManagement = () => {
       setIsDropdownOpen(false);
       setIsGroupManagementOpen(true);
@@ -72,7 +79,7 @@ export default function GroupMenuButton({groupId, userId, groupName, memberCount
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleGroupSetting}>
                   <UserCog className="mr-2 h-4 w-4" />
                   <span>Setting</span>
                 </DropdownMenuItem>
@@ -88,6 +95,7 @@ export default function GroupMenuButton({groupId, userId, groupName, memberCount
               </DropdownMenuContent>
             </DropdownMenu>  
            
+            <GroupSettingsDialog groupMembers={groupMembers} userId={userId} leader={leader} isOpen={isGroupSettingOpen} setIsOpen={setIsGroupSettingOpen} setIsDropdownOpen={setIsDropdownOpen} groupImage={groupImage} groupId={groupId} groupName={groupName} />
             <MembersManagement isOpen={isGroupManagementOpen} setIsOpen={setIsGroupManagementOpen} setIsDropdownOpen={setIsDropdownOpen} friendList={friendList} groupMembers={groupMembers} userId={userId} groupId={groupId} groupName={groupName} memberCount={memberCount} createdAt={createdAt} leader={leader} />
             <LeaveGroupDialogue isOpen={isleaveGroupOpen} setIsOpen={setIsLeaveGroupOpen} setIsDropdownOpen={setIsDropdownOpen} userId={userId} groupId={groupId} groupMembers={groupMembers} memberCount={memberCount} groupName={groupName} leader={leader}/>
         </div>

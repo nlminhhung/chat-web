@@ -47,7 +47,7 @@ type MembersManagementProps = {
 export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen, friendList, groupMembers, userId, groupId, groupName, memberCount, createdAt, leader }: MembersManagementProps) {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    // const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
     const handleRemoveMember = async (memberId: string) => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/removeMember`, {
@@ -89,32 +89,32 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
 
     }
 
-    const handleDeleteGroup = async () => {
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/deleteGroup`, {
-                method: "POST",
-                body: JSON.stringify({
-                    userId: userId,
-                    groupId: groupId,
-                    memberIds: groupMembers.map((member) => member.id),
-                }),
-            });
-            const resMessage = await res.json();
-            if (!res.ok) {
-                toast.error(resMessage.error);
-            }
-            else {
-                setIsOpen(false);
-                setShowDeleteAlert(false)
-                for (const member of groupMembers) {
-                    socket.emit("leaveGroup", {userId: member.id, groupId});
-                }
-                toast.success(resMessage.message);
-            }
-        } catch (error) {
-            toast.error("Failed to delete group!");
-        }
-    };
+    // const handleDeleteGroup = async () => {
+    //     try {
+    //         const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/deleteGroup`, {
+    //             method: "POST",
+    //             body: JSON.stringify({
+    //                 userId: userId,
+    //                 groupId: groupId,
+    //                 memberIds: groupMembers.map((member) => member.id),
+    //             }),
+    //         });
+    //         const resMessage = await res.json();
+    //         if (!res.ok) {
+    //             toast.error(resMessage.error);
+    //         }
+    //         else {
+    //             setIsOpen(false);
+    //             setShowDeleteAlert(false)
+    //             for (const member of groupMembers) {
+    //                 socket.emit("leaveGroup", {userId: member.id, groupId});
+    //             }
+    //             toast.success(resMessage.message);
+    //         }
+    //     } catch (error) {
+    //         toast.error("Failed to delete group!");
+    //     }
+    // };
 
     return (
         <>
@@ -141,7 +141,7 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
                         {userId == leader && (
                             <Button onClick={() => setIsAddDialogOpen(true)} variant="outline" className="w-full">
                                 <UserPlus className="mr-2 h-4 w-4" />
-                                Add Member
+                                Add Members
                             </Button>
                         )}
                         {userId == leader && (
@@ -208,12 +208,12 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
                                     ))}
                             </div>
                         </ScrollArea>
-                        {userId == leader && (
+                        {/* {userId == leader && (
                             <Button onClick={() => setShowDeleteAlert(true)} variant="destructive" className="w-full">
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Delete Group
                             </Button>
-                        )}
+                        )} */}
                     </div>
                 </DialogContent>
             </Dialog>
@@ -221,7 +221,7 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
             <AddMemberDialogue isAddDialogOpen={isAddDialogOpen} setIsAddDialogOpen={setIsAddDialogOpen} setIsDropdownOpen={setIsDropdownOpen} memberCount={memberCount} groupMembers={groupMembers} friendList={friendList} userId={userId} groupId={groupId} />
             <RemoveMemberDialogue isRemoveDialogOpen={isRemoveDialogOpen} setIsRemoveDialogOpen={setIsRemoveDialogOpen} setIsDropdownOpen={setIsDropdownOpen} memberCount={memberCount} groupMembers={groupMembers} userId={userId} groupId={groupId} />
 
-            <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+            {/* <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -238,7 +238,7 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
-            </AlertDialog>
+            </AlertDialog> */}
         </>
     )
 }

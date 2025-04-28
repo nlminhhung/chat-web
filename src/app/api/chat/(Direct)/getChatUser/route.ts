@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
             "zscore",
             `user:${session.user.id}:friends`,
             friendId
-            )) as 0 | 1;
+        )) as 0 | 1;
         
         if (!isFriend) {
             return Response.json({error:"These users are not friends!"}, { status: 400 });

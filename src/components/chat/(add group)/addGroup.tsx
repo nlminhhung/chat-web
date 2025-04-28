@@ -33,7 +33,6 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
 
   const handleConfirm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const form = event.currentTarget
     const formData = new FormData()
     formData.append("file", groupPicture!);
     const friendIds = groupFriends.map(friend => friend.id);
@@ -45,9 +44,8 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
     formData.append("groupName", groupName);
     formData.append("userId", userId);
 
-    const sendImageURL =`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/groups/create`;   
     try {
-      const res = await fetch(sendImageURL, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/groups/create`, {
         method: "POST",
         body: formData
       });
