@@ -3,5 +3,6 @@ interface Group {
     name: string
     image: string
     leader: string
-    memberCount: string
+    memberCount: number
+    createdAt: string
 }

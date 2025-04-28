@@ -79,9 +79,8 @@ export function GroupSettingsDialog({
         toast.error(data.error)
       } else {
         const friendIds = groupMembers.map((member) => member.id)
-        socket.emit("newGroup", {
-          groupMembers: [...friendIds, userId],
-          roomId: data.groupId,
+        socket.emit("notificateGroup", {
+          groupMembers: [...friendIds, userId]
         })
         toast.success(data.message)
         setIsOpen(false)

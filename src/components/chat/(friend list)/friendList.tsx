@@ -56,6 +56,7 @@ export default function FriendList({ userId }: { userId: string }) {
       );
       const data = await res.json();
       setGroupList(data);
+      setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch group List:", error);
     }
@@ -65,7 +66,6 @@ export default function FriendList({ userId }: { userId: string }) {
     setIsLoading(true);
     fetchFriendList();
     fetchGroupList();
-    setIsLoading(false);
 
     const handleFriendList = async () => {
       await fetchFriendList();

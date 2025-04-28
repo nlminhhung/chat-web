@@ -11,7 +11,7 @@ import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
 import GroupMenuButton from "@/src/components/chat/(chat screen)/(group menu)/groupMenuButton";
 import ChatSummarizeButton from "@/src/components/chat/(chat screen)/chatSummarizeButton";
-
+import GroupLayoutFetch from "@/src/components/chat/(chat screen)/groupLayoutFetch";
 interface LayoutProps {
   children: ReactNode;
   params: {
@@ -47,23 +47,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <div className="bg-purple-600 text-white shadow-sm z-10">
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center">
-            <Avatar className="h-10 w-10 mr-3">
-              <AvatarImage src={group?.image} alt={group?.name} />
-              <AvatarFallback>{group?.name[0]}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-xl truncate font-semibold">{group?.name}</h1>
-            </div>
-          </div>
-          <div className={"flex items-center space-x-2"}>
-            <ChatSummarizeButton groupId={groupId} userId={userId} />
-            <GroupMenuButton groupImage={group.image} groupId={groupId} userId={userId} groupName={group?.name} memberCount={group?.memberCount} createdAt={group?.createdAt} leader={group?.leader}/>
-          </div>
-        </div>
-      </div>
+      <GroupLayoutFetch group={group} groupId={groupId} userId={userId}/>
       <MessageInterface
         friend={group!}
         user={{

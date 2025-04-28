@@ -58,6 +58,7 @@ export default function MessageInterface({
       }
       const data = await res.json();
       setMessages(data);
+      setIsLoading(false);
       return data;
     } catch (error) {
       toast.error("Failed to fetch new messages!");
@@ -142,7 +143,7 @@ export default function MessageInterface({
   useEffect(() => {
     setIsLoading(true);
     getMessages(friend.id);
-    setIsLoading(false);
+    // setIsLoading(false);
     const handleMessages = async () => {
       await getMessages(friend.id);
     };

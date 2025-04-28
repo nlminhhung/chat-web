@@ -43,7 +43,7 @@ export default function ChatSummarizeButton({groupId, userId}: {groupId: string,
       
         if (!res.ok) toast.error("Failed to fetch");
       
-        const data = await res.json(); // Assuming the API sends JSON
+        const data = await res.json(); 
         setChatSummary(data.summary);
       } catch (error) {
         setError(true);

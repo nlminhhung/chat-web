@@ -12,16 +12,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/src/components/chat/ui/dropdown-menu"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/src/components/chat/ui/alert-dialog"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area"
 import { Separator } from "@/src/components/chat/ui/separator"
 import { Crown, MoreVertical, Shield, UserPlus, UserMinus, Users, Calendar, Trash2 } from "lucide-react"
@@ -47,7 +37,6 @@ type MembersManagementProps = {
 export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen, friendList, groupMembers, userId, groupId, groupName, memberCount, createdAt, leader }: MembersManagementProps) {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-    // const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
     const handleRemoveMember = async (memberId: string) => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/removeMember`, {
