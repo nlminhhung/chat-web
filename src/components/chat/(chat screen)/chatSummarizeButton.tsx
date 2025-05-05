@@ -14,23 +14,6 @@ export default function ChatSummarizeButton({groupId, userId}: {groupId: string,
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
-    // const fetchSummary = async () => {
-    //   try {
-    //     // const res = await fetch(`/api/chat/summarizeGroupMessages?groupId=${groupId}`, {
-    //     //   method: "GET"
-    //     // });
-    //     const summary = await res.json();
-    //     toast.success(summary.summary);
-    //     console.log("Summary here: ", summary);
-    //   } catch (error) {
-    //     toast.error("Failed to load messages!");
-    //   }
-    // };
-    
-    // const handleSummarize = () => {
-    //   fetchSummary();
-    // }
-
     const handleSummarize = async () => {
       setOpen(true)
       setLoading(true)

@@ -6,10 +6,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { AnimatedElement } from "@/src/components/home/ui/animated-element"
 import { MessageSquare, Shield, Zap, Users, ChevronRight } from "lucide-react"
+import Head from "next/head";
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
   return (
+    <>
+  
         <div className="min-h-[100dvh] flex flex-col bg-gradient-to-b from-white to-gray-50">
           {/* Header */}
           <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100">
@@ -280,6 +283,7 @@ export default async function HomePage() {
             </div>
           </footer>
         </div>
+      </>
   );
 }
 
