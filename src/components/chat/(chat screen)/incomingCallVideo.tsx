@@ -63,7 +63,7 @@ export function IncomingCallVideo({
           <div className="flex justify-center">
             <div className="pulse-animation relative flex h-20 w-20 items-center justify-center rounded-full bg-purple-100">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={"/placeholder.svg"} />
+                <AvatarImage src={"https://lh3.googleusercontent.com/a/ACg8ocI74bJpoR7307hi-CILg6gQSDi-ZN0u8Ne5HaWbA6f92zStsw=s96-c"} />
               </Avatar>
             </div>
           </div>

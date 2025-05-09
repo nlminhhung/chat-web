@@ -90,10 +90,7 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
           className="w-full"
         />
 
-        <div className="space-y-2">
-          <Label htmlFor="group-picture" className="text-lg font-semibold">
-            Group Picture
-          </Label>
+        <div className="space-y-2 mt-5">
           <div className="flex flex-col items-center space-y-4">
             {groupPicture ? (
               <div className="relative">

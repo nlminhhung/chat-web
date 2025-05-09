@@ -231,7 +231,7 @@ export function CallVideoInterface({
           </div>
         </div>
         <div className="flex justify-center gap-4 mt-6">
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             className={cn(
@@ -241,7 +241,7 @@ export function CallVideoInterface({
             onClick={() => setIsMuted(!isMuted)}
           >
             {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-          </Button>
+          </Button> */}
           <Button
             variant="destructive"
             size="icon"
@@ -250,7 +250,7 @@ export function CallVideoInterface({
           >
             <Phone className="h-5 w-5" />
           </Button>
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             className={cn(
@@ -260,7 +260,7 @@ export function CallVideoInterface({
             onClick={() => setIsCameraOff(!isCameraOff)}
           >
             {isCameraOff ? <VideoOff className="h-5 w-5" /> : <VideoIcon className="h-5 w-5" />}
-          </Button>
+          </Button> */}
         </div>
       </DialogContent>
     </Dialog>

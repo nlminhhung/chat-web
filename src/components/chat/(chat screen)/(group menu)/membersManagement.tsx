@@ -19,6 +19,7 @@ import AddMemberDialogue from "./addMemberDialogue"
 import RemoveMemberDialogue from "./removeMemberDialogue"
 import toast from "react-hot-toast"
 import socket from "@/src/lib/getSocket"
+import Image from "next/image"
 
 type MembersManagementProps = {
     isOpen: boolean;
@@ -78,33 +79,6 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
 
     }
 
-    // const handleDeleteGroup = async () => {
-    //     try {
-    //         const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}api/groups/deleteGroup`, {
-    //             method: "POST",
-    //             body: JSON.stringify({
-    //                 userId: userId,
-    //                 groupId: groupId,
-    //                 memberIds: groupMembers.map((member) => member.id),
-    //             }),
-    //         });
-    //         const resMessage = await res.json();
-    //         if (!res.ok) {
-    //             toast.error(resMessage.error);
-    //         }
-    //         else {
-    //             setIsOpen(false);
-    //             setShowDeleteAlert(false)
-    //             for (const member of groupMembers) {
-    //                 socket.emit("leaveGroup", {userId: member.id, groupId});
-    //             }
-    //             toast.success(resMessage.message);
-    //         }
-    //     } catch (error) {
-    //         toast.error("Failed to delete group!");
-    //     }
-    // };
-
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -150,7 +124,11 @@ export default function MembersManagement({ isOpen, setIsOpen, setIsDropdownOpen
                                         >
                                             <div className="flex items-center gap-3">
                                                 <Avatar>
-                                                    <AvatarImage src={member.image} />
+                                                    <Image src={member.image}
+                                                                            alt={member.name}
+                                                                            width={40}
+                                                                            height={40}
+                                                                            className="rounded-full object-cover"/>
                                                     <AvatarFallback>
                                                         {member.name.split(" ").map((n) => n[0]).join("")}
                                                     </AvatarFallback>

@@ -18,6 +18,7 @@ import socket from "@/src/lib/getSocket";
 import { useState } from "react";
 import { useSidebar } from "@/src/lib/context/sideBarContext";
 import { ChatListSkeleton } from "./friendListSkeletion";
+import Image from "next/image";
 
 interface FriendListUser extends User {
   lastMessage: string;
@@ -148,12 +149,15 @@ export default function FriendList({ userId }: { userId: string }) {
                 key={friend.id}
                 className="p-4 border-b border-purple-600 hover:bg-purple-500 cursor-pointer transition-colors duration-200"
               >
+                
                 <Link href={`/chat/${userId}/${friend.id}`}>
                   <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={friend.image} alt={friend.name} />
-                      <AvatarFallback>{friend.name[0]}</AvatarFallback>
-                    </Avatar>
+                      <Image src={friend.image}
+                        alt={friend.name}
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover"/>
+                    
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{friend.name}</p>
                       <p className="text-xs text-purple-300 truncate">{friend.lastMessage}</p>
@@ -180,7 +184,7 @@ export default function FriendList({ userId }: { userId: string }) {
                       <AvatarFallback>{group.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{group.name}</p>
+                      <p className="text-sm font-medium truncate max-w-[120px]">{group.name}</p>
                       {/* <p className="text-xs text-purple-300 truncate">{group.lastMessage}</p> */}
                     </div>
                     <div className="text-xs text-purple-300">{group.memberCount} members</div>
