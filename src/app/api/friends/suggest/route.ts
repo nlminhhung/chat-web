@@ -8,12 +8,10 @@ export async function GET(req: Request) {
     if (!session) {
       return new Response("You are unauthorized!", { status: 401 });
     }
-
     const suggestedUserIds = (await fetchRedis(
       "hkeys",
       `onlineUsers`
     )) as string[];
-
     const userInfo = await Promise.all(
       suggestedUserIds.map(async (userId) => {
         const userInfo = JSON.parse(
@@ -27,8 +25,11 @@ export async function GET(req: Request) {
         };
       })
     );
-    return Response.json(userInfo, { status: 200 });
+    const jsonResponse = JSON.stringify(userInfo);
+    return new Response(jsonResponse, { status: 200, headers: { 'Content-Type': 'application/json' } });
+    // return Response.json(userInfo, { status: 200 });
   } catch (error) {
+    console.error("Error fetching suggested users:", error);
     return new Response("Something went wrong!", { status: 400 });
   }
 }

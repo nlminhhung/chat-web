@@ -12,9 +12,7 @@ export default async function HomePage() {
   const session = await getServerSession(authOptions);
   return (
     <>
-  
         <div className="min-h-[100dvh] flex flex-col bg-gradient-to-b from-white to-gray-50">
-          {/* Header */}
           <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100">
             <div className="container mx-auto flex items-center justify-between h-16 px-4 md:px-6">
               <Link href="/" className="flex items-center gap-2" prefetch={false}>
