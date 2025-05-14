@@ -34,6 +34,21 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
+    socket.on('typing', async ({ userId, toUserId }) => {
+      const recipientSocketID = await client.hget("onlineUsers", toUserId);
+      if (recipientSocketID) {
+        io.to(recipientSocketID).emit('typing', { fromUserId: userId });
+      }
+    });
+
+    socket.on('stop_typing', async ({ userId, toUserId }) => {
+      const recipientSocketID = await client.hget("onlineUsers", toUserId);
+      if (recipientSocketID) {
+        io.to(recipientSocketID).emit('stop_typing', { fromUserId: userId });
+      }
+    });
+
+
     socket.on("newGroup", async ({ groupMembers, roomId }) => {
       for (const id of groupMembers) {
         const recipientSocketID = await client.hget("onlineUsers", id);

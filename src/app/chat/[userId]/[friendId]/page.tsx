@@ -14,6 +14,7 @@ import ImageUpload from "@/src/components/chat/(chat screen)/imageUpload";
 
 type ChatScreenProps = {
   friendId: string;
+  userId: string;
 };
 
 type FormData = z.infer<typeof messageValidate>;
@@ -30,6 +31,7 @@ const emojis = [
 
 export default function ChatScreen({ params }: { params: ChatScreenProps }) {
   const friendId = params.friendId;
+  const userId = params.userId;
   const {
     register,
     handleSubmit,
@@ -37,6 +39,16 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
     reset,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(messageValidate) });
+
+  let typingTimeout : NodeJS.Timeout;
+
+  const handleTyping = () => {
+    socket.emit('typing', { userId: userId, toUserId: friendId });
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit('stop_typing', { userId: userId, toUserId: friendId });
+    }, 2000);
+  };  
 
   const sendMessage = async (message: string, friendId: string) => {
     try {
@@ -80,6 +92,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
         <form className="flex space-x-2" onSubmit={handleSubmit(onSubmit)}>
           <Input
             {...register("message")}
+            onChange={handleTyping}
             id="message"
             className="flex-grow bg-white"
             autoComplete="off"

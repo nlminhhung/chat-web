@@ -11,9 +11,9 @@ export function MessageListSkeleton({ messageCount = 5 }: { messageCount?: numbe
             const isImageMessage = index % 5 === 3 // Every 5th message is an image
   
             return (
-              <div key={index} className={`flex group ${isUserMessage ? "justify-end" : "justify-start"} bg-gray-300 p-2 rounded-lg shadow-sm`}>
+              <div key={index} className={`flex group ${isUserMessage ? "justify-end" : "justify-start"} p-2 rounded-lg shadow-sm`}>
                 <div
-                  className={`flex flex-col ${isUserMessage ? "items-end" : "items-start"} max-w-[70%] sm:max-w-[60%] p-2 rounded-lg shadow-sm`}
+                  className={`flex flex-col ${isUserMessage ? "items-end" : "items-start"} transition-colors duration-200 max-w-[70%] sm:max-w-[60%] p-2 rounded-lg shadow-sm`}
                 >
                   {/* User info with avatar */}
                   <div className="flex items-center space-x-2 mb-1 ">

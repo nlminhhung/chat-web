@@ -26,7 +26,6 @@ import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { messageValidate } from "@/src/lib/valid_data/message";
 import Image from "next/image";
-import { set } from "zod";
 import { MessageListSkeleton } from "./messageInterfaceSkeleton";
 
 export default function MessageInterface({
@@ -42,6 +41,7 @@ export default function MessageInterface({
   const [editingMessage, setEditingMessage] = useState<string>("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFriendTyping, setIsFriendTyping] = useState(false);
 
   const getMessages = async (id: string) => {
     try {
@@ -147,9 +147,21 @@ export default function MessageInterface({
     const handleMessages = async () => {
       await getMessages(friend.id);
     };
+    socket.on('typing', ({ fromUserId }) => {
+      if (fromUserId == friend.id) {
+        setIsFriendTyping(true);
+      }
+    });
+    socket.on('stop_typing', ({ fromUserId }) => {
+      if (fromUserId === friend.id) {
+        setIsFriendTyping(false);
+      }
+    });
     socket.on("messages", handleMessages);
     return () => {
       socket.off("messages", handleMessages);
+      socket.off('typing');
+      socket.off('stop_typing');
     };
   }, []);
 
@@ -295,6 +307,24 @@ export default function MessageInterface({
             </DropdownMenu>
           </div>
         ))}
+        {isFriendTyping && 
+        <div className="p-3 rounded-lg text-purple-800 flex items-center">
+                      <span className="text-sm mr-1">{friend.name} is typing</span>
+                      <span className="flex space-x-1">
+                        <span
+                          className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce"
+                          style={{ animationDelay: "0ms" }}
+                        ></span>
+                        <span
+                          className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce"
+                          style={{ animationDelay: "150ms" }}
+                        ></span>
+                        <span
+                          className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce"
+                          style={{ animationDelay: "300ms" }}
+                        ></span>
+                      </span>
+                    </div>}
       </div>
     </ScrollArea>) : <MessageListSkeleton />}
     
