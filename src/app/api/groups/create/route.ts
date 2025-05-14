@@ -49,6 +49,7 @@ export async function POST(req: Request) {
     if (!allowedImageTypes.includes(groupPicture.type)) {
       return NextResponse.json({ error: `Invalid file type. Allowed types are: ${allowedImageTypes.join(", ")}` }, { status: 400 });
     }
+
     const groupId = randomBytes(12).toString("hex").slice(0, 12);
     const date = new Date();
     const timestamp = date.getTime();
@@ -63,7 +64,7 @@ export async function POST(req: Request) {
     }
     const fileUrl = `https://${bucketName}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${fileName}`;
     await s3Client.send(new PutObjectCommand(uploadParams));
-
+    
     // add user to group
     const addUserToGroupPromises = friendIds.map((friendId: string) => {
       return postRedis("zadd", `user:${friendId}:groups`, timestamp, groupId);

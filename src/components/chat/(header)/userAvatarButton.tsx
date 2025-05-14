@@ -12,6 +12,7 @@ import { authOptions } from "@/src/lib/auth";
 import { Button } from "@/src/components/chat/ui/button";
 import ToAdminButton from "./toAdminButton";
 import Image from "next/image";
+import ProfileCustomizer from "@/src/components/chat/(header)/profileCustomizer";
 
 export default async function UserAvatarButton() {
   const session = await getServerSession(authOptions);
@@ -31,6 +32,7 @@ export default async function UserAvatarButton() {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <ToAdminButton role={session?.user.role}/>
+        <ProfileCustomizer id={session!.user.id} name={session!.user.name} image={session!.user.image} />
         <SignOutButton />
       </DropdownMenuContent>
     </DropdownMenu>

@@ -59,9 +59,9 @@ export default async function Layout({ children, params }: LayoutProps) {
               <h1 className="text-xl truncate font-semibold">{friend?.name}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-x-2 ml-auto">
-            <DeleteFriendButton friendId={friendId} />
-            <CallVideoButton friendName={friend?.name} friendId={friendId} userId={userId}/>
+          <div className="flex items-center gap-x-2 ml-auto"> 
+            <DeleteFriendButton friendId={friendId} /> 
+            <CallVideoButton friendName={friend?.name} friendId={friendId} userId={userId}/> 
           </div>
         </div>
       </div>)}

@@ -55,8 +55,6 @@ export async function POST(req: Request) {
     // increase group member count
     const increaseGroupMembersCount = postRedis("hset", `group:${groupId}`, "memberCount", parseInt(memberCount) + membersAdded);
     
-    console.log("MC: ", parseInt(memberCount), "MR: ", membersAdded);
-
     await Promise.all([
       ...addGroupIdToUser,
       ...addUserIdToGroup,
