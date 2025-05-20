@@ -135,7 +135,6 @@ export function createSocketServer(server: HTTPServer) {
 
     socket.on("ice-candidate", ({ candidate, roomId }) => {
       socket.to(roomId).emit("ice-candidate", { candidate });
-      console.log("Ice candidate sent");
     });
 
     socket.on("hangup", ({ roomId }) => {

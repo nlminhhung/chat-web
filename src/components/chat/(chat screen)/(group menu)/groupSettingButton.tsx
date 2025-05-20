@@ -219,6 +219,7 @@ export function GroupSettingsDialog({
 
             {/* Danger Zone */}
             {userId === leader && (
+              <>  
               <div className="space-y-2 rounded-md border border-destructive/20 p-3">
                 <h4 className="font-medium text-destructive">Danger Zone</h4>
                 <p className="text-xs text-muted-foreground">
@@ -234,14 +235,15 @@ export function GroupSettingsDialog({
                   Delete Group
                 </Button>
               </div>
-            )}
-
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit">Save Changes</Button>
             </DialogFooter>
+            </>
+            )}
+
           </form>
         </DialogContent>
       </Dialog>

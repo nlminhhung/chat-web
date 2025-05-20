@@ -1,12 +1,11 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/chat/ui/avatar"
+import { Avatar, AvatarImage } from "@/src/components/chat/ui/avatar"
 
 import GroupMenuButton from "@/src/components/chat/(chat screen)/(group menu)/groupMenuButton";
 import ChatSummarizeButton from "@/src/components/chat/(chat screen)/chatSummarizeButton";
 
-import toast from "react-hot-toast"
-import socket from "@/src/lib/getSocket"
+import socket from "@/src/lib/getSocket";
 
 
 export default function GroupLayoutFetch({ group, groupId, userId }: { group: Group, groupId: string, userId: string }) {
@@ -34,12 +33,12 @@ export default function GroupLayoutFetch({ group, groupId, userId }: { group: Gr
         }
     }
     return (
-        <div className="bg-purple-600 text-white shadow-sm z-10">
+      <div className="bg-purple-600 text-white shadow-sm z-10">
             <div className="px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center">
                     <Avatar className="h-10 w-10 mr-3">
                         <AvatarImage src={groupData!.image} />
-                        <AvatarFallback>{groupData!.name[0]}</AvatarFallback>
+                        {/* <AvatarFallback>{groupData!.name[0]}</AvatarFallback> */}
                     </Avatar>
                     <div>
                         <h1 className="text-xl truncate font-semibold">{groupData!.name}</h1>

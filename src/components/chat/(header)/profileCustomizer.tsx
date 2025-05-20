@@ -48,11 +48,12 @@ export default function ProfileCustomizer({name, image, id}: ProfileCustomizerPr
 //   }
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-    console.log("RUN")
-    event.preventDefault()
-    const formData = new FormData()
+    event.preventDefault();
+    const formData = new FormData();
     formData.append("id", id);
-    formData.append("file", newImage!);
+    if (newImage) {
+      formData.append("file", newImage);
+    }
     formData.append("name", newName);
 
     try {
@@ -90,8 +91,8 @@ export default function ProfileCustomizer({name, image, id}: ProfileCustomizerPr
                 Customize Profile
           </Button>
         </DialogTrigger>
-        <form onSubmit={handleSave}>
         <DialogContent className="sm:max-w-[425px]">
+        <form onSubmit={handleSave}>
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
             <DialogDescription>
@@ -163,8 +164,8 @@ export default function ProfileCustomizer({name, image, id}: ProfileCustomizerPr
               Save changes
             </Button>
           </DialogFooter>
-        </DialogContent>
         </form>
+        </DialogContent>
       </Dialog>
     </div>
   )

@@ -2,15 +2,8 @@ import { ReactNode } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { redirect } from "next/navigation";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/src/components/chat/ui/avatar";
 import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
-import GroupMenuButton from "@/src/components/chat/(chat screen)/(group menu)/groupMenuButton";
-import ChatSummarizeButton from "@/src/components/chat/(chat screen)/chatSummarizeButton";
 import GroupLayoutFetch from "@/src/components/chat/(chat screen)/groupLayoutFetch";
 interface LayoutProps {
   children: ReactNode;
@@ -24,30 +17,42 @@ export default async function Layout({ children, params }: LayoutProps) {
   const session = await getServerSession(authOptions);
   const groupId = params.groupId;
   const userId = params.userId;
-
+  let group;
   if (userId !== session!.user.id) {
     redirect("/chat");
   }
-  const group = await fetch(
+    try {
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/chat/getChatGroup?groupId=${groupId}`,
     {
       method: "GET",
-      headers: headers()
+      headers: headers(),
+      cache: "no-store", 
     }
-  ) 
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      redirect("/chat");
-    });
+  );
+
+  const data = await response.json();
+
+  if (response.status === 403 && data.error === "You are not a member of this group!") {
+    console.error("Access denied:", data.error);
+    redirect("/chat");
+  }
+
+  if (!response.ok || !data) {
+    console.error("Failed to fetch group:", data);
+    redirect("/chat");
+  }
+
+  group = data;
+
+} catch (error) {
+  console.error("Unexpected error while fetching group:", error);
+  redirect("/chat");
+}
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <GroupLayoutFetch group={group} groupId={groupId} userId={userId}/>
+      {group && <><GroupLayoutFetch group={group} groupId={groupId} userId={userId}/>
       <MessageInterface
         friend={group!}
         user={{
@@ -56,7 +61,7 @@ export default async function Layout({ children, params }: LayoutProps) {
           image: session?.user.image,
         }}
         chatType="group"
-      />
+      /></>}
       {children}
     </div>
   );
