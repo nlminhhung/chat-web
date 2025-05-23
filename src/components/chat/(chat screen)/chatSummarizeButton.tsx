@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/src/components/chat/ui/button";
 import toast from 'react-hot-toast';
-import socket from '@/src/lib/getSocket';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Bot, AlertCircle } from 'lucide-react';
 

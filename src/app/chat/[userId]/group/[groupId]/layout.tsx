@@ -52,7 +52,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      {group && <><GroupLayoutFetch group={group} groupId={groupId} userId={userId}/>
+      {group && <><GroupLayoutFetch userName={session?.user.name} group={group} groupId={groupId} userId={userId}/>
       <MessageInterface
         friend={group!}
         user={{

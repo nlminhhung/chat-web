@@ -68,6 +68,11 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
+    socket.on("groupCall-initiate", async (data) => {
+      const { groupId, userId: callerId, groupName } = data;
+      io.to(groupId).emit("groupCall-initiate", {groupId, groupName, callerId});
+    });
+
     socket.on("leaveGroup", async ({ userId, roomId }) => {
       const recipientSocketID = await client.hget("onlineUsers", userId);
       if (recipientSocketID) {
@@ -99,7 +104,6 @@ export function createSocketServer(server: HTTPServer) {
 
     socket.on("newMessage", async (data) => {
       const { chatType, recipientId } = data;
-
       if (chatType === "direct") {
         const recipientSocketID = await client.hget("onlineUsers", recipientId);
         if (recipientSocketID) {

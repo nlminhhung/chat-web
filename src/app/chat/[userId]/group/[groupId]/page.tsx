@@ -14,6 +14,7 @@ import ImageUpload from "@/src/components/chat/(chat screen)/imageUpload";
 
 type GroupScreenProps = {
   groupId: string;
+  userId: string;
 };
 
 type FormData = z.infer<typeof messageValidate>;

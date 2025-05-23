@@ -6,9 +6,10 @@ import GroupMenuButton from "@/src/components/chat/(chat screen)/(group menu)/gr
 import ChatSummarizeButton from "@/src/components/chat/(chat screen)/chatSummarizeButton";
 
 import socket from "@/src/lib/getSocket";
+import { GroupCallVideoButton } from "./groupCallVideoButton";
 
 
-export default function GroupLayoutFetch({ group, groupId, userId }: { group: Group, groupId: string, userId: string }) {
+export default function GroupLayoutFetch({ userName, group, groupId, userId }: { userName: string, group: Group, groupId: string, userId: string }) {
     const [groupData, setGroupData] = useState<Group>(group)
     useEffect(() => {
         setGroupData(group);
@@ -32,19 +33,20 @@ export default function GroupLayoutFetch({ group, groupId, userId }: { group: Gr
             console.error("Failed to fetch group detail:", error)
         }
     }
+
     return (
       <div className="bg-purple-600 text-white shadow-sm z-10">
             <div className="px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center">
                     <Avatar className="h-10 w-10 mr-3">
                         <AvatarImage src={groupData!.image} />
-                        {/* <AvatarFallback>{groupData!.name[0]}</AvatarFallback> */}
                     </Avatar>
                     <div>
                         <h1 className="text-xl truncate font-semibold">{groupData!.name}</h1>
                     </div>
                 </div>
                 <div className={"flex items-center space-x-2"}>
+                    <GroupCallVideoButton userName={userName} groupId={groupId} groupName={groupData.name} userId={userId} />
                     <ChatSummarizeButton groupId={groupId} userId={userId} />
                     <GroupMenuButton groupImage={groupData!.image} groupId={groupId} userId={userId} groupName={groupData!.name} memberCount={groupData!.memberCount} createdAt={groupData!.createdAt} leader={groupData!.leader} />
                 </div>

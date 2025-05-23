@@ -27,6 +27,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { messageValidate } from "@/src/lib/valid_data/message";
 import Image from "next/image";
 import { MessageListSkeleton } from "./messageInterfaceSkeleton";
+import { IncomingGroupCallVideo } from "./incomingGroupCallVideo";
 
 export default function MessageInterface({
   friend,
@@ -174,6 +175,7 @@ export default function MessageInterface({
 
   return (
     <>
+    <IncomingGroupCallVideo userName={user.name} userId={user.id}/>
     { !isLoading ? (
     <ScrollArea className="flex-1 p-4 h-50 overflow-auto bg-purple-50">
       <div className="space-y-4">
