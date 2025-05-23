@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     if (!session) {
       return NextResponse.json(
         { error: "You are unauthorized!" },
-        { status: 402 }
+        { status: 401 }
       );
     }
 
@@ -31,13 +31,22 @@ export async function POST(req: Request) {
     const sortedUsers = [session.user.id, friendId].sort(); 
     const chatId = sortedUsers.join(":");
 
-    await Promise.all([
-      fetchRedis("zrem", `user:${session.user.id}:friends`, friendId),
-      fetchRedis("zrem", `user:${friendId}:friends`, session.user.id),
-      fetchRedis("del", `chat:${chatId}`)
-    ]);
-
-    return Response.json("OK", { status: 200 });
+    const messageIds = (await fetchRedis(
+      "zrange",
+      `chat:${chatId}`,
+      0,
+      -1,
+    )) as string[];
+    
+    for (const messageId of messageIds) {
+      await fetchRedis("zrem", `chat:${chatId}`, messageId);
+      await fetchRedis("del", messageId);
+    }
+    
+    await fetchRedis("zrem", `user:${session.user.id}:friends`, friendId);
+    await fetchRedis("zrem", `user:${friendId}:friends`, session.user.id);
+    
+    return Response.json("Delete friend successfully!", { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong!" },

@@ -33,7 +33,7 @@ export default function SuggestedFriends({sessionId, suggestedFriends}: {session
       key={user.id}
       className="flex flex-col items-center space-y-2 transition-opacity duration-300 ease-in-out"
     >
-      <Avatar className="w-15 h-15">
+      <Avatar className="w-15 h-12">
         <AvatarImage src={user.image} alt={user.name} />
         <AvatarFallback>{user.name[0]}</AvatarFallback>
       </Avatar>

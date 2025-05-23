@@ -16,18 +16,21 @@ import toast from "react-hot-toast";
 import socket from "@/src/lib/getSocket";
 
 interface Report {
+  messageId: string;
   reporterId: string;
   reporterName: string;
   senderId: string;
   senderName: string;
+  groupId: string;
   content: string;
   timestamp: string;
+  chatType: "direct" | "group";
 }
 
 export default function AdminPage() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [reports, setReports] = useState<Report[]>([]);
-  
+
   const getReports = async () => {
     try {
       const res = await fetch(
@@ -40,8 +43,7 @@ export default function AdminPage() {
         return;
       }
       const data = await res.json();
-      const parsedData = data.map((report: string) => JSON.parse(report));
-      setReports(parsedData);
+      setReports(data);
     } catch (error) {
       toast.error("Failed to fetch new reports!");
     }
@@ -59,26 +61,44 @@ export default function AdminPage() {
 
   const handleReport = async (isDelete: boolean, report: Report) => {
     try {
-        const res = await fetch(`/api/admin/handleReportedMessage`, {
-          method: "post",
-          body: JSON.stringify({
-            report: report,
-            isDelete: isDelete
-          }),
-        });
-        const resMessage = await res.json();
-        if (!res.ok) {
-          toast.error(resMessage.error);
-        } else {
-          setReports((prevItems) => prevItems.filter(item => item !== report));  
-          if (isDelete){
-            socket.emit("newMessage", [{ idToAdd: report.reporterId }, { idToAdd: report.senderId }]);
+      const res = await fetch(`/api/admin/handleReportedMessage`, {
+        method: "post",
+        body: JSON.stringify({
+          messageId: report.messageId,
+          reporterId: report.reporterId,
+          senderId: report.senderId,
+          isDelete: isDelete,
+          groupId: report.groupId,
+          chatType: report.chatType,
+        }),
+      });
+      const resMessage = await res.json();
+      if (!res.ok) {
+        toast.error(resMessage.error);
+      } else {
+        setReports((prevItems) => prevItems.filter((item) => item !== report));
+        if (isDelete) {
+          if (report.chatType === "direct") {
+            socket.emit("newMessage", {
+              chatType: "direct",
+              recipientId: report.senderId,
+            });
+            socket.emit("newMessage", {
+              chatType: "direct",
+              recipientId: report.reporterId,
+            });
+          } else if (report.chatType === "group") {
+            socket.emit("newMessage", {
+              chatType: "group",
+              recipientId: report.groupId,
+            });
           }
-          toast.success("Message has been dealed with!")
         }
-      } catch (error) {
-        toast.error("There was an error! Try again");
+        toast.success("Message has been dealed with!");
       }
+    } catch (error) {
+      toast.error("There was an error! Try again");
+    }
   };
 
   useEffect(() => {
@@ -127,7 +147,8 @@ export default function AdminPage() {
                   variant="secondary"
                   className="mt-1 sm:mt-0 text-xs sm:text-sm bg-purple-200 text-purple-800 "
                 >
-                  Reported at: {report.timestamp}
+                  Reported at:{" "}
+                  {new Date(Number(report.timestamp)).toLocaleString()}
                 </Badge>
               </div>
               <p className="mb-2 text-sm sm:text-base text-purple-900 ">

@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return new Response("You are unauthorized!", { status: 402 });
+      return new Response("You are unauthorized!", { status: 401 });
     }
 
     const userId = session!.user.id;
@@ -22,15 +22,31 @@ export async function GET(req: Request) {
         const senderInfo = JSON.parse(
           await fetchRedis("get", `user:${friendId}`)
         ) as User;
-        const onlineStatus = (await fetchRedis("hexists", "onlineUsers", friendId)) as 0 | 1
-        const sortedUsers = [userId, friendId].sort(); 
-        const chatId = sortedUsers.join(":"); 
-        let lastMessage = ""
+        const onlineStatus = (await fetchRedis(
+          "hexists",
+          "onlineUsers",
+          friendId
+        )) as 0 | 1;
+        const sortedUsers = [userId, friendId].sort();
+        const chatId = sortedUsers.join(":");
+        let lastMessage;
         try {
-            const jsonLastMessage = JSON.parse(decodeURIComponent((await fetchRedis("lrange", `chat:${chatId}`, -1, -1))))
-            lastMessage = jsonLastMessage.content;
+          const messageId = await fetchRedis(
+            "zrange",
+            `chat:${chatId}`,
+            0,
+            0,
+            "REV"
+          );
+          const lastMessageType = await fetchRedis("hget", messageId, "type");
+          if (lastMessageType == "message"){
+            const jsonLastMessage = await fetchRedis("hget", messageId, "content");
+            lastMessage = jsonLastMessage;
+          } else {
+            lastMessage = "[image]";
+          }
         } catch (error) {
-            lastMessage = "..."
+          lastMessage = "...";
         }
         return {
           id: senderInfo.id,

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { redirect } from "next/navigation";
@@ -9,8 +9,9 @@ import {
 } from "@/src/components/chat/ui/avatar";
 import { headers } from "next/headers";
 import MessageInterface from "@/src/components/chat/(chat screen)/messageInterface";
-import MenuButton from "@/src/components/chat/(chat screen)/menuButton";
 import DeleteFriendButton from "@/src/components/chat/(chat screen)/deleteFriendButton"
+import UserDetailSkeleton from "@/src/components/chat/(chat screen)/userDetailSkeleton";
+import {CallVideoButton} from "@/src/components/chat/(chat screen)/callVideoButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -47,7 +48,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <div className="bg-purple-600 text-white shadow-sm z-10">
+      {!friend ? (<UserDetailSkeleton />) : (<div className="bg-purple-600 text-white shadow-sm z-10">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
             <Avatar className="h-10 w-10 mr-3">
@@ -58,9 +59,12 @@ export default async function Layout({ children, params }: LayoutProps) {
               <h1 className="text-xl truncate font-semibold">{friend?.name}</h1>
             </div>
           </div>
-        <DeleteFriendButton friendId={friendId} />
+          <div className="flex items-center gap-x-2 ml-auto"> 
+            <DeleteFriendButton friendId={friendId} /> 
+            <CallVideoButton friendName={friend?.name} friendId={friendId} userId={userId}/> 
+          </div>
         </div>
-      </div>
+      </div>)}
       <MessageInterface
         friend={friend!}
         user={{
@@ -68,6 +72,7 @@ export default async function Layout({ children, params }: LayoutProps) {
           name: session?.user.name,
           image: session?.user.image,
         }}
+        chatType="direct"
       />
       {children}
     </div>

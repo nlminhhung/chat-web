@@ -5,15 +5,16 @@ import toast from "react-hot-toast";
 import { Send, Smile } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { messageValidate } from "@/src/lib/valid_data/message";
 import * as z from "zod";
 import socket from "@/src/lib/getSocket";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/chat/ui/popover"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
+import ImageUpload from "@/src/components/chat/(chat screen)/imageUpload";
 
 type ChatScreenProps = {
   friendId: string;
+  userId: string;
 };
 
 type FormData = z.infer<typeof messageValidate>;
@@ -30,6 +31,7 @@ const emojis = [
 
 export default function ChatScreen({ params }: { params: ChatScreenProps }) {
   const friendId = params.friendId;
+  const userId = params.userId;
   const {
     register,
     handleSubmit,
@@ -38,10 +40,20 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(messageValidate) });
 
+  let typingTimeout : NodeJS.Timeout;
+
+  const handleTyping = () => {
+    socket.emit('typing', { userId: userId, toUserId: friendId });
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit('stop_typing', { userId: userId, toUserId: friendId });
+    }, 2000);
+  };  
+
   const sendMessage = async (message: string, friendId: string) => {
     try {
       const validatedMessage = messageValidate.parse({ message });
-      const res = await fetch("/api/chat/sendChat", {
+      const res = await fetch("/api/chat/sendDirectMessage", {
         method: "post",
         body: JSON.stringify({
           friendId: friendId,
@@ -52,7 +64,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
       if (!res.ok) {
         toast.error(resMessage.error);
       } else {
-        socket.emit("newMessage", [{ idToAdd: friendId }]);
+        socket.emit("newMessage", {chatType: "direct", recipientId: friendId});
         socket.emit("newFriend", { idToAdd: friendId });
       }
     } catch (error) {
@@ -80,6 +92,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
         <form className="flex space-x-2" onSubmit={handleSubmit(onSubmit)}>
           <Input
             {...register("message")}
+            onChange={handleTyping}
             id="message"
             className="flex-grow bg-white"
             autoComplete="off"
@@ -92,6 +105,8 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
             <Send className="h-4 w-4" />
             <span className="sr-only">Send</span>
           </Button>
+          <ImageUpload friendId={friendId} chatType="direct"/>
+          
           <Popover>
             <PopoverTrigger asChild>
               <Button 

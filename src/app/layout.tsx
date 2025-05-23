@@ -5,6 +5,12 @@ import { cn } from '@/src/lib/utils'
 import './globals.css'
 import { ReactNode } from 'react'
 import Providers from '../components/Providers'
+import type { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: 'ChatterBox',
+  description: 'chat with your friends',
+}
 
 const fontHeading = Inter({
   subsets: ['latin'],
