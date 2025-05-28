@@ -177,7 +177,7 @@ export default function MessageInterface({
     <>
     <IncomingGroupCallVideo userName={user.name} userId={user.id}/>
     { !isLoading ? (
-    <ScrollArea className="flex-1 p-4 h-50 overflow-auto bg-purple-50">
+    <ScrollArea className="scrollable-container flex-1 p-4 h-50 overflow-auto bg-purple-50">
       <div className="space-y-4">
         {messages.map((message, index) => (
           <div

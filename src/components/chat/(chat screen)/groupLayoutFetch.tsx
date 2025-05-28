@@ -42,7 +42,7 @@ export default function GroupLayoutFetch({ userName, group, groupId, userId }: {
                         <AvatarImage src={groupData!.image} />
                     </Avatar>
                     <div>
-                        <h1 className="text-xl truncate font-semibold">{groupData!.name}</h1>
+                        <h1 className="text-xl font-semibold truncate max-w-[150px] md:truncate-none md:max-w-full">{groupData!.name}</h1>
                     </div>
                 </div>
                 <div className={"flex items-center space-x-2"}>

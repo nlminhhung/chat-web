@@ -50,13 +50,13 @@ export default async function Layout({ children, params }: LayoutProps) {
     <div className="flex-1 flex flex-col overflow-auto">
       {!friend ? (<UserDetailSkeleton />) : (<div className="bg-purple-600 text-white shadow-sm z-10">
         <div className="px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center">
+          <div className=" flex items-center">
             <Avatar className="h-10 w-10 mr-3">
               <AvatarImage src={friend?.image} alt={friend?.name} />
               <AvatarFallback>{friend?.name[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-xl truncate font-semibold">{friend?.name}</h1>
+              <h1 className="text-xl font-semibold truncate max-w-[150px] md:truncate-none md:max-w-full">{friend?.name}</h1>
             </div>
           </div>
           <div className="flex items-center gap-x-2 ml-auto"> 
