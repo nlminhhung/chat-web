@@ -1,7 +1,7 @@
 import {io as SocketIOClient} from 'socket.io-client' 
 import { Server as SocketIOServer } from 'socket.io';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3000'; // Replace with your server URL
+const SOCKET_URL = process.env.NEXT_PUBLIC_LOCAL_URL || 'http://localhost:3000'; // Replace with your server URL
 
 let io: SocketIOServer | null = null;
 

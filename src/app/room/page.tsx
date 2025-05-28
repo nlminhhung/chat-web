@@ -15,10 +15,7 @@ import toast from 'react-hot-toast';
 
 export default function Page() {
   const holder_room = 'quickstart-room';
-  const urlParams = new URLSearchParams(window.location.search);
-  const name = urlParams.get("username") ?? 'Guest';
-  const room = urlParams.get("groupId") ?? holder_room;
-  const userId = urlParams.get("userId") ?? '123';
+  
 
   const [roomInstance] = useState(() => new Room({
     adaptiveStream: true,
@@ -27,6 +24,10 @@ export default function Page() {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const name = urlParams.get("username") ?? 'Guest';
+  const room = urlParams.get("groupId") ?? holder_room;
+  const userId = urlParams.get("userId") ?? '123';
     let mounted = true;
     (async () => {
       try {

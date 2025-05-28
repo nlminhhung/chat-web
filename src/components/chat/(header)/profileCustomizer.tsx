@@ -96,7 +96,7 @@ export default function ProfileCustomizer({name, image, id}: ProfileCustomizerPr
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
             <DialogDescription>
-              Customize your username and profile picture. Click save when you're done.
+              Customize your username and profile picture. Click save when you are done.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">

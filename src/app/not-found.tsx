@@ -7,7 +7,7 @@ export default function NotFound() {
         <TriangleAlertIcon className="mx-auto h-12 w-12 text-red-600" />
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Oops, page not found :(</h1>
         <p className="mt-4 text-muted-foreground">
-          The page you're looking for doesn't exist. Let's get you back on track.
+          The page you are looking for does not exist.
         </p>
         <div className="mt-6">
           <Link

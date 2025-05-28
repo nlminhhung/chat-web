@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx src/server.ts",
     "build": "next build",
-    "start": "NODE_ENV=production node src/server.js",
+    "start": "NODE_ENV=production tsx src/server.ts",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch"

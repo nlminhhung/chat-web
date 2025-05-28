@@ -73,12 +73,12 @@ export function AddFriend() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Friend's Email</Label>
+              <Label htmlFor="email">Friend Email</Label>
               <Input
                 {...register("email")}
                 id="email"
                 type="email"
-                placeholder="Enter your friend's email"
+                placeholder="Enter your friend email"
                 required
               />
             </div>

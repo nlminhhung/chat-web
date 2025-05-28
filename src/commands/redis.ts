@@ -1,4 +1,4 @@
-const upstashRedisRestUrl = process.env.UPSTASH_REDIS_REST_URL;
+const upstashRedisRestUrl = process.env.UPSTASH_REDIS_REST_URL
 const restToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 type Command = "subscribe" | "get" | "set" | "del" |"sismember" | "smembers" | "sadd" | "rpush" | "lrange" | "lset" | "lrem" | "zadd" | "zrem" | "zrange" | "zscore" | "hset" | "hexists" | "hlen" | "hkeys" | "hget" | "hmget" | "hgetall" |"hdel";
 
