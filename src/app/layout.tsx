@@ -6,7 +6,8 @@ import './globals.css'
 import { ReactNode } from 'react'
 import Providers from '../components/Providers'
 import type { Metadata } from 'next'
- 
+import { CustomCursor } from '@/src/components/chat/(cursor)/customCursor'
+
 export const metadata: Metadata = {
   title: 'ChatterBox',
   description: 'chat with your friends',
@@ -38,6 +39,7 @@ export default function Layout({ children } : LayoutProps) {
             fontBody.variable
           )}
       >
+        <CustomCursor/>
         <Providers>
           {children}
         </Providers>

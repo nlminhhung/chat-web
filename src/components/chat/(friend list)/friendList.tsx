@@ -179,7 +179,7 @@ export default function FriendList({ userId }: { userId: string }) {
               >
                 <Link href={`/chat/${userId}/group/${group.id}`}>
                   <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
+                    <Avatar className="w-10 h-10 cursor-none">
                       <AvatarImage src={group.image} alt={group.name} />
                       <AvatarFallback>{group.name[0]}</AvatarFallback>
                     </Avatar>

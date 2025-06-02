@@ -19,7 +19,7 @@ export default async function UserAvatarButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-         <Avatar role="button" className="h-10 w-10 mr-3 hover:opacity-80 transition">
+         <Avatar role="button" className="h-10 w-10 mr-3 hover:opacity-80 transition cursor-none">
               <AvatarImage src={session!.user.image!} />
           </Avatar>
       </DropdownMenuTrigger>
