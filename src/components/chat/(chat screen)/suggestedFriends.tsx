@@ -19,10 +19,10 @@ export default function SuggestedFriends({sessionId, suggestedFriends}: {session
         message: "I see you online!",
       }),
     });
-    const resMessage = await res.json();
     if (!res.ok) {
-      toast.error(resMessage.error);
+      toast.error("Already sent request to this user or already friend with this user!");
     } else {
+      const resMessage = await res.json() ;
       socket.emit("newFriendRequest", { idToAdd: resMessage.idToAdd });
       toast.success("Your request has been filed!");
       setSuggestedUsers(suggestedUsers.filter((user) => user.id !== friendId));

@@ -5,11 +5,15 @@ import { fetchRedis } from "@/src/commands/redis";
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
+
     if (!session) {
-      return new Response("You are unauthorized!", { status: 401 });
+      return new Response(
+        JSON.stringify({ message: "You are unauthorized!" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    const userId = session!.user.id;
+    const userId = session.user.id;
     const friends = (await fetchRedis(
       "zrange",
       `user:${userId}:friends`,
@@ -17,18 +21,25 @@ export async function GET(req: Request) {
       -1,
       "REV"
     )) as string[];
+
     const friendInfo = await Promise.all(
       friends.map(async (friendId) => {
-        const senderInfo = JSON.parse(
-          await fetchRedis("get", `user:${friendId}`)
-        ) as User;
+        const senderRaw = await fetchRedis("get", `user:${friendId}`);
+        const senderInfo = senderRaw ? JSON.parse(senderRaw) as User : null;
+
+        if (!senderInfo) {
+          return null; 
+        }
+
         const onlineStatus = (await fetchRedis(
           "hexists",
           "onlineUsers",
           friendId
         )) as 0 | 1;
+
         const sortedUsers = [userId, friendId].sort();
         const chatId = sortedUsers.join(":");
+
         let lastMessage;
         try {
           const messageId = await fetchRedis(
@@ -38,16 +49,21 @@ export async function GET(req: Request) {
             0,
             "REV"
           );
-          const lastMessageType = await fetchRedis("hget", messageId, "type");
-          if (lastMessageType == "message"){
-            const jsonLastMessage = await fetchRedis("hget", messageId, "content");
-            lastMessage = jsonLastMessage;
+
+          if (Array.isArray(messageId) && messageId.length > 0) {
+            const lastMessageType = await fetchRedis("hget", messageId[0], "type");
+            if (lastMessageType === "message") {
+              lastMessage = await fetchRedis("hget", messageId[0], "content");
+            } else {
+              lastMessage = "[image]";
+            }
           } else {
-            lastMessage = "[image]";
+            lastMessage = "...";
           }
         } catch (error) {
           lastMessage = "...";
         }
+
         return {
           id: senderInfo.id,
           name: senderInfo.name,
@@ -58,8 +74,16 @@ export async function GET(req: Request) {
       })
     );
 
-    return Response.json(friendInfo, { status: 200 });
+    const filteredFriendInfo = friendInfo.filter(Boolean);
+
+    return new Response(
+      JSON.stringify(filteredFriendInfo),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    return new Response("Something went wrong!", { status: 400 });
+    return new Response(
+      JSON.stringify({ message: "Something went wrong!" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
   }
 }

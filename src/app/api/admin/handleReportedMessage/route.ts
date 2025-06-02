@@ -26,20 +26,6 @@ export async function POST(req: NextRequest) {
       chatType === "direct" ? [senderId, reporterId].sort().join(":") : groupId;
 
     if (isDelete) {
-      const requestType = chatType === "direct" ? "friends" : "groups";
-
-      const isValidRequest = (await fetchRedis(
-        "zscore",
-        `user:${session.user.id}:${requestType}`,
-        groupId
-      )) as 0 | 1;
-
-      if (!isValidRequest) {
-        return NextResponse.json(
-          { error: "You can't delete this message!" },
-          { status: 400 }
-        );
-      }
       await Promise.all([
         fetchRedis("del", messageId),
         fetchRedis("zrem", `chat:${chatId}`, messageId),

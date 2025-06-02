@@ -2,13 +2,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
 import { fetchRedis } from "@/src/commands/redis";
 import { z } from "zod";
-import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({error: "You are unauthorized!"}, { status: 401 });
+      return new Response("You are unauthorized!", { status: 401 });
     }
 
     const body = await req.json();
@@ -19,8 +18,9 @@ export async function POST(req: Request) {
       `user:${session.user.id}:friends`,
       idToAdd
     )) as 0 | 1;
+
     if (isFriend) {
-      return NextResponse.json({error: "Already friends"}, { status: 400 });
+      return new Response("Already friends", { status: 400 });
     }
 
     const hasSentRequest = (await fetchRedis(
@@ -30,10 +30,9 @@ export async function POST(req: Request) {
     )) as 0 | 1;
 
     if (!hasSentRequest) {
-      return new Response("Request doesn't exist!", {
-        status: 400,
-      });
+      return new Response("Request doesn't exist!", { status: 400 });
     }
+
     const timestamp = Math.floor(Date.now() / 1000);
     await Promise.all([
       fetchRedis("zadd", `user:${session.user.id}:friends`, timestamp, idToAdd),
@@ -47,11 +46,11 @@ export async function POST(req: Request) {
         "hdel",
         `user:${idToAdd}:incoming_friend_requests`,
         session.user.id
-      )
+      ),
     ]);
 
-    return Response.json("OK", { status: 200 });
+    return new Response("OK", { status: 200 });
   } catch (error) {
-    return NextResponse.json({error: "Something went wrong!"}, { status: 400 });
+    return new Response("Something went wrong!", { status: 400 });
   }
 }

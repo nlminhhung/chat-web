@@ -55,9 +55,9 @@ export const Notification = ({userId} : {userId: string}) => {
         method: "post",
         body: JSON.stringify({ id: id }),
       });
-      const resMessage = await res.json();
+      // const resMessage = await res.json();
       if (!res.ok) {
-        toast.error(resMessage.error);
+        toast.error("Already friends or request doesn't exist!");
       } else {
         socket.emit("newFriendRequest", { idToAdd: id });
         socket.emit("newFriend", { idToAdd: id });

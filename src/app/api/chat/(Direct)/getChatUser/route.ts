@@ -1,24 +1,25 @@
 import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
-import { NextResponse, NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) {
-            return NextResponse.json({error: "You are unauthorized!"}, { status: 401 });
+            return new Response("You are unauthorized!", { status: 401 });
         }
-        const friendId = req.nextUrl.searchParams.get("friendId") as string;
+
+        const url = new URL(req.url);
+        const friendId = url.searchParams.get("friendId") as string;
 
         const isFriend = (await fetchRedis(
             "zscore",
             `user:${session.user.id}:friends`,
             friendId
         )) as 0 | 1;
-        
+
         if (!isFriend) {
-            return Response.json({error:"These users are not friends!"}, { status: 400 });
+            return new Response("These users are not friends!", { status: 400 });
         }
 
         // const nickname = await fetchRedis(
@@ -35,10 +36,14 @@ export async function GET(req: NextRequest) {
         // if (nickname){
         //     return NextResponse.json({name: nickname, image: friendInfo.image, id: friendInfo.id} , { status: 200 });
         // }
-        return NextResponse.json({name: friendInfo.name, image: friendInfo.image, id: friendInfo.id} , { status: 200 });
+        const jsonResponse = JSON.stringify({
+            name: friendInfo.name,
+            image: friendInfo.image,
+            id: friendInfo.id
+        });
+        return new Response(jsonResponse, { status: 200, headers: { 'Content-Type': 'application/json' } });
 
-    }
-    catch {
-        return NextResponse.json({error: "Something went wrong!"}, { status: 400 });
+    } catch {
+        return new Response("Something went wrong!", { status: 400 });
     }
 }

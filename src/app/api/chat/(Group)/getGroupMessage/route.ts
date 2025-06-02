@@ -1,18 +1,19 @@
 import { fetchRedis } from "@/src/commands/redis";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/src/lib/auth";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import { getHash } from "@/src/commands/getHash";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json(
-        { error: "You are unauthorized!" },
-        { status: 401 }
-      );
+      return new Response(JSON.stringify({ error: "You are unauthorized!" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
+
     const groupId = req.nextUrl.searchParams.get("groupId") as string;
 
     const isMember = (await fetchRedis(
@@ -22,10 +23,10 @@ export async function GET(req: NextRequest) {
     )) as 0 | 1;
 
     if (!isMember) {
-      return NextResponse.json(
-        { error: "You are not a member of this group!" },
-        { status: 403 }
-      );
+      return new Response(JSON.stringify({ error: "You are not a member of this group!" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const messageIds = (await fetchRedis(
@@ -49,11 +50,15 @@ export async function GET(req: NextRequest) {
         return result;
       })
     );
-    return NextResponse.json(messages, { status: 200 });
+
+    return new Response(JSON.stringify(messages), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch {
-    return NextResponse.json(
-      { error: "Something went wrong!" },
-      { status: 400 }
-    );
+    return new Response(JSON.stringify({ error: "Something went wrong!" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
