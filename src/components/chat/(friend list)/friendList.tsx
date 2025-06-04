@@ -18,7 +18,6 @@ import socket from "@/src/lib/getSocket";
 import { useState } from "react";
 import { useSidebar } from "@/src/lib/context/sideBarContext";
 import { ChatListSkeleton } from "./friendListSkeletion";
-import Image from "next/image";
 
 interface FriendListUser extends User {
   lastMessage: string;
@@ -152,11 +151,10 @@ export default function FriendList({ userId }: { userId: string }) {
                 
                 <Link href={`/chat/${userId}/${friend.id}`}>
                   <div className="flex items-center space-x-3">
-                      <Image src={friend.image}
-                        alt={friend.name}
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover"/>
+                      <Avatar className="w-10 h-10 cursor-none">
+                      <AvatarImage src={friend.image} alt={friend.name} />
+                      <AvatarFallback>{friend.name[0]}</AvatarFallback>
+                    </Avatar>
                     
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{friend.name}</p>

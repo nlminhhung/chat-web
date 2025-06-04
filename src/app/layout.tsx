@@ -39,7 +39,7 @@ export default function Layout({ children } : LayoutProps) {
             fontBody.variable
           )}
       >
-        <CustomCursor/>
+        {/* <CustomCursor/> */}
         <Providers>
           {children}
         </Providers>

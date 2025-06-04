@@ -5,13 +5,14 @@ import toast from "react-hot-toast";
 import { Send, Smile } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { messageValidate } from "@/src/lib/valid_data/message";
 import * as z from "zod";
 import socket from "@/src/lib/getSocket";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/chat/ui/popover"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import ImageUpload from "@/src/components/chat/(chat screen)/imageUpload";
-
+import GifDialog from "@/src/components/chat/(chat screen)/gifDialog";
 type ChatScreenProps = {
   friendId: string;
   userId: string;
@@ -92,7 +93,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
         <form className="flex space-x-2" onSubmit={handleSubmit(onSubmit)}>
           <Input
             {...register("message")}
-            onChange={handleTyping}
+            onInput={handleTyping}
             id="message"
             className="flex-grow bg-white"
             autoComplete="off"
@@ -106,7 +107,7 @@ export default function ChatScreen({ params }: { params: ChatScreenProps }) {
             <span className="sr-only">Send</span>
           </Button>
           <ImageUpload friendId={friendId} chatType="direct"/>
-          
+          <GifDialog friendId={friendId} chatType="direct"/>
           <Popover>
             <PopoverTrigger asChild>
               <Button 

@@ -220,11 +220,12 @@ export default function MessageInterface({
                   {message.content}
                 </div>
               )) || (
-                <Image
+                <img
                   src={message.content}
                   width={500}
                   height={500}
-                  alt="Picture of the author"
+                  alt="Picture"
+                  className="max-w-[300px] max-h-[300px]"
                 />
               )}
               <div className="flex items-center mt-1 text-xs text-purple-600">

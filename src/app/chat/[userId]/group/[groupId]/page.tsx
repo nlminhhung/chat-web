@@ -11,6 +11,7 @@ import socket from "@/src/lib/getSocket";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/chat/ui/popover"
 import { ScrollArea } from "@/src/components/chat/ui/scroll-area";
 import ImageUpload from "@/src/components/chat/(chat screen)/imageUpload";
+import GifDialog from "@/src/components/chat/(chat screen)/gifDialog";
 
 type GroupScreenProps = {
   groupId: string;
@@ -93,7 +94,7 @@ export default function GroupScreen({ params }: { params: GroupScreenProps }) {
             <span className="sr-only">Send</span>
           </Button>
           <ImageUpload friendId={groupId} chatType="group"/>
-          
+          <GifDialog friendId={groupId} chatType="group" />
           <Popover>
             <PopoverTrigger asChild>
               <Button 

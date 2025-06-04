@@ -36,6 +36,7 @@ export function AddFriend() {
   const addFriend = async (email: string, message: string) => {
     try {
       const validatedRequest = addFriendValidate.parse({ email, message });
+      setSuccess(true);
       const res = await fetch("/api/friends/add", {
         method: "post",
         body: JSON.stringify({
@@ -48,7 +49,6 @@ export function AddFriend() {
         toast.error(resMessage.error);
       } else {
         socket.emit("newFriendRequest", { idToAdd: resMessage.idToAdd });
-        setSuccess(true);
         toast.success("Your request has been filed!");
       }
     } catch (error) {
