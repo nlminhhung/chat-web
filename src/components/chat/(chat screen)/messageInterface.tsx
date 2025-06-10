@@ -25,9 +25,7 @@ import {
 import { Textarea } from "../ui/textarea";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { messageValidate } from "@/src/lib/valid_data/message";
-import Image from "next/image";
 import { MessageListSkeleton } from "./messageInterfaceSkeleton";
-import { IncomingGroupCallVideo } from "./incomingGroupCallVideo";
 
 export default function MessageInterface({
   friend,
@@ -123,7 +121,7 @@ export default function MessageInterface({
     }
   };
 
-  const handleReportMessage = async (messageId: string, senderId: string) => {
+  const handleReportMessage = async (messageId: string, senderId: string, messageType: string ) => {
     const res = await fetch("/api/chat/reportMessage", {
       method: "post",
       body: JSON.stringify({
@@ -131,6 +129,7 @@ export default function MessageInterface({
         friendId: friend.id,
         senderId: senderId,
         chatType: chatType,
+        messageType: messageType,
       }),
     });
     const resMessage = await res.json();
@@ -175,7 +174,6 @@ export default function MessageInterface({
 
   return (
     <>
-    <IncomingGroupCallVideo userName={user.name} userId={user.id}/>
     { !isLoading ? (
     <ScrollArea className="scrollable-container flex-1 p-4 h-50 overflow-auto bg-purple-50">
       <div className="space-y-4">
@@ -300,7 +298,7 @@ export default function MessageInterface({
                   </>
                 ) : (
                   <DropdownMenuItem
-                    onSelect={() => handleReportMessage(message.messageId, message.senderId)}
+                    onSelect={() => handleReportMessage(message.messageId, message.senderId, message.type)}
                   >
                     <Flag className="w-4 h-4 mr-2" />
                     Report

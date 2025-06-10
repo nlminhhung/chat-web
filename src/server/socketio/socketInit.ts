@@ -115,10 +115,10 @@ export function createSocketServer(server: HTTPServer) {
       }
     });
 
-    socket.on("call-initiate", async ({ recipientId, recipientName, chatId }) => {
+    socket.on("call-initiate", async ({ recipientId, recipientName, chatId, recipientImage }) => {
       const recipientSocketID = await client.hget("onlineUsers", recipientId);
         if (recipientSocketID) {
-          io.to(recipientSocketID).emit("call-initiate", {recipientId, recipientName, chatId});
+          io.to(recipientSocketID).emit("call-initiate", {recipientId, recipientName, chatId, recipientImage});
         }
     });
 

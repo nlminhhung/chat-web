@@ -11,6 +11,7 @@ import { Dialog, DialogContent } from "../ui/dialog";
 export function IncomingCallVideo({
   friendId,
   friendName,
+  friendImage,
   chatId,
   incomingCall,
   setIncomingCall,
@@ -18,6 +19,7 @@ export function IncomingCallVideo({
 }: {
   friendId: string;
   chatId: string;
+  friendImage: string;
   friendName: string;
   incomingCall: boolean;
   setIncomingCall: (value: boolean) => void;
@@ -51,7 +53,7 @@ export function IncomingCallVideo({
           <div className="flex justify-center">
             <div className="pulse-animation relative flex h-20 w-20 items-center justify-center rounded-full bg-purple-100">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={"https://lh3.googleusercontent.com/a/ACg8ocI74bJpoR7307hi-CILg6gQSDi-ZN0u8Ne5HaWbA6f92zStsw=s96-c"} />
+                <AvatarImage src={friendImage} />
               </Avatar>
             </div>
           </div>

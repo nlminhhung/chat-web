@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     const senderId = body.senderId;
     const friendId = body.friendId;
     const chatType = body.chatType;
+    const messageType = body.messageType;
 
     const requestType = chatType === "direct" ? "friends" : "groups"
 
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
         groupId: friendId,
         messageId: messageId,
         chatType: chatType,
+        messageType: messageType,
     };
     const jsonReport = JSON.stringify(reportObj);
 

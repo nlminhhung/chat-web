@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     const senderId = body.senderId;
     const groupId = body.groupId;
     const chatType = body.chatType;
+    const messageType = body.messageType;
 
     const chatId =
       chatType === "direct" ? [senderId, reporterId].sort().join(":") : groupId;
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
       groupId: groupId,
       messageId: messageId,
       chatType: chatType,
+      messageType: messageType,
     };
     const jsonMessage = JSON.stringify(reportObj);
 

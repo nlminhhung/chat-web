@@ -37,7 +37,7 @@ export default function SuggestedFriends({sessionId, suggestedFriends}: {session
         <AvatarImage src={user.image} alt={user.name} />
         <AvatarFallback>{user.name[0]}</AvatarFallback>
       </Avatar>
-      <span className="truncate text-sm font-medium text-purple-800">
+      <span className="truncate max-w-[100px] h-10 w-10 md:truncate-none md:max-w-full text-sm font-medium text-purple-800">
         {user.name}
       </span>
       <Button

@@ -21,13 +21,14 @@ import { ChatListSkeleton } from "./friendListSkeletion";
 import { toast } from "react-hot-toast";
 import { IncomingCallVideo } from "../(chat screen)/incomingCallVideo";
 import { CallVideoInterface } from "../(chat screen)/callVideoInterface";
+import { IncomingGroupCallVideo } from "../(chat screen)/incomingGroupCallVideo";
 
 interface FriendListUser extends User {
   lastMessage: string;
   onlineStatus: 0 | 1;
 }
 
-export default function FriendList({ userId }: { userId: string }) {
+export default function FriendList({ userId, userName }: { userId: string, userName: string }) {
   const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
   const [friendList, setFriendList] = useState<FriendListUser[]>([]);
   const [groupList, setGroupList] = useState<Group[]>([]);
@@ -36,6 +37,7 @@ export default function FriendList({ userId }: { userId: string }) {
   const [recipientId, setRecipientId] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [chatId, setChatId] = useState("");
+  const [recipientImage, setRecipientImage] = useState("");
   const [showCallInterface, setShowCallInterface] = useState(false);
   const [incomingCall, setIncomingCall] = useState(false);
 
@@ -85,11 +87,12 @@ export default function FriendList({ userId }: { userId: string }) {
     socket.on("friends", handleFriendList);
     socket.on("groups", handleGroupList);
     socket.on("call-initiate", (data)=> {
-      const { recipientId, recipientName, chatId } = data;
+      const { recipientId, recipientName, chatId, recipientImage } = data;
       setRecipientId(recipientId);
       setRecipientName(recipientName);
       setChatId(chatId);
       setIncomingCall(true);
+      setRecipientImage(recipientImage);
       toast.success(`Incoming call from ${recipientName}`);
     });
     return () => {
@@ -216,10 +219,13 @@ export default function FriendList({ userId }: { userId: string }) {
               friendId={recipientId}
               friendName={recipientName}
               chatId={chatId}
+              friendImage={recipientImage}
               incomingCall={incomingCall}
               setIncomingCall={setIncomingCall}
               showInterface={() => setShowCallInterface(true)}
         />}
+      <IncomingGroupCallVideo userName={userName} userId={userId}/>
+      
       {showCallInterface && (
               <CallVideoInterface
                 friendId={recipientId}

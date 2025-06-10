@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
         messageResult["reporterName"] = reporterInfo.name;
         messageResult["reporterId"] = report.reporterId;
         messageResult["senderName"] = senderInfo.name;
+        messageResult["messageType"] = report.messageType;
         return messageResult;
       })
     );

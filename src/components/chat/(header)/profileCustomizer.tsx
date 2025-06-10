@@ -55,7 +55,7 @@ export default function ProfileCustomizer({name, image, id}: ProfileCustomizerPr
       formData.append("file", newImage);
     }
     formData.append("name", newName);
-
+    setOpen(false);
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/notifications/customizeProfile`, {
             method: "POST",

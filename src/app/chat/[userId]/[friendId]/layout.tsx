@@ -61,7 +61,7 @@ export default async function Layout({ children, params }: LayoutProps) {
           </div>
           <div className="flex items-center gap-x-2 ml-auto"> 
             <DeleteFriendButton friendId={friendId} /> 
-            <CallVideoButton friendName={friend?.name} friendId={friendId} userId={userId}/> 
+            <CallVideoButton friendName={friend?.name} friendId={friendId} userId={userId} userName={session?.user.name} userImage={session?.user.image}/> 
           </div>
         </div>
       </div>)}

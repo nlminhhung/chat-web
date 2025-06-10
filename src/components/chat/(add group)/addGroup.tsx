@@ -32,8 +32,11 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
   }
 
   const handleConfirm = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formData = new FormData()
+    event.preventDefault();
+    setSuccess(true);
+    
+    const formData = new FormData();
+
     formData.append("file", groupPicture!);
     const friendIds = groupFriends.map(friend => friend.id);
 
@@ -56,7 +59,6 @@ export default function AddGroup({ friendList, userId }: {friendList: User[], us
           toast.error(data.error);
         } else {
           socket.emit("newGroup", { groupMembers: [...friendIds, userId], roomId: data.groupId });
-          setSuccess(true);
           toast.success(data.message);
         }
       } catch (error) {

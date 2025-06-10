@@ -67,7 +67,7 @@ export function CallVideoInterface({
       stream.getTracks().forEach((track) => {
         peerConnection.current?.addTrack(track, stream);
       });
-      toast.success("Media devices activated!");
+      // toast.success("Media devices activated!");
     } catch (error) {
       toast.error("Could not access camera or microphone.");
       console.error("Error accessing media devices:", error);
@@ -188,8 +188,8 @@ export function CallVideoInterface({
   }, [chatId]);
 
   return (
-    <Dialog open onOpenChange={closeInterface}>
-      <DialogContent className="sm:max-w-4xl p-6 [&>button]:hidden">
+    <Dialog modal={true} open onOpenChange={closeInterface}>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-4xl p-6 [&>button]:hidden">
         <DialogHeader>
           <DialogTitle>Video Chat</DialogTitle>
         </DialogHeader>

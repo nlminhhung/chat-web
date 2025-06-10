@@ -24,6 +24,7 @@ interface Report {
   groupId: string;
   content: string;
   timestamp: string;
+  messageType: "message" | "image";
   chatType: "direct" | "group";
 }
 
@@ -70,6 +71,7 @@ export default function AdminPage() {
           isDelete: isDelete,
           groupId: report.groupId,
           chatType: report.chatType,
+          messageType: report.messageType,
         }),
       });
       const resMessage = await res.json();
@@ -130,50 +132,60 @@ export default function AdminPage() {
       <CardContent>
         <ScrollArea className="h-[calc(100vh-200px)]">
           {reports.map((report, index) => (
-            <div
-              key={index}
-              className="mb-4 p-3 sm:p-4 border border-purple-200 rounded bg-purple-50 "
-            >
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
-                <div>
-                  <h3 className="font-semibold text-sm sm:text-base text-purple-800 ">
-                    {report.senderName}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-purple-600 ">
-                    Reported by: {report.reporterName}
-                  </p>
-                </div>
-                <Badge
-                  variant="secondary"
-                  className="mt-1 sm:mt-0 text-xs sm:text-sm bg-purple-200 text-purple-800 "
-                >
-                  Reported at:{" "}
-                  {new Date(Number(report.timestamp)).toLocaleString()}
-                </Badge>
-              </div>
-              <p className="mb-2 text-sm sm:text-base text-purple-900 ">
-                {report.content}
-              </p>
-              <div className="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
-                  onClick={() => handleReport(true, report)}
-                >
-                  Delete this message
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full sm:w-auto border-purple-300 text-purple-700 hover:bg-purple-100"
-                  onClick={() => handleReport(false, report)}
-                >
-                  Ignore Report
-                </Button>
-              </div>
-            </div>
-          ))}
+  <div
+    key={index}
+    className="mb-4 p-3 sm:p-4 border border-purple-200 rounded bg-purple-50"
+  >
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
+      <div>
+        <h3 className="font-semibold text-sm sm:text-base text-purple-800">
+          {report.senderName}
+        </h3>
+        <p className="text-xs sm:text-sm text-purple-600">
+          Reported by: {report.reporterName}
+        </p>
+      </div>
+      <Badge
+        variant="secondary"
+        className="mt-1 sm:mt-0 text-xs sm:text-sm bg-purple-200 text-purple-800"
+      >
+        Reported at: {new Date(Number(report.timestamp)).toLocaleString()}
+      </Badge>
+    </div>
+
+    <div className="mb-2 text-sm sm:text-base text-purple-900">
+      {report.messageType === "image" ? (
+        <img
+          src={report.content}
+          alt="Reported content"
+          className="sm:max-w-sm rounded border max-w-[300px] max-h-[300px]"
+        />
+      ) : (
+        report.content
+      )}
+    </div>
+
+    <div className="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+      <Button
+        variant="destructive"
+        size="sm"
+        className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
+        onClick={() => handleReport(true, report)}
+      >
+        Delete this message
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full sm:w-auto border-purple-300 text-purple-700 hover:bg-purple-100"
+        onClick={() => handleReport(false, report)}
+      >
+        Ignore Report
+      </Button>
+    </div>
+  </div>
+))}
+
         </ScrollArea>
       </CardContent>
     </Card>

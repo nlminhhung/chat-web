@@ -38,7 +38,7 @@ export default async function Layout({ children, params }: LayoutProps) {
           </div>
         </header>
         <div className="flex flex-1 overflow-hidden">
-          <FriendList userId={session?.user.id} />
+          <FriendList userId={session?.user.id} userName={session?.user.name} />
           {children}
         </div>
       </SidebarProvider>
