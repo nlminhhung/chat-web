@@ -25,7 +25,7 @@ export function CallVideoButton({
   // Outgoing call initiation.
   const initiateCall = () => {
     socket.emit("join-room", chatId);
-    socket.emit("call-initiate", { recipientId: friendId });
+    socket.emit("call-initiate", { recipientId: friendId, recipientName: friendName, chatId });
     toast.success("Calling...");
     setShowCallInterface(true);
   };
@@ -52,12 +52,9 @@ export function CallVideoButton({
       )}
 
       {/* Always render the incoming call UI so that it can listen for incoming calls */}
-      <IncomingCallVideo
-        friendId={friendId}
-        friendName={friendName}
-        chatId={chatId}
+      {/* <IncomingCallVideo
         showInterface={() => setShowCallInterface(true)}
-      />
+      /> */}
     </div>
   );
 }

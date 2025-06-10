@@ -18,6 +18,9 @@ import socket from "@/src/lib/getSocket";
 import { useState } from "react";
 import { useSidebar } from "@/src/lib/context/sideBarContext";
 import { ChatListSkeleton } from "./friendListSkeletion";
+import { toast } from "react-hot-toast";
+import { IncomingCallVideo } from "../(chat screen)/incomingCallVideo";
+import { CallVideoInterface } from "../(chat screen)/callVideoInterface";
 
 interface FriendListUser extends User {
   lastMessage: string;
@@ -30,6 +33,11 @@ export default function FriendList({ userId }: { userId: string }) {
   const [groupList, setGroupList] = useState<Group[]>([]);
   const [activeList, setActiveList] = useState<"friends" | "groups">("friends");
   const [isLoading, setIsLoading] = useState(true);
+  const [recipientId, setRecipientId] = useState("");
+  const [recipientName, setRecipientName] = useState("");
+  const [chatId, setChatId] = useState("");
+  const [showCallInterface, setShowCallInterface] = useState(false);
+  const [incomingCall, setIncomingCall] = useState(false);
 
   const fetchFriendList = async () => {
     try {
@@ -76,10 +84,19 @@ export default function FriendList({ userId }: { userId: string }) {
 
     socket.on("friends", handleFriendList);
     socket.on("groups", handleGroupList);
-
+    socket.on("call-initiate", (data)=> {
+      const { recipientId, recipientName, chatId } = data;
+      setRecipientId(recipientId);
+      setRecipientName(recipientName);
+      setChatId(chatId);
+      setIncomingCall(true);
+      toast.success(`Incoming call from ${recipientName}`);
+    });
     return () => {
       socket.off("friends", handleFriendList);
       socket.off("groups", handleGroupList);
+      socket.off("call-initiate");
+
     };
   }, []);
 
@@ -195,6 +212,22 @@ export default function FriendList({ userId }: { userId: string }) {
           )
         )}
       </ScrollArea> : <ChatListSkeleton activeList={activeList} />}
+      {<IncomingCallVideo
+              friendId={recipientId}
+              friendName={recipientName}
+              chatId={chatId}
+              incomingCall={incomingCall}
+              setIncomingCall={setIncomingCall}
+              showInterface={() => setShowCallInterface(true)}
+        />}
+      {showCallInterface && (
+              <CallVideoInterface
+                friendId={recipientId}
+                friendName={recipientName}
+                chatId={chatId}
+                closeInterface={() => setShowCallInterface(false)}
+              />
+        )}
     </div>
   );
 }

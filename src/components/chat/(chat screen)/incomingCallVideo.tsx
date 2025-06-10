@@ -8,33 +8,21 @@ import { Button } from "../ui/button"
 import socket from "@/src/lib/getSocket"
 import { Dialog, DialogContent } from "../ui/dialog";
 
-
 export function IncomingCallVideo({
   friendId,
   friendName,
   chatId,
+  incomingCall,
+  setIncomingCall,
   showInterface,
 }: {
   friendId: string;
-  friendName: string;
   chatId: string;
+  friendName: string;
+  incomingCall: boolean;
+  setIncomingCall: (value: boolean) => void;
   showInterface: () => void;
 }) {
-  const [incomingCall, setIncomingCall] = useState(false);
-
-  // When a "call-initiate" event is received, indicate an incoming call.
-  useEffect(() => {
-    const handleIncoming = () => {
-      // For incoming calls, notify the callee.
-      setIncomingCall(true);
-      toast.success(`Incoming call from ${friendId}`);
-    };
-    socket.on("call-initiate", handleIncoming);
-
-    return () => {
-      socket.off("call-initiate", handleIncoming);
-    };
-  }, [friendId]);
 
   // Accept the incoming call.
   const acceptCall = async () => {

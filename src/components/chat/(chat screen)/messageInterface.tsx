@@ -211,7 +211,7 @@ export default function MessageInterface({
               </div>
               {(message.type == "message" && (
                 <div
-                  className={`p-3 rounded-lg ${
+                  className={`p-3 rounded-lg border border-gray-500 ${
                     message.senderId === user.id
                       ? "bg-purple-500 text-white"
                       : "bg-white text-purple-800"

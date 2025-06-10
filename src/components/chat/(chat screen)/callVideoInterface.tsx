@@ -23,7 +23,7 @@ export function CallVideoInterface({
   const localStreamRef = useRef<MediaStream | null>(null);
   const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
 
-  const [isMuted, setIsMuted] = useState(false);
+  // const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
   const [isRemoteConnected, setIsRemoteConnected] = useState(false);
 
@@ -128,7 +128,7 @@ export function CallVideoInterface({
         await peerConnection.current!.setLocalDescription(answer);
         socket.emit("answer", { answer, roomId: chatId });
       } catch (error) {
-        console.error("Error processing offer:", error);
+        // console.error("Error processing offer:", error);
         toast.error("Error processing offer.");
       }
     });
